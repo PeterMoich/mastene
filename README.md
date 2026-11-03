@@ -135,13 +135,13 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 
 ## CI
 
-`.github/workflows/ci.yml` runs on every push to `main` and every pull request:
+`.github/workflows/ci.yml` runs on every push to `master` and every pull request:
 
 1. Backend: build with warnings as errors (NuGet vulnerability audit included), check transitive
    packages for known vulnerabilities, unit tests, integration tests against SQL Server.
 2. Frontend: `npm ci`, lint, component tests, production build, `npm audit`.
 3. CodeQL security scan of the C# and TypeScript code.
-4. Docker images for the API and web app, published to `ghcr.io/petermoich/mastene-*` from `main`.
+4. Docker images for the API and web app, published to `ghcr.io/petermoich/mastene-*` from `master`.
 
 A failure in any of the first three blocks the images.
 
