@@ -1,6 +1,0 @@
-@TenantManager.Api_HostAddress = http://localhost:5080
-
-GET {{TenantManager.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

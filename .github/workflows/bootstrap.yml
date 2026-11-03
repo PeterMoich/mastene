@@ -1,29 +1,43 @@
 name: bootstrap
-# Temporary: scaffolds the solution with the official CLIs and commits the result back
-# to the bootstrap branch. Deleted once main has the real code.
+# Temporary tooling branch: builds the solution and generates EF Core migrations, committing
+# them back. Removed once main has the real code and CI.
 on:
   push:
     branches: [bootstrap]
 permissions:
   contents: write
 jobs:
-  scaffold:
-    if: "!contains(github.event.head_commit.message, '[scaffolded]')"
+  migration:
+    if: contains(github.event.head_commit.message, '[gen-migration]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Scaffold
-        run: bash tools/bootstrap.sh
-      - name: Commit generated files
+          global-json-file: global.json
+      - name: Build
+        run: |
+          set -o pipefail
+          dotnet build TenantManager.slnx -clp:NoSummary 2>&1 | tee build.log
+      - name: Report build errors
+        if: failure()
+        run: |
+          msg=$(grep -E ": (error|warning) [A-Z]+[0-9]+" build.log | sed -E 's/ \[[^]]*\]$//; s#^.*/mastene/##' | sort -u | head -80 | sed ':a;N;$!ba;s/%/%25/g;s/\n/%0A/g')
+          echo "::error title=build::$msg"
+      - name: Generate migration
+        run: |
+          dotnet tool restore
+          name=$(git log -1 --pretty=%s | sed -nE 's/.*\[gen-migration:([A-Za-z0-9]+)\].*/\1/p')
+          dotnet ef migrations add "${name:-InitialCreate}" -p src/TenantManager.Infrastructure -s src/TenantManager.Api -o Persistence/Migrations --no-build 2>&1 | tee ef.log
+      - name: Report migration errors
+        if: failure()
+        run: |
+          msg=$(tail -40 ef.log | sed ':a;N;$!ba;s/%/%25/g;s/\n/%0A/g')
+          echo "::error title=ef::$msg"
+      - name: Commit migration
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "chore: scaffold solution and Angular app [scaffolded]"
+          git add src/TenantManager.Infrastructure/Persistence/Migrations
+          git commit -m "chore: generate EF Core migration [skip ci]"
           git push
