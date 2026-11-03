@@ -1,0 +1,1312 @@
+== dotnet 10.0.403
+The template "dotnet gitignore file" was created successfully.
+
+The template "global.json file" was created successfully.
+
+The template "Solution File" was created successfully.
+
+The template "Class Library" was created successfully.
+
+Processing post-creation actions...
+Restoring /home/runner/work/mastene/mastene/src/TenantManager.Domain/TenantManager.Domain.csproj:
+  Determining projects to restore...
+  Restored /home/runner/work/mastene/mastene/src/TenantManager.Domain/TenantManager.Domain.csproj (in 43 ms).
+Restore succeeded.
+
+
+The template "Class Library" was created successfully.
+
+Processing post-creation actions...
+Restoring /home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj:
+  Determining projects to restore...
+  Restored /home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj (in 41 ms).
+Restore succeeded.
+
+
+The template "Class Library" was created successfully.
+
+Processing post-creation actions...
+Restoring /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj:
+  Determining projects to restore...
+  Restored /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj (in 41 ms).
+Restore succeeded.
+
+
+The template "ASP.NET Core Web API" was created successfully.
+
+Processing post-creation actions...
+Restoring /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj:
+  Determining projects to restore...
+  Restored /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj (in 614 ms).
+Restore succeeded.
+
+
+The template "xUnit Test Project" was created successfully.
+
+Processing post-creation actions...
+Restoring /home/runner/work/mastene/mastene/tests/TenantManager.Domain.Tests/TenantManager.Domain.Tests.csproj:
+  Determining projects to restore...
+  Restored /home/runner/work/mastene/mastene/tests/TenantManager.Domain.Tests/TenantManager.Domain.Tests.csproj (in 640 ms).
+Restore succeeded.
+
+
+The template "xUnit Test Project" was created successfully.
+
+Processing post-creation actions...
+Restoring /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj:
+  Determining projects to restore...
+  Restored /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj (in 166 ms).
+Restore succeeded.
+
+
+Project `src/TenantManager.Api/TenantManager.Api.csproj` added to the solution.
+Project `src/TenantManager.Application/TenantManager.Application.csproj` added to the solution.
+Project `src/TenantManager.Domain/TenantManager.Domain.csproj` added to the solution.
+Project `src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj` added to the solution.
+Project `tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj` added to the solution.
+Project `tests/TenantManager.Domain.Tests/TenantManager.Domain.Tests.csproj` added to the solution.
+Reference `..\TenantManager.Domain\TenantManager.Domain.csproj` added to the project.
+Reference `..\TenantManager.Application\TenantManager.Application.csproj` added to the project.
+Reference `..\TenantManager.Application\TenantManager.Application.csproj` added to the project.
+Reference `..\TenantManager.Infrastructure\TenantManager.Infrastructure.csproj` added to the project.
+Reference `..\..\src\TenantManager.Domain\TenantManager.Domain.csproj` added to the project.
+Reference `..\..\src\TenantManager.Application\TenantManager.Application.csproj` added to the project.
+Reference `..\..\src\TenantManager.Api\TenantManager.Api.csproj` added to the project.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'FluentValidation' into project '/home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/fluentvalidation/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/fluentvalidation/index.json 108ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/fluentvalidation/page/1.3.0/7.2.1.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/fluentvalidation/page/1.3.0/7.2.1.json 24ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/fluentvalidation/page/7.3.0-beta1/9.2.0.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/fluentvalidation/page/7.3.0-beta1/9.2.0.json 20ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/fluentvalidation/page/9.2.1/12.2.0.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/fluentvalidation/page/9.2.1/12.2.0.json 21ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/fluentvalidation/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/fluentvalidation/index.json 37ms
+info :   GET https://api.nuget.org/v3-flatcontainer/fluentvalidation/12.2.0/fluentvalidation.12.2.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/fluentvalidation/12.2.0/fluentvalidation.12.2.0.nupkg 3ms
+info : Installed FluentValidation 12.2.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/fluentvalidation/12.2.0 with content hash DR3lFbdnKucaaj1/8zMNOACMz/64igzox1yVZSFVsLxYB5mxAB+wFP1WZ8fjwrZnbU1KA1DoMzHKYKxUfuZ4wQ==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+info : Package 'FluentValidation' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj'.
+info : PackageReference for package 'FluentValidation' version '12.2.0' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj'.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Application/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj (in 216 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'FluentValidation.DependencyInjectionExtensions' into project '/home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/fluentvalidation.dependencyinjectionextensions/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/fluentvalidation.dependencyinjectionextensions/index.json 102ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/fluentvalidation.dependencyinjectionextensions/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/fluentvalidation.dependencyinjectionextensions/index.json 15ms
+info :   GET https://api.nuget.org/v3-flatcontainer/fluentvalidation.dependencyinjectionextensions/12.2.0/fluentvalidation.dependencyinjectionextensions.12.2.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/fluentvalidation.dependencyinjectionextensions/12.2.0/fluentvalidation.dependencyinjectionextensions.12.2.0.nupkg 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection.abstractions/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection.abstractions/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection.abstractions/2.1.0/microsoft.extensions.dependencyinjection.abstractions.2.1.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection.abstractions/2.1.0/microsoft.extensions.dependencyinjection.abstractions.2.1.0.nupkg 3ms
+info : Installed FluentValidation.DependencyInjectionExtensions 12.2.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/fluentvalidation.dependencyinjectionextensions/12.2.0 with content hash QpKXgiO9E6wXCh19X2Musn8MZM0xt7KQt/QrD6GDBn3MCUfy8a+rkhCzrYJNCfoxTsTRQ7bpKP8T3geTnJNNeQ==.
+info : Installed Microsoft.Extensions.DependencyInjection.Abstractions 2.1.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/2.1.0 with content hash 8/CtASu80UIoyG+r8FstrmZW5GLtXxzoYpjj3jV0FKZCL5CiFgSH3pAmqut/dC68mu7N1bU6v0UtKKL3gCUQGQ==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+info : Package 'FluentValidation.DependencyInjectionExtensions' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj'.
+info : PackageReference for package 'FluentValidation.DependencyInjectionExtensions' version '12.2.0' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj'.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Application/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj (in 351 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Microsoft.EntityFrameworkCore' into project '/home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/index.json 102ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/page/0.0.1-alpha/3.1.2.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/page/0.0.1-alpha/3.1.2.json 25ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/page/3.1.3/6.0.0-preview.6.21352.1.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/page/3.1.3/6.0.0-preview.6.21352.1.json 16ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/page/6.0.0-preview.7.21378.4/7.0.17.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/page/6.0.0-preview.7.21378.4/7.0.17.json 16ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/page/7.0.18/9.0.9.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/page/7.0.18/9.0.9.json 15ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/page/9.0.10/11.0.0-rc.3.26522.148.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore/page/9.0.10/11.0.0-rc.3.26522.148.json 15ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore/index.json 17ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore/10.0.14/microsoft.entityframeworkcore.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore/10.0.14/microsoft.entityframeworkcore.10.0.14.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.abstractions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.analyzers/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.memory/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.abstractions/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.abstractions/10.0.14/microsoft.entityframeworkcore.abstractions.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.memory/index.json 6ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.memory/10.0.14/microsoft.extensions.caching.memory.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.analyzers/index.json 8ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.analyzers/10.0.14/microsoft.entityframeworkcore.analyzers.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.abstractions/10.0.14/microsoft.entityframeworkcore.abstractions.10.0.14.nupkg 10ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging/index.json 16ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging/10.0.14/microsoft.extensions.logging.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.memory/10.0.14/microsoft.extensions.caching.memory.10.0.14.nupkg 13ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.analyzers/10.0.14/microsoft.entityframeworkcore.analyzers.10.0.14.nupkg 10ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging/10.0.14/microsoft.extensions.logging.10.0.14.nupkg 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.abstractions/index.json
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection.abstractions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.primitives/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.options/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection.abstractions/10.0.14/microsoft.extensions.dependencyinjection.abstractions.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/index.json 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.primitives/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/10.0.14/microsoft.extensions.logging.abstractions.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.abstractions/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.primitives/10.0.14/microsoft.extensions.primitives.10.0.14.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.abstractions/10.0.14/microsoft.extensions.caching.abstractions.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection.abstractions/10.0.14/microsoft.extensions.dependencyinjection.abstractions.10.0.14.nupkg 5ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection/index.json 6ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/10.0.14/microsoft.extensions.logging.abstractions.10.0.14.nupkg 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection/10.0.14/microsoft.extensions.dependencyinjection.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection/10.0.14/microsoft.extensions.dependencyinjection.10.0.14.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.abstractions/10.0.14/microsoft.extensions.caching.abstractions.10.0.14.nupkg 6ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.primitives/10.0.14/microsoft.extensions.primitives.10.0.14.nupkg 9ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.options/index.json 19ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.options/10.0.14/microsoft.extensions.options.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.options/10.0.14/microsoft.extensions.options.10.0.14.nupkg 5ms
+info : Installed Microsoft.Extensions.DependencyInjection 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.dependencyinjection/10.0.14 with content hash 2LzcuVjemeXR+WdY9wGIr8iGb7fYsDAit+IScxXX2XJnX0b++mWcE/WO6fEGIqhdMfSQM2ZS5JGMHYZix7YXZg==.
+info : Installed Microsoft.Extensions.DependencyInjection.Abstractions 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.14 with content hash QtpQzuSZVyTPCuHW058yCs9Nj0394uUkNyFHS813nOmK9UgUdBdaprJ5PPsBgsQIpxADTsTkbaMMonykem6qdw==.
+info : Installed Microsoft.Extensions.Primitives 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.primitives/10.0.14 with content hash 1bbZqqCJTPba3inTADExbp/9PsGVyvGOX3zr6tFr7ySCgVkX9Lpw7BV0TizktNItd3SsbUu1sQfSAYm1GZMoNw==.
+info : Installed Microsoft.EntityFrameworkCore.Abstractions 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.entityframeworkcore.abstractions/10.0.14 with content hash /SaznoTTFfKzxYEbCPAwwKBR3XT92DZgH4jJ3/cqs2skP3o2D+TL6i9Aaj+8Azwtu6/sRd0ve4P2mN12nfVmCw==.
+info : Installed Microsoft.EntityFrameworkCore 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.entityframeworkcore/10.0.14 with content hash vY3931PYPIDBbKovGHbACmpOWvURvKNyRXfCjMh5yLW+FH6vLWeqUu2xzSCRo4Oz4tgx9GYpd0JlV5LDyAoQdg==.
+info : Installed Microsoft.EntityFrameworkCore.Analyzers 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.entityframeworkcore.analyzers/10.0.14 with content hash gaANlGNTxkgODX2eeVT8jjd3AmlFilQV4DFf8qoW30+wUCm2o4N7nEHtZvnHIwfhaJni2DqcjE47Au7tC0Q5jA==.
+info : Installed Microsoft.Extensions.Options 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.options/10.0.14 with content hash EeN/33S418m9oWEaZY4N5T+BNxtOqNTIFoFbIgBKwylh4OJPKIWFAzbIhpTdNbwUs26MhkmbLCAbdY+YCJ1dIQ==.
+info : Installed Microsoft.Extensions.Logging 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.logging/10.0.14 with content hash O2fXL6JmtkFwkigxS8fPTQpLXxGDjgZco5D+h88s++Cl0bDCs023PVkpNoifciJ+f30I82jnp8tpwF0wCLdFtA==.
+info : Installed Microsoft.Extensions.Logging.Abstractions 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.14 with content hash SwcbEBtkECq3D2oywvHkm46fyrX9Dd2JPWphDnHUc2+cUWR1Mdo41atAjh/9iZjgQxuvbKfZKXqostT/LZfefA==.
+info : Installed Microsoft.Extensions.Caching.Memory 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.caching.memory/10.0.14 with content hash AxK3kyD6sWNpYKf+66huE7wHHjgKHONlD1dUaD/CxjZVBLEpH5N4jaqgszTcZvaM9/XVeXF28K3E0wsTyTA4Xg==.
+info : Installed Microsoft.Extensions.Caching.Abstractions 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.caching.abstractions/10.0.14 with content hash enSfqeENnSjGH3YAYKsCtsa5ob0HNiwF2nwJiC2yhilNXTlD/0prxrgPkWjoAp9svJcu04AiEIKtdh/A54P2fA==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+info : Package 'Microsoft.EntityFrameworkCore' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj'.
+info : PackageReference for package 'Microsoft.EntityFrameworkCore' version '10.0.14' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj'.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/src/TenantManager.Application/obj/TenantManager.Application.csproj.nuget.g.props.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/src/TenantManager.Application/obj/TenantManager.Application.csproj.nuget.g.targets.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Application/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Application/TenantManager.Application.csproj (in 316 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Microsoft.EntityFrameworkCore.SqlServer' into project '/home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/index.json 102ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/page/0.0.1-alpha/3.1.2.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/page/0.0.1-alpha/3.1.2.json 19ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/page/3.1.3/6.0.0-preview.6.21352.1.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/page/3.1.3/6.0.0-preview.6.21352.1.json 24ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/page/6.0.0-preview.7.21378.4/7.0.17.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/page/6.0.0-preview.7.21378.4/7.0.17.json 20ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/page/7.0.18/9.0.9.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/page/7.0.18/9.0.9.json 26ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/page/9.0.10/11.0.0-rc.3.26522.148.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.sqlserver/page/9.0.10/11.0.0-rc.3.26522.148.json 18ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.sqlserver/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.sqlserver/index.json 13ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.sqlserver/10.0.14/microsoft.entityframeworkcore.sqlserver.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.sqlserver/10.0.14/microsoft.entityframeworkcore.sqlserver.10.0.14.nupkg 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.relational/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlclient/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.abstractions/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlclient/index.json 7ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlclient/6.1.7/microsoft.data.sqlclient.6.1.7.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.abstractions/index.json 13ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.relational/index.json 14ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.abstractions/10.0.14/microsoft.extensions.configuration.abstractions.10.0.14.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.relational/10.0.14/microsoft.entityframeworkcore.relational.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlclient/6.1.7/microsoft.data.sqlclient.6.1.7.nupkg 5ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.abstractions/10.0.14/microsoft.extensions.configuration.abstractions.10.0.14.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.relational/10.0.14/microsoft.entityframeworkcore.relational.10.0.14.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/azure.identity/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/azure.core/index.json
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.memory/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlclient.sni.runtime/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identity.client/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.broker/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.jsonwebtokens/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols.openidconnect/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.sqlserver.server/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.configuration.configurationmanager/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.security.cryptography.pkcs/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.identitymodel.tokens.jwt/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.memory/9.0.11/microsoft.extensions.caching.memory.9.0.11.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlclient.sni.runtime/index.json 8ms
+info :   OK https://api.nuget.org/v3-flatcontainer/azure.identity/index.json 8ms
+info :   GET https://api.nuget.org/v3-flatcontainer/azure.identity/1.17.1/azure.identity.1.17.1.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlclient.sni.runtime/6.0.3/microsoft.data.sqlclient.sni.runtime.6.0.3.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identity.client/index.json 10ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identity.client/4.84.2/microsoft.identity.client.4.84.2.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.broker/index.json 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.broker/4.84.2/microsoft.identity.client.broker.4.84.2.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.jsonwebtokens/index.json 6ms
+info :   OK https://api.nuget.org/v3-flatcontainer/azure.core/index.json 14ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.jsonwebtokens/7.7.1/microsoft.identitymodel.jsonwebtokens.7.7.1.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/azure.core/1.50.0/azure.core.1.50.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols.openidconnect/index.json 7ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols.openidconnect/7.7.1/microsoft.identitymodel.protocols.openidconnect.7.7.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.sqlserver.server/index.json 8ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.sqlserver.server/1.0.0/microsoft.sqlserver.server.1.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.configuration.configurationmanager/index.json 9ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.configuration.configurationmanager/9.0.11/system.configuration.configurationmanager.9.0.11.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.security.cryptography.pkcs/index.json 10ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.identitymodel.tokens.jwt/index.json 11ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.security.cryptography.pkcs/9.0.11/system.security.cryptography.pkcs.9.0.11.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/system.identitymodel.tokens.jwt/7.7.1/system.identitymodel.tokens.jwt.7.7.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identity.client/4.84.2/microsoft.identity.client.4.84.2.nupkg 8ms
+info :   OK https://api.nuget.org/v3-flatcontainer/azure.identity/1.17.1/azure.identity.1.17.1.nupkg 11ms
+info :   OK https://api.nuget.org/v3-flatcontainer/azure.core/1.50.0/azure.core.1.50.0.nupkg 6ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.sqlserver.server/1.0.0/microsoft.sqlserver.server.1.0.0.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.broker/4.84.2/microsoft.identity.client.broker.4.84.2.nupkg 8ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.security.cryptography.pkcs/9.0.11/system.security.cryptography.pkcs.9.0.11.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.jsonwebtokens/7.7.1/microsoft.identitymodel.jsonwebtokens.7.7.1.nupkg 8ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.configuration.configurationmanager/9.0.11/system.configuration.configurationmanager.9.0.11.nupkg 5ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.memory/9.0.11/microsoft.extensions.caching.memory.9.0.11.nupkg 15ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols.openidconnect/7.7.1/microsoft.identitymodel.protocols.openidconnect.7.7.1.nupkg 7ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.data.sqlclient.sni.runtime/6.0.3/microsoft.data.sqlclient.sni.runtime.6.0.3.nupkg 15ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.bcl.asyncinterfaces/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.clientmodel/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.memory.data/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.extensions.msal/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identity.client/4.78.0/microsoft.identity.client.4.78.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.identitymodel.tokens.jwt/7.7.1/system.identitymodel.tokens.jwt.7.7.1.nupkg 8ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.clientmodel/index.json 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.memory.data/index.json 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.bcl.asyncinterfaces/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.memory.data/8.0.1/system.memory.data.8.0.1.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/system.clientmodel/1.8.0/system.clientmodel.1.8.0.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.bcl.asyncinterfaces/8.0.0/microsoft.bcl.asyncinterfaces.8.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identity.client/4.78.0/microsoft.identity.client.4.78.0.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.extensions.msal/index.json 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.extensions.msal/4.78.0/microsoft.identity.client.extensions.msal.4.78.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.clientmodel/1.8.0/system.clientmodel.1.8.0.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.memory.data/8.0.1/system.memory.data.8.0.1.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.bcl.asyncinterfaces/8.0.0/microsoft.bcl.asyncinterfaces.8.0.0.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.extensions.msal/4.78.0/microsoft.identity.client.extensions.msal.4.78.0.nupkg 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.abstractions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.nativeinterop/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.tokens/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.diagnostics.eventlog/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.security.cryptography.protecteddata/index.json
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/8.0.3/microsoft.extensions.logging.abstractions.8.0.3.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.abstractions/index.json 2ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.abstractions/8.14.0/microsoft.identitymodel.abstractions.8.14.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.diagnostics.eventlog/index.json 2ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.diagnostics.eventlog/9.0.11/system.diagnostics.eventlog.9.0.11.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols/index.json 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.tokens/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols/7.7.1/microsoft.identitymodel.protocols.7.7.1.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.tokens/7.7.1/microsoft.identitymodel.tokens.7.7.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.nativeinterop/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.nativeinterop/0.20.6/microsoft.identity.client.nativeinterop.0.20.6.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/8.0.3/microsoft.extensions.logging.abstractions.8.0.3.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.abstractions/8.14.0/microsoft.identitymodel.abstractions.8.14.0.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols/7.7.1/microsoft.identitymodel.protocols.7.7.1.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.diagnostics.eventlog/9.0.11/system.diagnostics.eventlog.9.0.11.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.tokens/7.7.1/microsoft.identitymodel.tokens.7.7.1.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identity.client.nativeinterop/0.20.6/microsoft.identity.client.nativeinterop.0.20.6.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.security.cryptography.protecteddata/index.json 7ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.security.cryptography.protecteddata/9.0.11/system.security.cryptography.protecteddata.9.0.11.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.security.cryptography.protecteddata/9.0.11/system.security.cryptography.protecteddata.9.0.11.nupkg 2ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.security.cryptography.protecteddata/4.5.0/system.security.cryptography.protecteddata.4.5.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.security.cryptography.protecteddata/4.5.0/system.security.cryptography.protecteddata.4.5.0.nupkg 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.logging/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.logging/index.json 11ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.logging/7.7.1/microsoft.identitymodel.logging.7.7.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.logging/7.7.1/microsoft.identitymodel.logging.7.7.1.nupkg 11ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.abstractions/7.7.1/microsoft.identitymodel.abstractions.7.7.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.abstractions/7.7.1/microsoft.identitymodel.abstractions.7.7.1.nupkg 2ms
+info : Installed Microsoft.Identity.Client.Extensions.Msal 4.78.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identity.client.extensions.msal/4.78.0 with content hash DYU9o+DrDQuyZxeq91GBA9eNqBvA3ZMkLzQpF7L9dTk6FcIBM1y1IHXWqiKXTvptPF7CZE59upbyUoa+FJ5eiA==.
+info : Installed Microsoft.Extensions.Caching.Memory 9.0.11 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.caching.memory/9.0.11 with content hash J77oUeVZXdMoiUiCPkL4v13KrNRuMQnSHHw78cTh/2ZidyiMFm8jhu49OUKvNydMUX8ZcuM5g8uohW18YaglMw==.
+info : Installed System.Security.Cryptography.ProtectedData 9.0.11 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.security.cryptography.protecteddata/9.0.11 with content hash s8yUYuYYu+PAwvBdhLG1KyrGrk9gkYeuPxfAsXsTqqWyepwSyEw8hAaflW4nO98NG52YpYI1am2+9o+79h2RtQ==.
+info : Installed Microsoft.IdentityModel.Protocols 7.7.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.protocols/7.7.1 with content hash h+fHHBGokepmCX+QZXJk4Ij8OApCb2n2ktoDkNX5CXteXsOxTHMNgjPGpAwdJMFvAL7TtGarUnk3o97NmBq2QQ==.
+info : Installed System.Diagnostics.EventLog 9.0.11 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.diagnostics.eventlog/9.0.11 with content hash 2Us/NchH6SM69NYWzf8NRyeftdv3ILso8LMiMdAjT7ECTiZKzddiXWhAyQj6ZzbddoAOHS9GdlPbAAkwCPID3Q==.
+info : Installed Microsoft.SqlServer.Server 1.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.sqlserver.server/1.0.0 with content hash N4KeF3cpcm1PUHym1RmakkzfkEv3GRMyofVv40uXsQhCQeglr2OHNcUk2WOG51AKpGO8ynGpo9M/kFXSzghwug==.
+info : Installed Microsoft.IdentityModel.JsonWebTokens 7.7.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.jsonwebtokens/7.7.1 with content hash 3Izi75UCUssvo8LPx3OVnEeZay58qaFicrtSnbtUt7q8qQi0gy46gh4V8VUTkMVMKXV6VMyjBVmeNNgeCUJuIw==.
+info : Installed Azure.Core 1.50.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/azure.core/1.50.0 with content hash GBNKZEhdIbTXxedvD3R7I/yDVFX9jJJEz02kCziFSJxspSQ5RMHc3GktulJ1s7+ffXaXD7kMgrtdQTaggyInLw==.
+info : Installed Microsoft.IdentityModel.Abstractions 8.14.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.abstractions/8.14.0 with content hash iwbCpSjD3ehfTwBhtSNEtKPK0ICun6ov7Ibx6ISNA9bfwIyzI2Siwyi9eJFCJBwxowK9xcA1mj+jBWiigeqgcQ==.
+info : Installed Microsoft.IdentityModel.Logging 7.7.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.logging/7.7.1 with content hash BZNgSq/o8gsKExdYoBKPR65fdsxW0cTF8PsdqB8y011AGUJJW300S/ZIsEUD0+sOmGc003Gwv3FYbjrVjvsLNQ==.
+info : Installed System.Memory.Data 8.0.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.memory.data/8.0.1 with content hash BVYuec3jV23EMRDeR7Dr1/qhx7369dZzJ9IWy2xylvb4YfXsrUxspWc4UWYid/tj4zZK58uGZqn2WQiaDMhmAg==.
+info : Installed System.Configuration.ConfigurationManager 9.0.11 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.configuration.configurationmanager/9.0.11 with content hash vPinosRgEk1CGjohbv0pDuz6gPprkWo5xvBTjOJjks5JOgOEWvPndq5NngGxiTcBcy1+k9GwzZ1c3Bp2fU5ezw==.
+info : Installed System.IdentityModel.Tokens.Jwt 7.7.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.identitymodel.tokens.jwt/7.7.1 with content hash rQkO1YbAjLwnDJSMpRhRtrc6XwIcEOcUvoEcge+evurpzSZM3UNK+MZfD3sKyTlYsvknZ6eJjSBfnmXqwOsT9Q==.
+info : Installed System.ClientModel 1.8.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.clientmodel/1.8.0 with content hash AqRzhn0v29GGGLj/Z6gKq4lGNtvPHT4nHdG5PDJh9IfVjv/nYUVmX11hwwws1vDFeIAzrvmn0dPu8IjLtu6fAw==.
+info : Installed Microsoft.Identity.Client 4.84.2 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identity.client/4.84.2 with content hash Va9FjmABSgj/lcUfHH0pBNQkmS7SNyepz2ERV7Yynp6QgEYpFdSqR6Vzy1WWipN8GS5pBHuXoZbqaDWuARCrHQ==.
+info : Installed System.Security.Cryptography.ProtectedData 4.5.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.security.cryptography.protecteddata/4.5.0 with content hash wLBKzFnDCxP12VL9ANydSYhk59fC4cvOr9ypYQLPnAj48NQIhqnjdD2yhP8yEKyBJEjERWS9DisKL7rX5eU25Q==.
+info : Installed Microsoft.Extensions.Configuration.Abstractions 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.configuration.abstractions/10.0.14 with content hash 4YdfvaoWn3tB1xQQHGrhRTFWJ8fGOqxThxduynSZy9ZFTiSaUi3vX4EK/kj8h2HQMwTlks9MWV1fv2WRBv5/1w==.
+info : Installed Microsoft.IdentityModel.Tokens 7.7.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.tokens/7.7.1 with content hash fQ0VVCba75lknUHGldi3iTKAYUQqbzp1Un8+d9cm9nON0Gs8NAkXddNg8iaUB0qi/ybtAmNWizTR4avdkCJ9pQ==.
+info : Installed Azure.Identity 1.17.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/azure.identity/1.17.1 with content hash MSZkBrctcpiGxs9Cvr2VKKoN6qFLZlP3I6xuCWJ9iTgitI5Rgxtk5gfOSpXPZE3+CJmZ/mnqpQyGyjawFn5Vvg==.
+info : Installed Microsoft.Identity.Client.Broker 4.84.2 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identity.client.broker/4.84.2 with content hash 928ySLeGz1xtvydwq6h9tv7TbxrtA4ZzavLKUqRJh0PW6BGcEJwpI8W8vf2PlQdYemGm/oyGjdzYzdY/I8r/4A==.
+info : Installed Microsoft.Extensions.Logging.Abstractions 8.0.3 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.logging.abstractions/8.0.3 with content hash dL0QGToTxggRLMYY4ZYX5AMwBb+byQBd/5dMiZE07Nv73o6I5Are3C7eQTh7K2+A4ct0PVISSr7TZANbiNb2yQ==.
+info : Installed Microsoft.Data.SqlClient.SNI.runtime 6.0.3 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.data.sqlclient.sni.runtime/6.0.3 with content hash kt2JDsmcFGzeanCo6hJNalMcjEvgtYoxSQjqh00Nm1xXmahHzuR48TxjS1nq/lpnYh+g+wLqD5D9WSz8xsybhw==.
+info : Installed Microsoft.IdentityModel.Abstractions 7.7.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.abstractions/7.7.1 with content hash S7sHg6gLg7oFqNGLwN1qSbJDI+QcRRj8SuJ1jHyCmKSipnF6ZQL+tFV2NzVfGj/xmGT9TykQdQiBN+p5Idl4TA==.
+info : Installed Microsoft.Identity.Client 4.78.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identity.client/4.78.0 with content hash vZ50HE9INSN+Ew8pCgTm0t7wzxQTqozF9L4MAsl64etXz0Teo0dbUvjpVzqDHRs6m1Vn8mHF04fGaxXrIvGpsg==.
+info : Installed Microsoft.EntityFrameworkCore.SqlServer 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.entityframeworkcore.sqlserver/10.0.14 with content hash S3zuzJE5qcl4jjBwSI1x1WZp/GiwzBk1qlFjI77O1E/FZ0mtXNYRBDCfAY0x7nly2zZjM2U5XIkw7AD3DsSpEQ==.
+info : Installed Microsoft.IdentityModel.Protocols.OpenIdConnect 7.7.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.protocols.openidconnect/7.7.1 with content hash yT2Hdj8LpPbcT9C9KlLVxXl09C8zjFaVSaApdOwuecMuoV4s6Sof/mnTDz/+F/lILPIBvrWugR9CC7iRVZgbfQ==.
+info : Installed Microsoft.Bcl.AsyncInterfaces 8.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.bcl.asyncinterfaces/8.0.0 with content hash 3WA9q9yVqJp222P3x1wYIGDAkpjAku0TMUaaQV22g6L67AI0LdOIrVS7Ht2vJfLHGSPVuqN94vIr15qn+HEkHw==.
+info : Installed Microsoft.EntityFrameworkCore.Relational 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.entityframeworkcore.relational/10.0.14 with content hash Ut0kgtfoKX9QElQVEXSEAgdQc79jISWStVWSOhfPDDHNSKMwFzSXG3gtdYFTAbsBoV+8NtXdVaj4xwdqeky8UA==.
+info : Installed System.Security.Cryptography.Pkcs 9.0.11 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.security.cryptography.pkcs/9.0.11 with content hash YS2YqtN6fFjlTDIQI+ucjbbrEvwMn796r+VLTQRr/5Oy6g+i+m7nIou83KnJCnAcKna2I+5eVJRks6SoHSpetQ==.
+info : Installed Microsoft.Data.SqlClient 6.1.7 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.data.sqlclient/6.1.7 with content hash NipUfw4MfNxdiVPekCxuLyTZ0GK68tXW0pmCzp8zK+foDHNMdd9fttxP0SIook03U5oy83vAsHCBNhTz+uqXNA==.
+info : Installed Microsoft.Identity.Client.NativeInterop 0.20.6 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identity.client.nativeinterop/0.20.6 with content hash noyfdMfVxyWpM6xUDmlW6gUvZ5ci24z7Qoy15JvynTQfZV5vTD2NEdsnT5Gy4ngViwgdIp5iRjRy10jAKXFAgw==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Microsoft.EntityFrameworkCore.SqlServer' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj'.
+info : PackageReference for package 'Microsoft.EntityFrameworkCore.SqlServer' version '10.0.14' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj'.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/obj/TenantManager.Infrastructure.csproj.nuget.g.props.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/obj/TenantManager.Infrastructure.csproj.nuget.g.targets.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj (in 871 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Microsoft.AspNetCore.Identity.EntityFrameworkCore' into project '/home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/index.json 99ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/page/0.0.1-alpha/3.1.4.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/page/0.0.1-alpha/3.1.4.json 70ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/page/3.1.5/6.0.0-rc.1.21452.15.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/page/3.1.5/6.0.0-rc.1.21452.15.json 21ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/page/6.0.0-rc.2.21480.10/7.0.19.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/page/6.0.0-rc.2.21480.10/7.0.19.json 20ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/page/7.0.20/9.0.11.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/page/7.0.20/9.0.11.json 20ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/page/9.0.12/11.0.0-rc.3.26522.148.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.identity.entityframeworkcore/page/9.0.12/11.0.0-rc.3.26522.148.json 22ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.identity.entityframeworkcore/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.identity.entityframeworkcore/index.json 19ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.identity.entityframeworkcore/10.0.14/microsoft.aspnetcore.identity.entityframeworkcore.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.identity.entityframeworkcore/10.0.14/microsoft.aspnetcore.identity.entityframeworkcore.10.0.14.nupkg 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.identity.stores/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.identity.stores/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.identity.stores/10.0.14/microsoft.extensions.identity.stores.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.identity.stores/10.0.14/microsoft.extensions.identity.stores.10.0.14.nupkg 2ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.identity.core/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.identity.core/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.identity.core/10.0.14/microsoft.extensions.identity.core.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.identity.core/10.0.14/microsoft.extensions.identity.core.10.0.14.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.cryptography.keyderivation/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.cryptography.keyderivation/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.cryptography.keyderivation/10.0.14/microsoft.aspnetcore.cryptography.keyderivation.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics/index.json 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics/10.0.14/microsoft.extensions.diagnostics.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.cryptography.keyderivation/10.0.14/microsoft.aspnetcore.cryptography.keyderivation.10.0.14.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.cryptography.internal/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics/10.0.14/microsoft.extensions.diagnostics.10.0.14.nupkg 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.abstractions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.options.configurationextensions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.cryptography.internal/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.cryptography.internal/10.0.14/microsoft.aspnetcore.cryptography.internal.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.abstractions/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.abstractions/10.0.14/microsoft.extensions.diagnostics.abstractions.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.options.configurationextensions/index.json 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.options.configurationextensions/10.0.14/microsoft.extensions.options.configurationextensions.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration/index.json 6ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration/10.0.14/microsoft.extensions.configuration.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.cryptography.internal/10.0.14/microsoft.aspnetcore.cryptography.internal.10.0.14.nupkg 7ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.abstractions/10.0.14/microsoft.extensions.diagnostics.abstractions.10.0.14.nupkg 6ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.options.configurationextensions/10.0.14/microsoft.extensions.options.configurationextensions.10.0.14.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration/10.0.14/microsoft.extensions.configuration.10.0.14.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.binder/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.binder/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.binder/10.0.14/microsoft.extensions.configuration.binder.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.binder/10.0.14/microsoft.extensions.configuration.binder.10.0.14.nupkg 2ms
+info : Installed Microsoft.AspNetCore.Cryptography.KeyDerivation 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.aspnetcore.cryptography.keyderivation/10.0.14 with content hash cpj0yWhsZ7HrSPl+pRoU3XqgJoyU3s7BoXU01atiELVV3Uw9dA7kR6AWhWQh/KUa/gkjYejf51c9PHrStjzZkQ==.
+info : Installed Microsoft.Extensions.Identity.Stores 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.identity.stores/10.0.14 with content hash z1y+CfHeLFWcyvNjAKAMW0pLspmVaXM/FgKS1CyFZeKuC/RWnm8aUiZQkvAMzeRpQgvjHugsy2faN9eD6XWiKw==.
+info : Installed Microsoft.AspNetCore.Identity.EntityFrameworkCore 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.aspnetcore.identity.entityframeworkcore/10.0.14 with content hash GPU3K0HaLlYu0dnocEglRhrnYRu6VTJocynD5TF8I2lvcMsNzhv46WJLxh/USxu6hgmOrNZH/VhGl4ckdiPHpg==.
+info : Installed Microsoft.Extensions.Configuration.Binder 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.configuration.binder/10.0.14 with content hash brDb5kgle2iY2lWHgeV/KOqnBEpVnlMFigGJ/WW7KP9Nj6C/t53f/h5boYyVXB0bEhgpL+ctbewDJMI+zAMj1w==.
+info : Installed Microsoft.AspNetCore.Cryptography.Internal 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.aspnetcore.cryptography.internal/10.0.14 with content hash hwsfpgYV5uYh/JLzjS9qdNBWwjL6dRbs4naGku9fJKLwrIJFTtRSincH2P060ZQUKdFFRzG+uT4hinr85sZtlQ==.
+info : Installed Microsoft.Extensions.Diagnostics.Abstractions 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.diagnostics.abstractions/10.0.14 with content hash vm+PPso6vOwGeX52MdOPh6z/R6KHgxQUwqq7k7Jc9jhy2JOxO2KB4xfoJQBBp2Ni8M4zKgJ4r2a1dgrYG7+MKw==.
+info : Installed Microsoft.Extensions.Configuration 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.configuration/10.0.14 with content hash UcnvaEaMvRckDDhyqY1OZkFwBqpZArkHFKB6dWaQWT9XTuNttNNX8Cqsb/Sic2LfJxsMLJUXnYrxY3iX5LN9pQ==.
+info : Installed Microsoft.Extensions.Identity.Core 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.identity.core/10.0.14 with content hash Thdt9CjRPtN4v9chsW2rTAnAfUexDhQS4PcJS2yuriSdTGpBHjxNEdKqVrSmUFvRb0GLO7fZpNgqdcBVsmhAXw==.
+info : Installed Microsoft.Extensions.Options.ConfigurationExtensions 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.options.configurationextensions/10.0.14 with content hash 4wcIU0rE04ejEfCwHTftu9O8fgH6CRYCe+tseRapikUBn1Kic3QdO7ku22SwFyLrzdWGYPUZMEgv57ZYuuc5gA==.
+info : Installed Microsoft.Extensions.Diagnostics 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.diagnostics/10.0.14 with content hash 80VqW8eKxQaxBOLDNpLUdxOlxzWn/jqBSxNBCfD8GCjcshNDpFvUgKh8uvvZwvkfBbwmNPWPWHyy9F+RLd1dlQ==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Microsoft.AspNetCore.Identity.EntityFrameworkCore' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj'.
+info : PackageReference for package 'Microsoft.AspNetCore.Identity.EntityFrameworkCore' version '10.0.14' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj'.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/obj/TenantManager.Infrastructure.csproj.nuget.g.targets.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj (in 347 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Microsoft.IdentityModel.JsonWebTokens' into project '/home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.identitymodel.jsonwebtokens/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.identitymodel.jsonwebtokens/index.json 98ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj...
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.jsonwebtokens/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.jsonwebtokens/8.23.0/microsoft.identitymodel.jsonwebtokens.8.23.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.jsonwebtokens/8.23.0/microsoft.identitymodel.jsonwebtokens.8.23.0.nupkg 19ms
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.tokens/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.tokens/8.23.0/microsoft.identitymodel.tokens.8.23.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.tokens/8.23.0/microsoft.identitymodel.tokens.8.23.0.nupkg 3ms
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.logging/index.json
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.bcl.cryptography/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/8.0.0/microsoft.extensions.logging.abstractions.8.0.0.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.logging/8.23.0/microsoft.identitymodel.logging.8.23.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.bcl.cryptography/index.json 10ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.bcl.cryptography/10.0.2/microsoft.bcl.cryptography.10.0.2.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/8.0.0/microsoft.extensions.logging.abstractions.8.0.0.nupkg 16ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.bcl.cryptography/10.0.2/microsoft.bcl.cryptography.10.0.2.nupkg 12ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.logging/8.23.0/microsoft.identitymodel.logging.8.23.0.nupkg 23ms
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.abstractions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.abstractions/8.23.0/microsoft.identitymodel.abstractions.8.23.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.abstractions/8.23.0/microsoft.identitymodel.abstractions.8.23.0.nupkg 2ms
+info : Installed Microsoft.IdentityModel.Abstractions 8.23.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.abstractions/8.23.0 with content hash JjiBkKj12OKvuWr+kB5sQwb7fmWW5bi03Mq/rd2Fu/7YwZ1RWQO9KhI9lBxki4o1VvY0wzqny8c7nwx1uuZzVg==.
+info : Installed Microsoft.Bcl.Cryptography 10.0.2 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.bcl.cryptography/10.0.2 with content hash LG9Yll3B5aNpxv0+D47g6LiOiKBIlodhcHdQwcYzo8VeexFLGqx5ymetmA2aBRyo9cCcWsQWrFsdbsr8LvmWDw==.
+info : Installed Microsoft.Extensions.Logging.Abstractions 8.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.logging.abstractions/8.0.0 with content hash arDBqTgFCyS0EvRV7O3MZturChstm50OJ0y9bDJvAcmEPJm0FFpFyjU/JLYyStNGGey081DvnQYlncNX5SJJGA==.
+info : Installed Microsoft.IdentityModel.Tokens 8.23.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.tokens/8.23.0 with content hash PUowLq8gqICt+oepHWmKBOJmnVmWoQ5dOVn2CgwFMBZZOAEMHgCQLWs8ONYdsjAyjhDHaFy+AAx0OMG/oV06Zw==.
+info : Installed Microsoft.IdentityModel.Logging 8.23.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.logging/8.23.0 with content hash wSXXOoV4b4hhRcC492jyNBZkO0LWrcWtWP5Cl5ujrON3vTMlufXDT39gTZfBhFAZCV2XJtNU6DLHMDR6E9YpUg==.
+info : Installed Microsoft.IdentityModel.JsonWebTokens 8.23.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.jsonwebtokens/8.23.0 with content hash ePEm+mv5iswzckE3mygh52uFUeQpVlHa1B10nS4jpEyNV5tL1mLgRS9U5sMaRlhsPRsZ1DJP0+FhxSrOIfMGIg==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Microsoft.IdentityModel.JsonWebTokens' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj'.
+info : PackageReference for package 'Microsoft.IdentityModel.JsonWebTokens' version '8.23.0' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj'.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj (in 301 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Asp.Versioning.Mvc' into project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/asp.versioning.mvc/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/asp.versioning.mvc/index.json 109ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/asp.versioning.mvc/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/asp.versioning.mvc/index.json 52ms
+info :   GET https://api.nuget.org/v3-flatcontainer/asp.versioning.mvc/10.2.1/asp.versioning.mvc.10.2.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/asp.versioning.mvc/10.2.1/asp.versioning.mvc.10.2.1.nupkg 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/asp.versioning.http/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/asp.versioning.http/index.json 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/asp.versioning.http/10.2.1/asp.versioning.http.10.2.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/asp.versioning.http/10.2.1/asp.versioning.http.10.2.1.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/asp.versioning.abstractions/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/asp.versioning.abstractions/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/asp.versioning.abstractions/10.2.1/asp.versioning.abstractions.10.2.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/asp.versioning.abstractions/10.2.1/asp.versioning.abstractions.10.2.1.nupkg 2ms
+info : Installed Asp.Versioning.Mvc 10.2.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/asp.versioning.mvc/10.2.1 with content hash fMzUraYZOAobKQn2PffrgPsULbCWFeWroYRYndPasxPsiQl1+i8x5qYRuMYZAbzDrBnymPUMBxT2gZG2PwbkcQ==.
+info : Installed Asp.Versioning.Http 10.2.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/asp.versioning.http/10.2.1 with content hash XaVOKS4AV6a6JdFsiuyLkNwU0ilWhUK2U71mBEXJsgi5AGpo24UkfZ4KUhpRGpuMmQNrugS7yxCIscGcnujdFA==.
+info : Installed Asp.Versioning.Abstractions 10.2.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/asp.versioning.abstractions/10.2.1 with content hash jMBztsVim+rYVrkNY23dMuOjTGXGQ9+je1xb3i17KgUof7OcBZtMMDduEWoCQ52SpTlYqKsuzgJyUMCMOFCBfg==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Asp.Versioning.Mvc' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : PackageReference for package 'Asp.Versioning.Mvc' version '10.2.1' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/TenantManager.Api.csproj.nuget.g.props.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/TenantManager.Api.csproj.nuget.g.targets.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj (in 286 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Asp.Versioning.Mvc.ApiExplorer' into project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/asp.versioning.mvc.apiexplorer/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/asp.versioning.mvc.apiexplorer/index.json 108ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/asp.versioning.mvc.apiexplorer/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/asp.versioning.mvc.apiexplorer/index.json 18ms
+info :   GET https://api.nuget.org/v3-flatcontainer/asp.versioning.mvc.apiexplorer/10.2.1/asp.versioning.mvc.apiexplorer.10.2.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/asp.versioning.mvc.apiexplorer/10.2.1/asp.versioning.mvc.apiexplorer.10.2.1.nupkg 3ms
+info : Installed Asp.Versioning.Mvc.ApiExplorer 10.2.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/asp.versioning.mvc.apiexplorer/10.2.1 with content hash Tv1megkpUy+3FN9yfVJKIcYMLXTe5CPs4zftBxGaZhADJe6h9CJZ2Okh5cG4PoE7wzHTef+AK++8IuZta3Ppog==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Asp.Versioning.Mvc.ApiExplorer' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : PackageReference for package 'Asp.Versioning.Mvc.ApiExplorer' version '10.2.1' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj (in 225 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Swashbuckle.AspNetCore' into project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/swashbuckle.aspnetcore/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/swashbuckle.aspnetcore/index.json 101ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore/index.json 13ms
+info :   GET https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore/10.3.1/swashbuckle.aspnetcore.10.3.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore/10.3.1/swashbuckle.aspnetcore.10.3.1.nupkg 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swagger/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swaggergen/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swaggerui/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.apidescription.server/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swagger/index.json 2ms
+info :   GET https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swagger/10.3.1/swashbuckle.aspnetcore.swagger.10.3.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swaggergen/index.json 7ms
+info :   GET https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swaggergen/10.3.1/swashbuckle.aspnetcore.swaggergen.10.3.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swaggerui/index.json 11ms
+info :   GET https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swaggerui/10.3.1/swashbuckle.aspnetcore.swaggerui.10.3.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.apidescription.server/index.json 14ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.apidescription.server/10.0.0/microsoft.extensions.apidescription.server.10.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swaggerui/10.3.1/swashbuckle.aspnetcore.swaggerui.10.3.1.nupkg 5ms
+info :   OK https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swagger/10.3.1/swashbuckle.aspnetcore.swagger.10.3.1.nupkg 13ms
+info :   OK https://api.nuget.org/v3-flatcontainer/swashbuckle.aspnetcore.swaggergen/10.3.1/swashbuckle.aspnetcore.swaggergen.10.3.1.nupkg 10ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.apidescription.server/10.0.0/microsoft.extensions.apidescription.server.10.0.0.nupkg 5ms
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.openapi/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.openapi/2.7.5/microsoft.openapi.2.7.5.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.openapi/2.7.5/microsoft.openapi.2.7.5.nupkg 3ms
+info : Installed Microsoft.OpenApi 2.7.5 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.openapi/2.7.5 with content hash 0FA67RSnRM4tcBKqiqVu/HPdZ9+QOKbmeRjxRUGTCjPU4C0bmUhd97Dso7Yild5P7nOV6GxJ2xrK0Kv/O9xp0w==.
+info : Installed Swashbuckle.AspNetCore.Swagger 10.3.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/swashbuckle.aspnetcore.swagger/10.3.1 with content hash ZBsi9PZbuy25lUIs+4/V8pmuMqospRAX9zVmxzCm1ZRyKiXjsUL9YCyqdi7ezfDwxKuef6P0fUgVan9sLRcDJA==.
+info : Installed Swashbuckle.AspNetCore.SwaggerGen 10.3.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/swashbuckle.aspnetcore.swaggergen/10.3.1 with content hash DMamYj+m40rOgnGdAp+4iQ+NXIMup2oYVs/zIOZtal0Dar6CXjCF9/SkepEn42TKNO29wAx0xyLfOXj1VjEIXg==.
+info : Installed Swashbuckle.AspNetCore 10.3.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/swashbuckle.aspnetcore/10.3.1 with content hash aCaJQAUxU2SZhN0lXqTfa+6/hJ7RdofjtbWu4oXSmsQ+z7WFJQvAAPrvn5rQI/ly8M/Vu381wtlbA1FUYseHPg==.
+info : Installed Swashbuckle.AspNetCore.SwaggerUI 10.3.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/swashbuckle.aspnetcore.swaggerui/10.3.1 with content hash kXuMIVJBDD6qMwG78VUrKy4x5Ke98HU0Q023Sf2iSBO/x45c5BuByYPAExIs9UeVsjdGGgvLWU5jK8l6MO2Z0Q==.
+info : Installed Microsoft.Extensions.ApiDescription.Server 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.apidescription.server/10.0.0 with content hash NCWCGiwRwje8773yzPQhvucYnnfeR+ZoB1VRIrIMp4uaeUNw7jvEPHij3HIbwCDuNCrNcphA00KSAR9yD9qmbg==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Swashbuckle.AspNetCore' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : PackageReference for package 'Swashbuckle.AspNetCore' version '10.3.1' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/TenantManager.Api.csproj.nuget.g.props.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/TenantManager.Api.csproj.nuget.g.targets.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj (in 378 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Microsoft.AspNetCore.Authentication.JwtBearer' into project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/index.json 100ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/page/0.0.1-alpha/3.1.11.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/page/0.0.1-alpha/3.1.11.json 17ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/page/3.1.12/6.0.5.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/page/3.1.12/6.0.5.json 15ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/page/6.0.6/8.0.0-preview.6.23329.11.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/page/6.0.6/8.0.0-preview.6.23329.11.json 13ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/page/8.0.0-preview.7.23375.9/9.0.18.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/page/8.0.0-preview.7.23375.9/9.0.18.json 14ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/page/9.0.19/11.0.0-rc.3.26522.148.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.authentication.jwtbearer/page/9.0.19/11.0.0-rc.3.26522.148.json 15ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.authentication.jwtbearer/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.authentication.jwtbearer/index.json 12ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.authentication.jwtbearer/10.0.14/microsoft.aspnetcore.authentication.jwtbearer.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.authentication.jwtbearer/10.0.14/microsoft.aspnetcore.authentication.jwtbearer.10.0.14.nupkg 3ms
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols.openidconnect/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols.openidconnect/8.19.2/microsoft.identitymodel.protocols.openidconnect.8.19.2.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols.openidconnect/8.19.2/microsoft.identitymodel.protocols.openidconnect.8.19.2.nupkg 3ms
+info :   CACHE https://api.nuget.org/v3-flatcontainer/system.identitymodel.tokens.jwt/index.json
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols/8.19.2/microsoft.identitymodel.protocols.8.19.2.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/system.identitymodel.tokens.jwt/8.19.2/system.identitymodel.tokens.jwt.8.19.2.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols/8.19.2/microsoft.identitymodel.protocols.8.19.2.nupkg 3ms
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.tokens/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.tokens/8.19.2/microsoft.identitymodel.tokens.8.19.2.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.identitymodel.tokens.jwt/8.19.2/system.identitymodel.tokens.jwt.8.19.2.nupkg 7ms
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.jsonwebtokens/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.jsonwebtokens/8.19.2/microsoft.identitymodel.jsonwebtokens.8.19.2.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.tokens/8.19.2/microsoft.identitymodel.tokens.8.19.2.nupkg 5ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.jsonwebtokens/8.19.2/microsoft.identitymodel.jsonwebtokens.8.19.2.nupkg 10ms
+info : Installed Microsoft.AspNetCore.Authentication.JwtBearer 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/10.0.14 with content hash DaTs32NtRkTabidrvhLhcXpa+Uguw0rN5FaX8Q1HmzbYtcI72iSauYlN4WmqbrXp6QQoB8fmZlHk5/bjiMTY7A==.
+info : Installed Microsoft.IdentityModel.Protocols 8.19.2 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.protocols/8.19.2 with content hash sGxSsSrZXNmca6D+jHH2rVRyo2nNRd/g4H9CFbPmLLq0xgoH1U0orLWE5minfijw7+zq49tBs7txenbfAErRoQ==.
+info : Installed Microsoft.IdentityModel.JsonWebTokens 8.19.2 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.jsonwebtokens/8.19.2 with content hash ui3fuBT4fs8kdKfBthI4NzLYIBIneEVS8UrL1JVBzAn80UiKmngBBi0BEByE7n/9c+EElcfFlCMFFTqpkBSLNA==.
+info : Installed Microsoft.IdentityModel.Tokens 8.19.2 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.tokens/8.19.2 with content hash GtPC1S02uH1gOO4fQ+zRysIicKmEXaYFP8PIkdJYXqMyruYhopre4ozVHp0XiDSA0+GJvOZH9prxCPvgBMg4Ww==.
+info : Installed Microsoft.IdentityModel.Protocols.OpenIdConnect 8.19.2 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.identitymodel.protocols.openidconnect/8.19.2 with content hash 1XOcyY36cVymzE3qKdzKaUEZ4Pzt7ZpSa14JZoPPK1NLFUkQDs85TCqpV6XDo0YjFXj6nVK00AfOHppjghjhtw==.
+info : Installed System.IdentityModel.Tokens.Jwt 8.19.2 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.identitymodel.tokens.jwt/8.19.2 with content hash gqhDC/icByKEutygpr+OFgAmjwTVowyzFjWB8K0q1ww8uFj5a1BQNL+QvijUl9uhq4p8OdDwcAIrjVC+eC9FVA==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Microsoft.AspNetCore.Authentication.JwtBearer' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : PackageReference for package 'Microsoft.AspNetCore.Authentication.JwtBearer' version '10.0.14' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj (in 302 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Serilog.AspNetCore' into project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/serilog.aspnetcore/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/serilog.aspnetcore/index.json 107ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.aspnetcore/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.aspnetcore/index.json 36ms
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.aspnetcore/10.0.0/serilog.aspnetcore.10.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.aspnetcore/10.0.0/serilog.aspnetcore.10.0.0.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.extensions.hosting/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.sinks.console/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.settings.configuration/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.formatting.compact/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.sinks.debug/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.sinks.file/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog/index.json 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog/4.3.0/serilog.4.3.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.extensions.hosting/index.json 9ms
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.extensions.hosting/10.0.0/serilog.extensions.hosting.10.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.sinks.file/index.json 17ms
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.sinks.file/7.0.0/serilog.sinks.file.7.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.formatting.compact/index.json 19ms
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.sinks.debug/index.json 19ms
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.formatting.compact/3.0.0/serilog.formatting.compact.3.0.0.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.sinks.debug/3.0.0/serilog.sinks.debug.3.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog/4.3.0/serilog.4.3.0.nupkg 12ms
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.sinks.file/7.0.0/serilog.sinks.file.7.0.0.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.extensions.hosting/10.0.0/serilog.extensions.hosting.10.0.0.nupkg 5ms
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.sinks.debug/3.0.0/serilog.sinks.debug.3.0.0.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.formatting.compact/3.0.0/serilog.formatting.compact.3.0.0.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.sinks.console/index.json 25ms
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.sinks.console/6.1.1/serilog.sinks.console.6.1.1.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.extensions.logging/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog/4.0.0/serilog.4.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.sinks.console/6.1.1/serilog.sinks.console.6.1.1.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.extensions.logging/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.extensions.logging/10.0.0/serilog.extensions.logging.10.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog/4.0.0/serilog.4.0.0.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.settings.configuration/index.json 30ms
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog.settings.configuration/10.0.0/serilog.settings.configuration.10.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.extensions.logging/10.0.0/serilog.extensions.logging.10.0.0.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog.settings.configuration/10.0.0/serilog.settings.configuration.10.0.0.nupkg 2ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencymodel/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/serilog/4.2.0/serilog.4.2.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/serilog/4.2.0/serilog.4.2.0.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencymodel/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencymodel/10.0.0/microsoft.extensions.dependencymodel.10.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencymodel/10.0.0/microsoft.extensions.dependencymodel.10.0.0.nupkg 2ms
+info : Installed Serilog.Extensions.Hosting 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/serilog.extensions.hosting/10.0.0 with content hash E7juuIc+gzoGxgzFooFgAV8g9BfiSXNKsUok9NmEpyAXg2odkcPsMa/Yo4axkJRlh0se7mkYQ1GXDaBemR+b6w==.
+info : Installed Serilog.Formatting.Compact 3.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/serilog.formatting.compact/3.0.0 with content hash wQsv14w9cqlfB5FX2MZpNsTawckN4a8dryuNGbebB/3Nh1pXnROHZov3swtu3Nj5oNG7Ba+xdu7Et/ulAUPanQ==.
+info : Installed Microsoft.Extensions.DependencyModel 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.dependencymodel/10.0.0 with content hash RFYJR7APio/BiqdQunRq6DB+nDB6nc2qhHr77mlvZ0q0BT8PubMXN7XicmfzCbrDE/dzhBnUKBRXLTcqUiZDGg==.
+info : Installed Serilog.Extensions.Logging 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/serilog.extensions.logging/10.0.0 with content hash vx0kABKl2dWbBhhqAfTOk53/i8aV/5VaT3a6il9gn72Wqs2pM7EK2OB6No6xdqK2IaY6Zf9gdjLuK9BVa2rT+Q==.
+info : Installed Serilog 4.3.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/serilog/4.3.0 with content hash +cDryFR0GRhsGOnZSKwaDzRRl4MupvJ42FhCE4zhQRVanX0Jpg6WuCBk59OVhVDPmab1bB+nRykAnykYELA9qQ==.
+info : Installed Serilog.Sinks.Console 6.1.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/serilog.sinks.console/6.1.1 with content hash 8jbqgjUyZlfCuSTaJk6lOca465OndqOz3KZP6Cryt/IqZYybyBu7GP0fE/AXBzrrQB3EBmQntBFAvMVz1COvAA==.
+info : Installed Serilog.Settings.Configuration 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/serilog.settings.configuration/10.0.0 with content hash LNq+ibS1sbhTqPV1FIE69/9AJJbfaOhnaqkzcjFy95o+4U+STsta9mi97f1smgXsWYKICDeGUf8xUGzd/52/uA==.
+info : Installed Serilog.AspNetCore 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/serilog.aspnetcore/10.0.0 with content hash a/cNa1mY4On1oJlfGG1wAvxjp5g7OEzk/Jf/nm7NF9cWoE7KlZw1GldrifUBWm9oKibHkR7Lg/l5jy3y7ACR8w==.
+info : Installed Serilog.Sinks.Debug 3.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/serilog.sinks.debug/3.0.0 with content hash 4BzXcdrgRX7wde9PmHuYd9U6YqycCC28hhpKonK7hx0wb19eiuRj16fPcPSVp0o/Y1ipJuNLYQ00R3q2Zs8FDA==.
+info : Installed Serilog 4.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/serilog/4.0.0 with content hash 2jDkUrSh5EofOp7Lx5Zgy0EB+7hXjjxE2ktTb1WVQmU00lDACR2TdROGKU0K1pDTBSJBN1PqgYpgOZF8mL7NJw==.
+info : Installed Serilog.Sinks.File 7.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/serilog.sinks.file/7.0.0 with content hash fKL7mXv7qaiNBUC71ssvn/dU0k9t0o45+qm2XgKAlSt19xF+ijjxyA3R6HmCgfKEKwfcfkwWjayuQtRueZFkYw==.
+info : Installed Serilog 4.2.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/serilog/4.2.0 with content hash gmoWVOvKgbME8TYR+gwMf7osROiWAURterc6Rt2dQyX7wtjZYpqFiA/pY6ztjGQKKV62GGCyOcmtP1UKMHgSmA==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Serilog.AspNetCore' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : PackageReference for package 'Serilog.AspNetCore' version '10.0.0' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj (in 360 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore' into project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/index.json 104ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/page/2.2.0-preview3-35497/5.0.2.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/page/2.2.0-preview3-35497/5.0.2.json 19ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/page/5.0.3/7.0.0-preview.5.22303.8.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/page/5.0.3/7.0.0-preview.5.22303.8.json 20ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/page/7.0.0-preview.6.22330.3/8.0.31.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/page/7.0.0-preview.6.22330.3/8.0.31.json 17ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/page/8.0.32/11.0.0-preview.6.26359.118.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/page/8.0.32/11.0.0-preview.6.26359.118.json 17ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/page/11.0.0-preview.7.26381.103/11.0.0-rc.3.26522.148.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/page/11.0.0-preview.7.26381.103/11.0.0-rc.3.26522.148.json 17ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/index.json 17ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/10.0.14/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/10.0.14/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore.10.0.14.nupkg 3ms
+info : Installed Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.diagnostics.healthchecks.entityframeworkcore/10.0.14 with content hash 2xE9FhV4PmKYFzu4aj3yMPbhJmWu9iwx0QfyDl7vrOKVx49B3GZ82JEHnC1lX1TjVtuZzVZF99ytMb2r6oApng==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : PackageReference for package 'Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore' version '10.0.14' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj (in 217 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Microsoft.EntityFrameworkCore.Design' into project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/index.json 87ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/page/0.0.1-alpha/3.1.3.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/page/0.0.1-alpha/3.1.3.json 15ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/page/3.1.4/6.0.0-preview.7.21378.4.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/page/3.1.4/6.0.0-preview.7.21378.4.json 15ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/page/6.0.0-rc.1.21452.10/7.0.18.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/page/6.0.0-rc.1.21452.10/7.0.18.json 15ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/page/7.0.19/9.0.10.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/page/7.0.19/9.0.10.json 14ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/page/9.0.11/11.0.0-rc.3.26522.148.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.entityframeworkcore.design/page/9.0.11/11.0.0-rc.3.26522.148.json 14ms
+info : Restoring packages for /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.design/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.design/index.json 226ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.design/10.0.14/microsoft.entityframeworkcore.design.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.design/10.0.14/microsoft.entityframeworkcore.design.10.0.14.nupkg 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.workspaces.msbuild/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/humanizer.core/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.csharp.workspaces/index.json
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencymodel/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/mono.texttemplating/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.build.framework/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/humanizer.core/index.json 6ms
+info :   CACHE https://api.nuget.org/v3-flatcontainer/newtonsoft.json/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.csharp/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencymodel/10.0.14/microsoft.extensions.dependencymodel.10.0.14.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/newtonsoft.json/13.0.4/newtonsoft.json.13.0.4.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.csharp.workspaces/index.json 18ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.csharp.workspaces/5.0.0/microsoft.codeanalysis.csharp.workspaces.5.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/mono.texttemplating/index.json 19ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.build.framework/index.json 13ms
+info :   GET https://api.nuget.org/v3-flatcontainer/mono.texttemplating/3.0.0/mono.texttemplating.3.0.0.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.build.framework/18.0.2/microsoft.build.framework.18.0.2.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg 10ms
+info :   OK https://api.nuget.org/v3-flatcontainer/newtonsoft.json/13.0.4/newtonsoft.json.13.0.4.nupkg 10ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.workspaces.msbuild/index.json 21ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencymodel/10.0.14/microsoft.extensions.dependencymodel.10.0.14.nupkg 10ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.workspaces.msbuild/5.0.0/microsoft.codeanalysis.workspaces.msbuild.5.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/mono.texttemplating/3.0.0/mono.texttemplating.3.0.0.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.build.framework/18.0.2/microsoft.build.framework.18.0.2.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.csharp.workspaces/5.0.0/microsoft.codeanalysis.csharp.workspaces.5.0.0.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.workspaces.msbuild/5.0.0/microsoft.codeanalysis.workspaces.msbuild.5.0.0.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.csharp/index.json 16ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.csharp/5.0.0/microsoft.codeanalysis.csharp.5.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.csharp/5.0.0/microsoft.codeanalysis.csharp.5.0.0.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.common/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.workspaces.common/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.analyzers/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition/index.json 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.common/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition/9.0.0/system.composition.9.0.0.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.common/5.0.0/microsoft.codeanalysis.common.5.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.workspaces.common/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.workspaces.common/5.0.0/microsoft.codeanalysis.workspaces.common.5.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.analyzers/index.json 5ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.common/5.0.0/microsoft.codeanalysis.common.5.0.0.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.workspaces.common/5.0.0/microsoft.codeanalysis.workspaces.common.5.0.0.nupkg 2ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.analyzers/3.11.0/microsoft.codeanalysis.analyzers.3.11.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition/9.0.0/system.composition.9.0.0.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.codeanalysis.analyzers/3.11.0/microsoft.codeanalysis.analyzers.3.11.0.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.build.framework/17.11.31/microsoft.build.framework.17.11.31.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/system.codedom/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.visualstudio.solutionpersistence/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.build.framework/17.11.31/microsoft.build.framework.17.11.31.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.codedom/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.codedom/6.0.0/system.codedom.6.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.codedom/6.0.0/system.codedom.6.0.0.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.visualstudio.solutionpersistence/index.json 10ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.visualstudio.solutionpersistence/1.0.52/microsoft.visualstudio.solutionpersistence.1.0.52.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.visualstudio.solutionpersistence/1.0.52/microsoft.visualstudio.solutionpersistence.1.0.52.nupkg 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition.attributedmodel/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition.convention/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition.hosting/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition.runtime/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition.typedparts/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition.convention/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition.convention/9.0.0/system.composition.convention.9.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition.runtime/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition.runtime/9.0.0/system.composition.runtime.9.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition.hosting/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition.hosting/9.0.0/system.composition.hosting.9.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition.attributedmodel/index.json 6ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition.attributedmodel/9.0.0/system.composition.attributedmodel.9.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition.convention/9.0.0/system.composition.convention.9.0.0.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition.runtime/9.0.0/system.composition.runtime.9.0.0.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition.typedparts/index.json 9ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.composition.typedparts/9.0.0/system.composition.typedparts.9.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition.attributedmodel/9.0.0/system.composition.attributedmodel.9.0.0.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition.typedparts/9.0.0/system.composition.typedparts.9.0.0.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/system.composition.hosting/9.0.0/system.composition.hosting.9.0.0.nupkg 21ms
+info : Installed Mono.TextTemplating 3.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/mono.texttemplating/3.0.0 with content hash YqueG52R/Xej4VVbKuRIodjiAhV0HR/XVbLbNrJhCZnzjnSjgMJ/dCdV0akQQxavX6hp/LC6rqLGLcXeQYU7XA==.
+info : Installed Microsoft.VisualStudio.SolutionPersistence 1.0.52 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.visualstudio.solutionpersistence/1.0.52 with content hash oNv2JtYXhpdJrX63nibx1JT3uCESOBQ1LAk7Dtz/sr0+laW0KRM6eKp4CZ3MHDR2siIkKsY8MmUkeP5DKkQQ5w==.
+info : Installed System.Composition.AttributedModel 9.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.composition.attributedmodel/9.0.0 with content hash iri00l/zIX9g4lHMY+Nz0qV1n40+jFYAmgsaiNn16xvt2RDwlqByNG4wgblagnDYxm3YSQQ0jLlC/7Xlk9CzyA==.
+info : Installed Newtonsoft.Json 13.0.4 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/newtonsoft.json/13.0.4 with content hash pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A==.
+info : Installed Microsoft.CodeAnalysis.Workspaces.MSBuild 5.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.codeanalysis.workspaces.msbuild/5.0.0 with content hash /G+LVoAGMz6Ae8nm+PGLxSw+F5RjYx/J7irbTO5uKAPw1bxHyQJLc/YOnpDxt+EpPtYxvC9wvBsg/kETZp1F9Q==.
+info : Installed Microsoft.CodeAnalysis.Analyzers 3.11.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.codeanalysis.analyzers/3.11.0 with content hash v/EW3UE8/lbEYHoC2Qq7AR/DnmvpgdtAMndfQNmpuIMx/Mto8L5JnuCfdBYtgvalQOtfNCnxFejxuRrryvUTsg==.
+info : Installed System.Composition.Runtime 9.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.composition.runtime/9.0.0 with content hash w1HOlQY1zsOWYussjFGZCEYF2UZXgvoYnS94NIu2CBnAGMbXFAX8PY8c92KwUItPmowal68jnVLBCzdrWLeEKA==.
+info : Installed System.Composition 9.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.composition/9.0.0 with content hash 3Djj70fFTraOarSKmRnmRy/zm4YurICm+kiCtI0dYRqGJnLX6nJ+G3WYuFJ173cAPax/gh96REcbNiVqcrypFQ==.
+info : Installed Microsoft.CodeAnalysis.CSharp.Workspaces 5.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.codeanalysis.csharp.workspaces/5.0.0 with content hash Al/Q8B+yO8odSqGVpSvrShMFDvlQdIBU//F3E6Rb0YdiLSALE9wh/pvozPNnfmh5HDnvU+mkmSjpz4hQO++jaA==.
+info : Installed Humanizer.Core 2.14.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/humanizer.core/2.14.1 with content hash lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw==.
+info : Installed Microsoft.Extensions.DependencyModel 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.dependencymodel/10.0.14 with content hash N8OcqM0370wSXMJ3ZxO66rSElHrIgxvpfUn0vV7zRj7NvKo0nfwgEoTmC3Yz3860o60IaQ4KIPyeLIGX9EeNWA==.
+info : Installed System.Composition.Convention 9.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.composition.convention/9.0.0 with content hash +vuqVP6xpi582XIjJi6OCsIxuoTZfR0M7WWufk3uGDeCl3wGW6KnpylUJ3iiXdPByPE0vR5TjJgR6hDLez4FQg==.
+info : Installed System.Composition.TypedParts 9.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.composition.typedparts/9.0.0 with content hash aRZlojCCGEHDKqh43jaDgaVpYETsgd7Nx4g1zwLKMtv4iTo0627715ajEFNpEEBTgLmvZuv8K0EVxc3sM4NWJA==.
+info : Installed Microsoft.Build.Framework 18.0.2 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.build.framework/18.0.2 with content hash sOSb+0J4G/jCBW/YqmRuL0eOMXgfw1KQLdC9TkbvfA5xs7uNm+PBQXJCOzSJGXtZcZrtXozcwxPmUiRUbmd7FA==.
+info : Installed Microsoft.Build.Framework 17.11.31 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.build.framework/17.11.31 with content hash 9bGe48OGm0EO69HHpex0shnNLH7ZEB4Nwj7mofeLUoQcl9NeuIJe9F9dawKJF3E0bf5qPTwH/v3eyCXgMD4HuA==.
+info : Installed System.Composition.Hosting 9.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.composition.hosting/9.0.0 with content hash OFqSeFeJYr7kHxDfaViGM1ymk7d4JxK//VSoNF9Ux0gpqkLsauDZpu89kTHHNdCWfSljbFcvAafGyBoY094btQ==.
+info : Installed System.CodeDom 6.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.codedom/6.0.0 with content hash CPc6tWO1LAer3IzfZufDBRL+UZQcj5uS207NHALQzP84Vp/z6wF0Aa0YZImOQY8iStY0A2zI/e3ihKNPfUm8XA==.
+info : Installed Microsoft.CodeAnalysis.Workspaces.Common 5.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.codeanalysis.workspaces.common/5.0.0 with content hash ZbUmIvT6lqTNKiv06Jl5wf0MTMi1vQ1oH7ou4CLcs2C/no/L7EhP3T8y3XXvn9VbqMcJaJnEsNA1jwYUMgc5jg==.
+info : Installed Microsoft.EntityFrameworkCore.Design 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.entityframeworkcore.design/10.0.14 with content hash hRaYw8yzhpGq3Yz9apZrr/tp6FeBDUiAq4zJELRxQH1J1PfSBb2uGZoXlOL6EoSB3/M+OMpIjHDH0aOfgwyUUQ==.
+info : Installed Microsoft.CodeAnalysis.CSharp 5.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.codeanalysis.csharp/5.0.0 with content hash 5DSyJ9bk+ATuDy7fp2Zt0mJStDVKbBoiz1DyfAwSa+k4H4IwykAUcV3URelw5b8/iVbfSaOwkwmPUZH6opZKCw==.
+info : Installed Microsoft.CodeAnalysis.Common 5.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.codeanalysis.common/5.0.0 with content hash ZXRAdvH6GiDeHRyd3q/km8Z44RoM6FBWHd+gen/la81mVnAdHTEsEkO5J0TCNXBymAcx5UYKt5TvgKBhaLJEow==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Microsoft.EntityFrameworkCore.Design' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : PackageReference for package 'Microsoft.EntityFrameworkCore.Design' version '10.0.14' added to file '/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj'.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/TenantManager.Api.csproj.nuget.g.props.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/TenantManager.Api.csproj.nuget.g.targets.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/src/TenantManager.Api/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj (in 948 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Shouldly' into project '/home/runner/work/mastene/mastene/tests/TenantManager.Domain.Tests/TenantManager.Domain.Tests.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/shouldly/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/shouldly/index.json 95ms
+info : Restoring packages for /home/runner/work/mastene/mastene/tests/TenantManager.Domain.Tests/TenantManager.Domain.Tests.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/shouldly/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/shouldly/index.json 13ms
+info :   GET https://api.nuget.org/v3-flatcontainer/shouldly/4.3.0/shouldly.4.3.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/shouldly/4.3.0/shouldly.4.3.0.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/diffengine/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/emptyfiles/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/diffengine/index.json 7ms
+info :   GET https://api.nuget.org/v3-flatcontainer/diffengine/11.3.0/diffengine.11.3.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/emptyfiles/index.json 12ms
+info :   GET https://api.nuget.org/v3-flatcontainer/emptyfiles/4.4.0/emptyfiles.4.4.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/diffengine/11.3.0/diffengine.11.3.0.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/emptyfiles/4.4.0/emptyfiles.4.4.0.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.management/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/system.management/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/system.management/6.0.1/system.management.6.0.1.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.management/6.0.1/system.management.6.0.1.nupkg 3ms
+info : Installed EmptyFiles 4.4.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/emptyfiles/4.4.0 with content hash gwJEfIGS7FhykvtZoscwXj/XwW+mJY6UbAZk+qtLKFUGWC95kfKXnj8VkxsZQnWBxJemM/q664rGLN5nf+OHZw==.
+info : Installed Shouldly 4.3.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/shouldly/4.3.0 with content hash sDetrWXrl6YXZ4HeLsdBoNk3uIa7K+V4uvIJ+cqdRa5DrFxeTED7VkjoxCuU1kJWpUuBDZz2QXFzSxBtVXLwRQ==.
+info : Installed System.Management 6.0.1 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.management/6.0.1 with content hash 10J1D0h/lioojphfJ4Fuh5ZUThT/xOVHdV9roGBittKKNP2PMjrvibEdbVTGZcPra1399Ja3tqIJLyQrc5Wmhg==.
+info : Installed DiffEngine 11.3.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/diffengine/11.3.0 with content hash k0ZgZqd09jLZQjR8FyQbSQE86Q7QZnjEzq1LPHtj1R2AoWO8sjV5x+jlSisL7NZAbUOI4y+7Bog8gkr9WIRBGw==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+info : Package 'Shouldly' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/tests/TenantManager.Domain.Tests/TenantManager.Domain.Tests.csproj'.
+info : PackageReference for package 'Shouldly' version '4.3.0' added to file '/home/runner/work/mastene/mastene/tests/TenantManager.Domain.Tests/TenantManager.Domain.Tests.csproj'.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/tests/TenantManager.Domain.Tests/obj/TenantManager.Domain.Tests.csproj.nuget.g.props.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/tests/TenantManager.Domain.Tests/obj/TenantManager.Domain.Tests.csproj.nuget.g.targets.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/tests/TenantManager.Domain.Tests/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/tests/TenantManager.Domain.Tests/TenantManager.Domain.Tests.csproj (in 261 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Shouldly' into project '/home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj'.
+info :   CACHE https://api.nuget.org/v3/registration5-gz-semver2/shouldly/index.json
+info : Restoring packages for /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks.abstractions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks/index.json 74ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks.abstractions/index.json 78ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks/10.0.14/microsoft.extensions.diagnostics.healthchecks.10.0.14.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks.abstractions/10.0.14/microsoft.extensions.diagnostics.healthchecks.abstractions.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks.abstractions/10.0.14/microsoft.extensions.diagnostics.healthchecks.abstractions.10.0.14.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.diagnostics.healthchecks/10.0.14/microsoft.extensions.diagnostics.healthchecks.10.0.14.nupkg 8ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.hosting.abstractions/index.json
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection.abstractions/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.hosting.abstractions/index.json 2ms
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection.abstractions/10.0.0/microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/10.0.0/microsoft.extensions.logging.abstractions.10.0.0.nupkg
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.binder/index.json
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.primitives/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.binder/10.0.0/microsoft.extensions.configuration.binder.10.0.0.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.primitives/10.0.0/microsoft.extensions.primitives.10.0.0.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.hosting.abstractions/10.0.14/microsoft.extensions.hosting.abstractions.10.0.14.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.hosting.abstractions/10.0.0/microsoft.extensions.hosting.abstractions.10.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection.abstractions/10.0.0/microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.abstractions/10.0.0/microsoft.extensions.logging.abstractions.10.0.0.nupkg 8ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.primitives/10.0.0/microsoft.extensions.primitives.10.0.0.nupkg 9ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.hosting.abstractions/10.0.14/microsoft.extensions.hosting.abstractions.10.0.14.nupkg 10ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.binder/10.0.0/microsoft.extensions.configuration.binder.10.0.0.nupkg 11ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.abstractions/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.hosting.abstractions/10.0.0/microsoft.extensions.hosting.abstractions.10.0.0.nupkg 13ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.abstractions/index.json 2ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.abstractions/10.0.14/microsoft.extensions.fileproviders.abstractions.10.0.14.nupkg
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging/index.json
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.abstractions/index.json
+info :   CACHE https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.abstractions/10.0.0/microsoft.extensions.configuration.abstractions.10.0.0.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration/10.0.0/microsoft.extensions.configuration.10.0.0.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging/10.0.0/microsoft.extensions.logging.10.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration/10.0.0/microsoft.extensions.configuration.10.0.0.nupkg 8ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.abstractions/10.0.0/microsoft.extensions.configuration.abstractions.10.0.0.nupkg 8ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging/10.0.0/microsoft.extensions.logging.10.0.0.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.abstractions/10.0.14/microsoft.extensions.fileproviders.abstractions.10.0.14.nupkg 22ms
+info : Installed Microsoft.Extensions.Hosting.Abstractions 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.hosting.abstractions/10.0.0 with content hash KrN6TGFwCwqOkLLk/idW/XtDQh+8In+CL9T4M1Dx+5ScsjTq4TlVbal8q532m82UYrMr6RiQJF2HvYCN0QwVsA==.
+info : Installed Microsoft.Extensions.FileProviders.Abstractions 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.fileproviders.abstractions/10.0.14 with content hash rAqf2Em2ZjLqNbcLJlboQnXNyJP604F960TsCKNiP00Ur6ExIc1mcwmNb8L2eTRT8RC8UKx/GjecoWcW2Sj7bw==.
+info : Installed Microsoft.Extensions.Configuration 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.configuration/10.0.0 with content hash H4SWETCh/cC5L1WtWchHR6LntGk3rDTTznZMssr4cL8IbDmMWBxY+MOGDc/ASnqNolLKPIWHWeuC1ddiL/iNPw==.
+info : Installed Microsoft.Extensions.Hosting.Abstractions 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.hosting.abstractions/10.0.14 with content hash p6NUEkmlaB+FujQZTtyNBKFULQO+Fj8SKuYdYHASQso+RkeYdFDPNsMM4mtOHqx1GZNQnZm/inmsqGkja/Dw2w==.
+info : Installed Microsoft.Extensions.DependencyInjection.Abstractions 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.0 with content hash L3AdmZ1WOK4XXT5YFPEwyt0ep6l8lGIPs7F5OOBZc77Zqeo01Of7XXICy47628sdVl0v/owxYJTe86DTgFwKCA==.
+info : Installed Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.diagnostics.healthchecks.abstractions/10.0.14 with content hash Rz5jWujGFSbOL7lBrw5gHegramz+hFpXb2lWX0amGRUFZFkxbCtgQisy05nqm1KehrZJJInB8ahLGbdOl/cQsA==.
+info : Installed Microsoft.Extensions.Logging 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.logging/10.0.0 with content hash BStFkd5CcnEtarlcgYDBcFzGYCuuNMzPs02wN3WBsOFoYIEmYoUdAiU+au6opzoqfTYJsMTW00AeqDdnXH2CvA==.
+info : Installed Microsoft.Extensions.Configuration.Binder 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.configuration.binder/10.0.0 with content hash tMF9wNh+hlyYDWB8mrFCQHQmWHlRosol1b/N2Jrefy1bFLnuTlgSYmPyHNmz8xVQgs7DpXytBRWxGhG+mSTp0g==.
+info : Installed Microsoft.Extensions.Diagnostics.HealthChecks 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.diagnostics.healthchecks/10.0.14 with content hash QwCCJ8J80dwDgNk4YZJWjFqq0UEoiNr3E3V7ZQRQLdlgkYS6MmB3gn5rQe2rc8Y815CpCy5DIujcRxYEksJK+g==.
+info : Installed Microsoft.Extensions.Configuration.Abstractions 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.configuration.abstractions/10.0.0 with content hash d2kDKnCsJvY7mBVhcjPSp9BkJk48DsaHPg5u+Oy4f8XaOqnEedRy/USyvnpHL92wpJ6DrTPy7htppUUzskbCXQ==.
+info : Installed Microsoft.Extensions.Primitives 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.primitives/10.0.0 with content hash inRnbpCS0nwO/RuoZIAqxQUuyjaknOOnCEZB55KSMMjRhl0RQDttSmLSGsUJN3RQ3ocf5NDLFd2mOQViHqMK5w==.
+info : Installed Microsoft.Extensions.Logging.Abstractions 10.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.0 with content hash FU/IfjDfwaMuKr414SSQNTIti/69bHEMb+QKrskRb26oVqpx3lNFXMjs/RC9ZUuhBhcwDM2BwOgoMw+PZ+beqQ==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Shouldly' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj'.
+info : PackageReference for package 'Shouldly' version '4.3.0' added to file '/home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj'.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/obj/TenantManager.Api.IntegrationTests.csproj.nuget.g.props.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/obj/TenantManager.Api.IntegrationTests.csproj.nuget.g.targets.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj (in 416 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Microsoft.AspNetCore.Mvc.Testing' into project '/home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/index.json 102ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/page/0.0.1-alpha/3.1.28.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/page/0.0.1-alpha/3.1.28.json 21ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/page/3.1.29/6.0.23.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/page/3.1.29/6.0.23.json 21ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/page/6.0.24/8.0.14.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/page/6.0.24/8.0.14.json 20ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/page/8.0.15/10.0.3.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/page/8.0.15/10.0.3.json 22ms
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/page/10.0.4/11.0.0-rc.3.26522.148.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/microsoft.aspnetcore.mvc.testing/page/10.0.4/11.0.0-rc.3.26522.148.json 19ms
+info : Restoring packages for /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.mvc.testing/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.mvc.testing/index.json 13ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.mvc.testing/10.0.14/microsoft.aspnetcore.mvc.testing.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.mvc.testing/10.0.14/microsoft.aspnetcore.mvc.testing.10.0.14.nupkg 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.hosting/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.testhost/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.hosting/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.hosting/10.0.14/microsoft.extensions.hosting.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.testhost/index.json 6ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.testhost/10.0.14/microsoft.aspnetcore.testhost.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.hosting/10.0.14/microsoft.extensions.hosting.10.0.14.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.testhost/10.0.14/microsoft.aspnetcore.testhost.10.0.14.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.commandline/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.environmentvariables/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.json/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.fileextensions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.usersecrets/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.environmentvariables/index.json 7ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.commandline/index.json 7ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.physical/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.commandline/10.0.14/microsoft.extensions.configuration.commandline.10.0.14.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.environmentvariables/10.0.14/microsoft.extensions.configuration.environmentvariables.10.0.14.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.configuration/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.console/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.debug/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.eventlog/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.eventsource/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.json/index.json 13ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.fileextensions/index.json 13ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.json/10.0.14/microsoft.extensions.configuration.json.10.0.14.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.fileextensions/10.0.14/microsoft.extensions.configuration.fileextensions.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.usersecrets/index.json 15ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.usersecrets/10.0.14/microsoft.extensions.configuration.usersecrets.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.physical/index.json 9ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.physical/10.0.14/microsoft.extensions.fileproviders.physical.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.commandline/10.0.14/microsoft.extensions.configuration.commandline.10.0.14.nupkg 10ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.eventlog/index.json 11ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.eventsource/index.json 11ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.json/10.0.14/microsoft.extensions.configuration.json.10.0.14.nupkg 7ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.eventlog/10.0.14/microsoft.extensions.logging.eventlog.10.0.14.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.eventsource/10.0.14/microsoft.extensions.logging.eventsource.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.fileextensions/10.0.14/microsoft.extensions.configuration.fileextensions.10.0.14.nupkg 6ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.environmentvariables/10.0.14/microsoft.extensions.configuration.environmentvariables.10.0.14.nupkg 13ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.configuration/index.json 12ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration.usersecrets/10.0.14/microsoft.extensions.configuration.usersecrets.10.0.14.nupkg 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.configuration/10.0.14/microsoft.extensions.logging.configuration.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.physical/10.0.14/microsoft.extensions.fileproviders.physical.10.0.14.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.console/index.json 14ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.eventlog/10.0.14/microsoft.extensions.logging.eventlog.10.0.14.nupkg 2ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.console/10.0.14/microsoft.extensions.logging.console.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.debug/index.json 15ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.eventsource/10.0.14/microsoft.extensions.logging.eventsource.10.0.14.nupkg 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.debug/10.0.14/microsoft.extensions.logging.debug.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.configuration/10.0.14/microsoft.extensions.logging.configuration.10.0.14.nupkg 2ms
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.filesystemglobbing/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.console/10.0.14/microsoft.extensions.logging.console.10.0.14.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.logging.debug/10.0.14/microsoft.extensions.logging.debug.10.0.14.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.filesystemglobbing/index.json 2ms
+info :   CACHE https://api.nuget.org/v3-flatcontainer/system.diagnostics.eventlog/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/microsoft.extensions.filesystemglobbing/10.0.14/microsoft.extensions.filesystemglobbing.10.0.14.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/system.diagnostics.eventlog/10.0.14/system.diagnostics.eventlog.10.0.14.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/system.diagnostics.eventlog/10.0.14/system.diagnostics.eventlog.10.0.14.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/microsoft.extensions.filesystemglobbing/10.0.14/microsoft.extensions.filesystemglobbing.10.0.14.nupkg 2ms
+info : Installed Microsoft.Extensions.Configuration.UserSecrets 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.configuration.usersecrets/10.0.14 with content hash z+dvl9uQnNzvq6Xco+UQyeujpP/BHs+ahHLPCBMxR5GW6M4JcsN1tupEgn5uWgR1fGCfmxS4QJEMt6eyizXGUA==.
+info : Installed Microsoft.Extensions.Configuration.CommandLine 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.configuration.commandline/10.0.14 with content hash /9IqkBeB7mE1enbN4Cfeu4HFPU9uR1JSJh2qwXfwr7SYBxETkTKRht/LoPfajmmlh+BJlH3jm79CLhQPFb9ovw==.
+info : Installed Microsoft.AspNetCore.Mvc.Testing 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.aspnetcore.mvc.testing/10.0.14 with content hash l3eFye4Bv4oGT1Ag8pFtZ6WM0LhR9PkNiDH1AYitZW2LAaFWl1FgF4Dj7wY4Fp/BqCZ4LLkBGLw+NE/CA5k6mQ==.
+info : Installed System.Diagnostics.EventLog 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/system.diagnostics.eventlog/10.0.14 with content hash O/RzNwWoDzehkLlAG9hR8xooY5L41U7VUaYlcKvE3+FhHohBJqF10oLUzuv0v59VeJ62hv3uw9VoeX12zej7Sg==.
+info : Installed Microsoft.Extensions.Configuration.FileExtensions 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.configuration.fileextensions/10.0.14 with content hash NBIfm8vWNi3UJ9OI9thvREJeV6KzEdPjQ4ONdH+yPWutGBpVnwLbXiEqdEFaGAFYpAluGCfyCwKFgH9pd2scfw==.
+info : Installed Microsoft.Extensions.Logging.Debug 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.logging.debug/10.0.14 with content hash 8e79uonXzgIsZbdgc5pa2Ybk5W+vUbd+gfGS50E+BW9ApRv9s0qL1DTyqLv7VQEPxTHS/l8Y0AtS7K8do+TczQ==.
+info : Installed Microsoft.Extensions.Logging.EventSource 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.logging.eventsource/10.0.14 with content hash Q06Q90D3qnrsKtf1QlaMELCED3ZdMV5SGIRIERUQTTSCoqTNKSitx3KMRgLdxBeqI5ZcbOu5InOu6xQ6o6zmUg==.
+info : Installed Microsoft.Extensions.Configuration.Json 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.configuration.json/10.0.14 with content hash 4Tn8eNg85x+ICDN4OLC7Dl/xvZNREZIf7VSOAdT4Q4KYf5Ip1zAk+0BAx8BsRTomgEpCYV4kKsNNnP/ZXUbQkw==.
+info : Installed Microsoft.AspNetCore.TestHost 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.aspnetcore.testhost/10.0.14 with content hash u4AX1M5Uzmw7V3NCdJJO4ITwH0DDDufyzmVlksE4QguVd23Co8adaREMp2VahlRB5f/rmtaFYVJIA1iIFnchmQ==.
+info : Installed Microsoft.Extensions.Logging.EventLog 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.logging.eventlog/10.0.14 with content hash 4HbWayQiJdw0lYthC45rElah2mJJeSlHDu3rcIrinGe95JdOt6I/vWQTNUFXiujIsHv3Z8MyA79ZC5P1Ww+jNg==.
+info : Installed Microsoft.Extensions.Logging.Configuration 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.logging.configuration/10.0.14 with content hash CfFSNbVSXSl8UTH453c0HoY5owcpaY1PMh1xsB+3NWcEq6WUSPHRotydbnMJtmw7Kybp6cTba8e+/uaJI52ANw==.
+info : Installed Microsoft.Extensions.Hosting 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.hosting/10.0.14 with content hash q3f2GLZebtxWG/pDtckPrgIWV22pVmSLSLEkncdmbUz7Z6atwF2wn9ag5cZCc/ndcGe7ffHJom98scauFG+oNQ==.
+info : Installed Microsoft.Extensions.FileProviders.Physical 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.fileproviders.physical/10.0.14 with content hash dcp6eCIk6ZpE3CTNmIna0ifgxsPel/MtOc23/Y/AJlD9SZZr7bhlKK2DAXYlrz81yMkMi6el/LHHUFKCZ3ufuQ==.
+info : Installed Microsoft.Extensions.FileSystemGlobbing 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.filesystemglobbing/10.0.14 with content hash xt6c/PWLL6+CiBiZA3PWRSfkwcPh+HCwiOLrgSUkhzBT7lrT/+QpIKPeuCQyDPspwOuG1q0cbJhuiGpRjr4UNQ==.
+info : Installed Microsoft.Extensions.Logging.Console 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.logging.console/10.0.14 with content hash 8Qx57p3sUAajSZHLQf8eihZqMtSIeI4fZ1JVpL4fvg4QqSbbgJkN0X0owX1cVJJRW2Xw4uqtVv9F7LgdXOBQHQ==.
+info : Installed Microsoft.Extensions.Configuration.EnvironmentVariables 10.0.14 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/microsoft.extensions.configuration.environmentvariables/10.0.14 with content hash jB0UiYjpnneoBH1ZeXPlHYt4zUme6SZlnstL6gsH/0O/d5rOuN5lSIlOIfxXzapl8tAi7QmYOEogP09g/wcHzA==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Microsoft.AspNetCore.Mvc.Testing' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj'.
+info : PackageReference for package 'Microsoft.AspNetCore.Mvc.Testing' version '10.0.14' added to file '/home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj'.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/obj/TenantManager.Api.IntegrationTests.csproj.nuget.g.props.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/obj/TenantManager.Api.IntegrationTests.csproj.nuget.g.targets.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj (in 362 ms).
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/codesignctl.pem'.
+info : X.509 certificate chain validation will use the fallback certificate bundle at '/usr/share/dotnet/sdk/10.0.403/trustedroots/timestampctl.pem'.
+info : Adding PackageReference for package 'Testcontainers.MsSql' into project '/home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj'.
+info :   GET https://api.nuget.org/v3/registration5-gz-semver2/testcontainers.mssql/index.json
+info :   OK https://api.nuget.org/v3/registration5-gz-semver2/testcontainers.mssql/index.json 109ms
+info : Restoring packages for /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj...
+info :   GET https://api.nuget.org/v3-flatcontainer/testcontainers.mssql/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/testcontainers.mssql/index.json 13ms
+info :   GET https://api.nuget.org/v3-flatcontainer/testcontainers.mssql/4.16.0/testcontainers.mssql.4.16.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/testcontainers.mssql/4.16.0/testcontainers.mssql.4.16.0.nupkg 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/testcontainers/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/testcontainers/index.json 3ms
+info :   GET https://api.nuget.org/v3-flatcontainer/testcontainers/4.16.0/testcontainers.4.16.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/testcontainers/4.16.0/testcontainers.4.16.0.nupkg 5ms
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.x509/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/ssh.net/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/sharpziplib/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced/4.3.3/docker.dotnet.enhanced.4.3.3.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.x509/index.json 8ms
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.x509/4.3.3/docker.dotnet.enhanced.x509.4.3.3.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/ssh.net/index.json 10ms
+info :   GET https://api.nuget.org/v3-flatcontainer/ssh.net/2026.0.0/ssh.net.2026.0.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/sharpziplib/index.json 10ms
+info :   GET https://api.nuget.org/v3-flatcontainer/sharpziplib/1.4.2/sharpziplib.1.4.2.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced/4.3.3/docker.dotnet.enhanced.4.3.3.nupkg 7ms
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.x509/4.3.3/docker.dotnet.enhanced.x509.4.3.3.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/ssh.net/2026.0.0/ssh.net.2026.0.0.nupkg 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/sharpziplib/1.4.2/sharpziplib.1.4.2.nupkg 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.legacyhttp/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.npipe/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.nativehttp/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.unix/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.handler.abstractions/index.json
+info :   GET https://api.nuget.org/v3-flatcontainer/bouncycastle.cryptography/index.json
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.nativehttp/index.json 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.legacyhttp/index.json 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.unix/index.json 3ms
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.npipe/index.json 4ms
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.nativehttp/4.3.3/docker.dotnet.enhanced.nativehttp.4.3.3.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.legacyhttp/4.3.3/docker.dotnet.enhanced.legacyhttp.4.3.3.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.unix/4.3.3/docker.dotnet.enhanced.unix.4.3.3.nupkg
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.npipe/4.3.3/docker.dotnet.enhanced.npipe.4.3.3.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.handler.abstractions/index.json 6ms
+info :   GET https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.handler.abstractions/4.3.3/docker.dotnet.enhanced.handler.abstractions.4.3.3.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.legacyhttp/4.3.3/docker.dotnet.enhanced.legacyhttp.4.3.3.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.nativehttp/4.3.3/docker.dotnet.enhanced.nativehttp.4.3.3.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/bouncycastle.cryptography/index.json 7ms
+info :   GET https://api.nuget.org/v3-flatcontainer/bouncycastle.cryptography/2.7.0/bouncycastle.cryptography.2.7.0.nupkg
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.unix/4.3.3/docker.dotnet.enhanced.unix.4.3.3.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.handler.abstractions/4.3.3/docker.dotnet.enhanced.handler.abstractions.4.3.3.nupkg 4ms
+info :   OK https://api.nuget.org/v3-flatcontainer/bouncycastle.cryptography/2.7.0/bouncycastle.cryptography.2.7.0.nupkg 2ms
+info :   OK https://api.nuget.org/v3-flatcontainer/docker.dotnet.enhanced.npipe/4.3.3/docker.dotnet.enhanced.npipe.4.3.3.nupkg 13ms
+info : Installed Docker.DotNet.Enhanced.NPipe 4.3.3 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/docker.dotnet.enhanced.npipe/4.3.3 with content hash ZTLYufuEfY0e6qLOgeH9QgXx2KYuoABRVaY5A8rsggyLgYqbDj9rCRfVAhHPCUv83S7pVxDHy+Tvm/BnxjWVpg==.
+info : Installed Docker.DotNet.Enhanced.LegacyHttp 4.3.3 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/docker.dotnet.enhanced.legacyhttp/4.3.3 with content hash 7j3M16emv9PAQN7VwFn23xLYNj8GJmwPOcogveHkaWnOCqiC+anRaNKQwqIBNApM1AuwZKivehTKTPmmrjUUnw==.
+info : Installed Docker.DotNet.Enhanced.Unix 4.3.3 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/docker.dotnet.enhanced.unix/4.3.3 with content hash ypo8qNbmvHw1t9VfpRTMogCw2vht6VjkXzlGYUUeP2H2bf83USURdla1maW1njn2oq2rfLUFOGMfmt+A37QU2w==.
+info : Installed SSH.NET 2026.0.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/ssh.net/2026.0.0 with content hash Yu9dirPq8l3oaat0+OQ7K0nUf5MmYltpia5UGqsApTG4zTPvBC1cxbNnC3NERij26dUST0A3Ef1QdHSn5ArbWQ==.
+info : Installed Docker.DotNet.Enhanced.X509 4.3.3 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/docker.dotnet.enhanced.x509/4.3.3 with content hash oBDibWezEv4hgj3RIQxI3DVcxkNV1MdrD0d/jhjUu+h3DL+qc0wlkQva15kkwMatXmC/hWp1VP0DMoFXe+BmEw==.
+info : Installed SharpZipLib 1.4.2 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/sharpziplib/1.4.2 with content hash yjj+3zgz8zgXpiiC3ZdF/iyTBbz2fFvMxZFEBPUcwZjIvXOf37Ylm+K58hqMfIBt5JgU/Z2uoUS67JmTLe973A==.
+info : Installed Docker.DotNet.Enhanced.Handler.Abstractions 4.3.3 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/docker.dotnet.enhanced.handler.abstractions/4.3.3 with content hash 9Cp8hOgtynixcDoAs9lnEaQosluojSYmiW3fsLsLIVfZjlq/fznSIZNUhnmyT4Xo1Iyuok/y49WL/25O47u0Pw==.
+info : Installed Docker.DotNet.Enhanced.NativeHttp 4.3.3 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/docker.dotnet.enhanced.nativehttp/4.3.3 with content hash iNzK+jRFeEMobSA7l/h4ARwCKOOefOWtVN5/RB0ft6/6H6IQXvVUuOgGyZAjYLBT7TsyClRYno2B904f3dtBuQ==.
+info : Installed Testcontainers.MsSql 4.16.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/testcontainers.mssql/4.16.0 with content hash UVLYLyq9CDSfLZUeu+CyDmwV7wo2LMNlpBLP8ZO9HG42WT3KTMI/p7qYesiCAZmo6GUeWH/Z6SOIw66Y4qnWuw==.
+info : Installed Testcontainers 4.16.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/testcontainers/4.16.0 with content hash JmMUZk6ZXQovbGQjaMB+YxOR0PbJTdYjOYjRcrm5LrA2dhLVMuCbhVGGunzCGIQfFMUB5Lno2LPOHMMuaGmuIg==.
+info : Installed Docker.DotNet.Enhanced 4.3.3 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/docker.dotnet.enhanced/4.3.3 with content hash nGicLwvd42FhRk+khY5uS6cx49ErNdwYKnYBg0F4m4BDKLp/R77AVmmN9xAiqI3W/wN5ZCHkdUhgxf5ORkZuFQ==.
+info : Installed BouncyCastle.Cryptography 2.7.0 from https://api.nuget.org/v3/index.json to /home/runner/.nuget/packages/bouncycastle.cryptography/2.7.0 with content hash U+12df8UEWHgBi04YVf/Lgi2dy3SItlIYvHjjEVa/BngCQIzDCDRBk50DDByCfDvSbe5pRNFr3b7UrVK2kMcLw==.
+info :   CACHE https://api.nuget.org/v3/vulnerabilities/index.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/vulnerability.base.json
+info :   CACHE https://api.nuget.org/v3-vulnerabilities/2026.10.28.05.41.06/2026.11.03.11.42.14/vulnerability.update.json
+warn : NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+warn : NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+info : Package 'Testcontainers.MsSql' is compatible with all the specified frameworks in project '/home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj'.
+info : PackageReference for package 'Testcontainers.MsSql' version '4.16.0' added to file '/home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj'.
+info : Generating MSBuild file /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/obj/TenantManager.Api.IntegrationTests.csproj.nuget.g.targets.
+info : Writing assets file to disk. Path: /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/obj/project.assets.json
+log  : Restored /home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj (in 826 ms).
+The template "Dotnet local tool manifest file" was created successfully.
+
+You can invoke the tool from this directory using the following commands: 'dotnet tool run dotnet-ef' or 'dotnet dotnet-ef'.
+Tool 'dotnet-ef' (version '10.0.14') was successfully installed. Entry is added to the manifest file /home/runner/work/mastene/mastene/dotnet-tools.json.
+== Resolved .NET packages
+  Determining projects to restore...
+/home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj : warning NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7 [/home/runner/work/mastene/mastene/TenantManager.slnx]
+/home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj : warning NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7 [/home/runner/work/mastene/mastene/TenantManager.slnx]
+/home/runner/work/mastene/mastene/src/TenantManager.Infrastructure/TenantManager.Infrastructure.csproj : warning NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx [/home/runner/work/mastene/mastene/TenantManager.slnx]
+/home/runner/work/mastene/mastene/tests/TenantManager.Api.IntegrationTests/TenantManager.Api.IntegrationTests.csproj : warning NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx [/home/runner/work/mastene/mastene/TenantManager.slnx]
+/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj : warning NU1902: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7 [/home/runner/work/mastene/mastene/TenantManager.slnx]
+/home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj : warning NU1903: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx [/home/runner/work/mastene/mastene/TenantManager.slnx]
+  Restored /home/runner/work/mastene/mastene/src/TenantManager.Api/TenantManager.Api.csproj (in 188 ms).
+  5 of 6 projects are up-to-date for restore.
+Project 'TenantManager.Api' has the following package references
+   [net10.0]: 
+   Top-level Package                                                        Requested   Resolved
+   > Asp.Versioning.Mvc                                                     10.2.1      10.2.1  
+   > Asp.Versioning.Mvc.ApiExplorer                                         10.2.1      10.2.1  
+   > Microsoft.AspNetCore.Authentication.JwtBearer                          10.0.14     10.0.14 
+   > Microsoft.AspNetCore.OpenApi                                           10.0.14     10.0.14 
+   > Microsoft.EntityFrameworkCore.Design                                   10.0.14     10.0.14 
+   > Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore      10.0.14     10.0.14 
+   > Serilog.AspNetCore                                                     10.0.0      10.0.0  
+   > Swashbuckle.AspNetCore                                                 10.3.1      10.3.1  
+
+Project 'TenantManager.Application' has the following package references
+   [net10.0]: 
+   Top-level Package                                     Requested   Resolved
+   > FluentValidation                                    12.2.0      12.2.0  
+   > FluentValidation.DependencyInjectionExtensions      12.2.0      12.2.0  
+   > Microsoft.EntityFrameworkCore                       10.0.14     10.0.14 
+
+Project 'TenantManager.Domain' has the following package references
+   [net10.0]: No packages were found for this framework.
+Project 'TenantManager.Infrastructure' has the following package references
+   [net10.0]: 
+   Top-level Package                                        Requested   Resolved
+   > Microsoft.AspNetCore.Identity.EntityFrameworkCore      10.0.14     10.0.14 
+   > Microsoft.EntityFrameworkCore.SqlServer                10.0.14     10.0.14 
+   > Microsoft.IdentityModel.JsonWebTokens                  8.23.0      8.23.0  
+
+Project 'TenantManager.Api.IntegrationTests' has the following package references
+   [net10.0]: 
+   Top-level Package                       Requested   Resolved
+   > coverlet.collector                    6.0.4       6.0.4   
+   > Microsoft.AspNetCore.Mvc.Testing      10.0.14     10.0.14 
+   > Microsoft.NET.Test.Sdk                17.14.1     17.14.1 
+   > Shouldly                              4.3.0       4.3.0   
+   > Testcontainers.MsSql                  4.16.0      4.16.0  
+   > xunit                                 2.9.3       2.9.3   
+   > xunit.runner.visualstudio             3.1.4       3.1.4   
+
+Project 'TenantManager.Domain.Tests' has the following package references
+   [net10.0]: 
+   Top-level Package                Requested   Resolved
+   > coverlet.collector             6.0.4       6.0.4   
+   > Microsoft.NET.Test.Sdk         17.14.1     17.14.1 
+   > Shouldly                       4.3.0       4.3.0   
+   > xunit                          2.9.3       2.9.3   
+   > xunit.runner.visualstudio      3.1.4       3.1.4   
+
+cat: .config/dotnet-tools.json: No such file or directory
+== Angular
+CREATE web/.prettierrc (161 bytes)
+CREATE web/README.md (1456 bytes)
+CREATE web/.editorconfig (314 bytes)
+CREATE web/.gitignore (622 bytes)
+CREATE web/angular.json (2024 bytes)
+CREATE web/package.json (778 bytes)
+CREATE web/tsconfig.json (908 bytes)
+CREATE web/tsconfig.app.json (398 bytes)
+CREATE web/tsconfig.spec.json (409 bytes)
+CREATE web/.vscode/extensions.json (130 bytes)
+CREATE web/.vscode/launch.json (470 bytes)
+CREATE web/.vscode/tasks.json (978 bytes)
+CREATE web/src/main.ts (222 bytes)
+CREATE web/src/index.html (289 bytes)
+CREATE web/src/styles.scss (80 bytes)
+CREATE web/src/app/app.scss (0 bytes)
+CREATE web/src/app/app.spec.ts (677 bytes)
+CREATE web/src/app/app.ts (287 bytes)
+CREATE web/src/app/app.html (20144 bytes)
+CREATE web/src/app/app.config.ts (312 bytes)
+CREATE web/src/app/app.routes.ts (77 bytes)
+CREATE web/public/favicon.ico (15086 bytes)
+- Installing packages (npm)...
+[32m✔[39m Packages installed successfully.
+
+     _                      _                 ____ _     ___
+    / \   _ __   __ _ _   _| | __ _ _ __     / ___| |   |_ _|
+   / △ \ | '_ \ / _` | | | | |/ _` | '__|   | |   | |    | |
+  / ___ \| | | | (_| | |_| | | (_| | |      | |___| |___ | |
+ /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
+                |___/
+    
+
+Angular CLI       : 22.2.5
+Angular           : 22.2.4
+Node.js           : 22.23.4
+Package Manager   : npm 10.9.9
+Operating System  : linux x64
+
+┌───────────────────────────┬───────────────────┬───────────────────┐
+│ Package                   │ Installed Version │ Requested Version │
+├───────────────────────────┼───────────────────┼───────────────────┤
+│ @angular/build            │ 22.2.5            │ ^22.2.5           │
+│ @angular/cdk              │ 22.2.5            │ ^22.2.5           │
+│ @angular/cli              │ 22.2.5            │ ^22.2.5           │
+│ @angular/common           │ 22.2.4            │ ^22.2.0           │
+│ @angular/compiler         │ 22.2.4            │ ^22.2.0           │
+│ @angular/compiler-cli     │ 22.2.4            │ ^22.2.0           │
+│ @angular/core             │ 22.2.4            │ ^22.2.0           │
+│ @angular/forms            │ 22.2.4            │ ^22.2.0           │
+│ @angular/material         │ 22.2.5            │ ^22.2.5           │
+│ @angular/platform-browser │ 22.2.4            │ ^22.2.0           │
+│ @angular/router           │ 22.2.4            │ ^22.2.0           │
+│ rxjs                      │ 7.8.2             │ ~7.8.0            │
+│ typescript                │ 6.0.3             │ ~6.0.2            │
+│ vitest                    │ 5.1.0             │ ^5.0.0            │
+└───────────────────────────┴───────────────────┴───────────────────┘
+{
+  "name": "web",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "lint": "ng lint"
+  },
+  "private": true,
+  "packageManager": "npm@10.9.9",
+  "dependencies": {
+    "@angular/cdk": "^22.2.5",
+    "@angular/common": "^22.2.0",
+    "@angular/compiler": "^22.2.0",
+    "@angular/core": "^22.2.0",
+    "@angular/forms": "^22.2.0",
+    "@angular/material": "^22.2.5",
+    "@angular/platform-browser": "^22.2.0",
+    "@angular/router": "^22.2.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.2.5",
+    "@angular/cli": "^22.2.5",
+    "@angular/compiler-cli": "^22.2.0",
+    "@eslint/js": "^10.0.1",
+    "angular-eslint": "22.6.0",
+    "eslint": "^10.12.0",
+    "jsdom": "^30.0.0",
+    "prettier": "^3.8.1",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "8.71.0",
+    "vitest": "^5.0.0"
+  }
+}
+== done
