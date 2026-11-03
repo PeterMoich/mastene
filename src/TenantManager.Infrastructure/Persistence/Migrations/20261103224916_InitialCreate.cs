@@ -370,11 +370,23 @@ namespace TenantManager.Infrastructure.Persistence.Migrations
                 columns: new[] { "PropertyId", "Label" },
                 unique: true,
                 filter: "[IsDeleted] = 0");
+
+            // Hand-written (ADR-008): the audit log is append-only at the database level too.
+            // INSTEAD OF means the UPDATE/DELETE never happens; THROW reports it to the caller.
+            migrationBuilder.Sql("""
+                CREATE TRIGGER [dbo].[TR_AuditLogs_AppendOnly]
+                ON [dbo].[AuditLogs]
+                INSTEAD OF UPDATE, DELETE
+                AS
+                    THROW 51000, N'AuditLogs is append-only: rows cannot be updated or deleted.', 1;
+                """);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("DROP TRIGGER IF EXISTS [dbo].[TR_AuditLogs_AppendOnly];");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
