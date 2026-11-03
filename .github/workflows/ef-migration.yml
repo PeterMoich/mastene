@@ -1,9 +1,11 @@
-name: bootstrap
-# Temporary tooling branch: builds the solution and generates EF Core migrations, committing
-# them back. Removed once main has the real code and CI.
+name: ef-migration
+# Generates an EF Core migration on GitHub's runners, for contributors without the .NET SDK.
+# Push a branch named tooling/<anything> whose last commit message contains
+# [gen-migration:<Name>]; the workflow builds, runs `dotnet ef migrations add <Name>` and
+# commits the generated files back to that branch for review.
 on:
   push:
-    branches: [bootstrap]
+    branches: ['tooling/**']
 permissions:
   contents: write
 jobs:

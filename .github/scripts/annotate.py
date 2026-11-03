@@ -35,8 +35,13 @@ def build(log_path: str) -> None:
 def trx(folder: str) -> None:
     ns = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
     failures = []
+    totals = {"total": 0, "passed": 0, "failed": 0}
     for path in glob.glob(f"{folder}/**/*.trx", recursive=True):
         root = ET.parse(path).getroot()
+        counters = root.find(".//t:ResultSummary/t:Counters", ns)
+        if counters is not None:
+            for key in totals:
+                totals[key] += int(counters.get(key, 0))
         for result in root.iterfind(".//t:UnitTestResult", ns):
             if result.get("outcome") != "Failed":
                 continue
@@ -47,8 +52,10 @@ def trx(folder: str) -> None:
     for failure in failures[:MAX]:
         name = failure.splitlines()[0]
         print(f"::error title=Test failed: {escape(name)[:200]}::{escape(failure)}")
-    if failures:
-        print(f"{len(failures)} test(s) failed")
+    print(f"::notice title=Tests::{totals['passed']} passed, {totals['failed']} failed, {totals['total']} total")
+    if totals["total"] == 0:
+        print("::error title=No tests ran::No test results were found; check that the test project built.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

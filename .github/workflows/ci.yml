@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [main, bootstrap] # bootstrap: temporary, removed when Phase 1 merges
+    branches: [main]
   pull_request:
 
 permissions:
@@ -42,14 +42,14 @@ jobs:
 
       - name: Unit tests
         run: |
-          rc=0; dotnet test tests/TenantManager.Domain.Tests -c Release --no-build --logger trx --results-directory TestResults > unit.log 2>&1 || rc=$?
-          tail -30 unit.log; python3 .github/scripts/annotate.py trx TestResults; exit $rc
+          rc=0; dotnet test tests/TenantManager.Domain.Tests -c Release --no-build --logger trx --results-directory TestResults/unit > unit.log 2>&1 || rc=$?
+          tail -30 unit.log; python3 .github/scripts/annotate.py trx TestResults/unit || rc=1; exit $rc
 
       # Uses Testcontainers: starts a real SQL Server in Docker (the runner has Docker).
       - name: Integration tests
         run: |
-          rc=0; dotnet test tests/TenantManager.Api.IntegrationTests -c Release --no-build --logger trx --results-directory TestResults > integration.log 2>&1 || rc=$?
-          tail -40 integration.log; python3 .github/scripts/annotate.py trx TestResults; exit $rc
+          rc=0; dotnet test tests/TenantManager.Api.IntegrationTests -c Release --no-build --logger trx --results-directory TestResults/integration > integration.log 2>&1 || rc=$?
+          tail -40 integration.log; python3 .github/scripts/annotate.py trx TestResults/integration || rc=1; exit $rc
 
       - name: Upload test results
         if: always()
