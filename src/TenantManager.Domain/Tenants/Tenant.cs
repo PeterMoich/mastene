@@ -78,7 +78,7 @@ public sealed partial class Tenant : Entity, IOwned, ISoftDeletable, IAuditable
     public static string NormaliseEmail(string? value)
     {
         var trimmed = Guard.NotBlank(value, "email", EmailMax).ToLowerInvariant();
-        if (!MailAddress.TryCreate(trimmed, out var parsed) || parsed.Address != trimmed || !trimmed.Contains('.'))
+        if (!MailAddress.TryCreate(trimmed, out var parsed) || parsed.Address != trimmed || !trimmed[trimmed.IndexOf('@')..].Contains('.'))
             throw new DomainRuleException("email.invalid", "Email address is not valid.");
         return trimmed;
     }
