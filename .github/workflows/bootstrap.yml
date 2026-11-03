@@ -16,19 +16,23 @@ jobs:
         with:
           global-json-file: global.json
       - name: Build
+        timeout-minutes: 15
+        # Log to a file, not a pipe: build-server processes outlive the build and would keep a pipe open.
         run: |
-          set -o pipefail
-          dotnet build TenantManager.slnx -clp:NoSummary 2>&1 | tee build.log
+          rc=0; dotnet build TenantManager.slnx --disable-build-servers -clp:NoSummary > build.log 2>&1 || rc=$?
+          cat build.log; exit $rc
       - name: Report build errors
         if: failure()
         run: |
           msg=$(grep -E ": (error|warning) [A-Z]+[0-9]+" build.log | sed -E 's/ \[[^]]*\]$//; s#^.*/mastene/##' | sort -u | head -80 | sed ':a;N;$!ba;s/%/%25/g;s/\n/%0A/g')
           echo "::error title=build::$msg"
       - name: Generate migration
+        timeout-minutes: 10
         run: |
           dotnet tool restore
           name=$(git log -1 --pretty=%s | sed -nE 's/.*\[gen-migration:([A-Za-z0-9]+)\].*/\1/p')
-          dotnet ef migrations add "${name:-InitialCreate}" -p src/TenantManager.Infrastructure -s src/TenantManager.Api -o Persistence/Migrations --no-build 2>&1 | tee ef.log
+          rc=0; dotnet ef migrations add "${name:-InitialCreate}" -p src/TenantManager.Infrastructure -s src/TenantManager.Api -o Persistence/Migrations --no-build > ef.log 2>&1 || rc=$?
+          cat ef.log; exit $rc
       - name: Report migration errors
         if: failure()
         run: |

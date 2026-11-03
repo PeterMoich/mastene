@@ -1,0 +1,52 @@
+// Shared layout for list pages (properties, tenants, users).
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+h1 {
+  font: var(--mat-sys-headline-medium);
+  margin: 0 0 16px;
+}
+
+.search {
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 8px;
+}
+
+.table {
+  width: 100%;
+}
+
+// Small screens: let wide tables scroll instead of squashing.
+:host {
+  display: block;
+  overflow-x: auto;
+}
+
+.empty {
+  padding: 24px 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.error {
+  color: var(--mat-sys-error);
+}
+
+.actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
