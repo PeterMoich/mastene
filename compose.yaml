@@ -1,0 +1,67 @@
+# One command runs everything locally:  cp .env.example .env  &&  docker compose up --build
+# Web app: http://localhost:4200   API + Swagger: http://localhost:5080/swagger
+name: tenant-manager
+
+x-api-env: &api-env
+  ASPNETCORE_ENVIRONMENT: Development
+  ConnectionStrings__Default: "Server=sqlserver,1433;Database=TenantManager;User Id=sa;Password=${SQL_SA_PASSWORD};Encrypt=False;TrustServerCertificate=True"
+  Jwt__SigningKey: ${JWT_SIGNING_KEY:?Set JWT_SIGNING_KEY in .env (copy .env.example)}
+  Seed__DemoData: "true"
+  Seed__Password: ${SEED_PASSWORD:?Set SEED_PASSWORD in .env (copy .env.example)}
+  Database__MigrateOnStartup: "false"
+  ReverseProxy__Enabled: "true"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SQL_SA_PASSWORD:?Set SQL_SA_PASSWORD in .env (copy .env.example)}
+    ports: ["1433:1433"]
+    volumes: [sqldata:/var/opt/mssql]
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  # Azure Blob emulator. Not used until document uploads arrive in Phase 2-3.
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    command: azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck
+    ports: ["10000:10000"]
+
+  # Applies migrations and loads synthetic demo data, then exits.
+  migrator:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    image: tenant-manager-api:local
+    command: ["migrate"]
+    environment: *api-env
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    image: tenant-manager-api:local
+    pull_policy: never
+    environment: *api-env
+    ports: ["5080:8080"]
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    ports: ["4200:8080"]
+    depends_on: [api]
+    restart: unless-stopped
+
+volumes:
+  sqldata:
