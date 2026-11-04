@@ -299,8 +299,7 @@ public sealed class LeaseService(
         .Include(l => l.Tenant)
         .Include(l => l.Signatures)
         .Include(l => l.Documents)
-        .Include(l => l.ExpiryNotices)
-        .AsSplitQuery();
+        .Include(l => l.ExpiryNotices);
 
     private LeaseDto ToDto(Lease l, Guid? renewalId)
     {

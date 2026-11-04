@@ -22,7 +22,6 @@ public sealed class LeaseLifecycleService(IApplicationDbContext db, IClock clock
             .Include(l => l.Previous)
             .Include(l => l.Signatures)
             .Include(l => l.ExpiryNotices)
-            .AsSplitQuery()
             .ToListAsync(ct);
 
         var summary = LeaseLifecycle.Run(leases, clock.Today(), await settings.GetLeaseSettingsAsync(ct));

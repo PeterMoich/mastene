@@ -32,6 +32,24 @@ export const routes: Routes = [
         loadComponent: () => import('./features/tenants/tenant-list').then((m) => m.TenantList),
       },
       {
+        path: 'leases',
+        canActivate: [roleGuard('Landlord', 'Tenant')],
+        title: 'Leases · Tenant Manager',
+        loadComponent: () => import('./features/leases/lease-list').then((m) => m.LeaseList),
+      },
+      {
+        path: 'leases/:id',
+        canActivate: [roleGuard('Landlord', 'Tenant')],
+        title: 'Lease · Tenant Manager',
+        loadComponent: () => import('./features/leases/lease-detail').then((m) => m.LeaseDetail),
+      },
+      {
+        path: 'settings',
+        canActivate: [roleGuard('Admin')],
+        title: 'Settings · Tenant Manager',
+        loadComponent: () => import('./features/settings/settings').then((m) => m.SettingsPage),
+      },
+      {
         path: 'users',
         canActivate: [roleGuard('Admin')],
         title: 'Users · Tenant Manager',
