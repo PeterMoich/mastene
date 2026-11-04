@@ -75,6 +75,11 @@ if (app.Configuration.GetValue<bool>("Jobs:Enabled"))
         job => job.RunAsync(CancellationToken.None),
         app.Configuration["Jobs:LeaseLifecycleCron"] ?? LeaseLifecycleJob.DefaultCron,
         new RecurringJobOptions { TimeZone = BusinessTime.Zone });
+    app.Services.GetRequiredService<IRecurringJobManager>().AddOrUpdate<IssueSlaJob>(
+        IssueSlaJob.Id,
+        job => job.RunAsync(CancellationToken.None),
+        app.Configuration["Jobs:IssueSlaCron"] ?? IssueSlaJob.DefaultCron,
+        new RecurringJobOptions { TimeZone = BusinessTime.Zone });
 }
 
 if (app.Services.GetRequiredService<JwtSigningKey>().IsGenerated)

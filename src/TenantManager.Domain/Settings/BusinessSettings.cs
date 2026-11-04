@@ -1,5 +1,6 @@
 using System.Globalization;
 using TenantManager.Domain.Common;
+using TenantManager.Domain.Issues;
 using TenantManager.Domain.Leases;
 using TenantManager.Domain.Payments;
 
@@ -42,13 +43,44 @@ public sealed class BusinessSettings : Entity, IAuditable
     /// <summary>LEGAL REVIEW NEEDED. Days after the lease ends by which the deposit should be refunded.</summary>
     public int DepositRefundDays { get; private set; }
 
+    /// <summary>BR15 targets, in hours from when the issue was opened. Suggested values, not legal ones.</summary>
+    public int SlaUrgentResponseHours { get; private set; }
+    public int SlaUrgentResolutionHours { get; private set; }
+    public int SlaHighResponseHours { get; private set; }
+    public int SlaHighResolutionHours { get; private set; }
+    public int SlaMediumResponseHours { get; private set; }
+    public int SlaMediumResolutionHours { get; private set; }
+    public int SlaLowResponseHours { get; private set; }
+    public int SlaLowResolutionHours { get; private set; }
+
+    /// <summary>Days after an issue is resolved before it closes by itself if the tenant doesn't reply.</summary>
+    public int IssueAutoCloseDays { get; private set; }
+
     public static BusinessSettings CreateDefault()
     {
         var settings = new BusinessSettings();
         settings.Apply(LeaseSettings.Defaults);
         settings.ApplyRent(RentSettings.Defaults);
+        settings.ApplySla(SlaTargets.Defaults);
         return settings;
     }
+
+    public void ApplySla(SlaTargets value)
+    {
+        value.Validate();
+        (SlaUrgentResponseHours, SlaUrgentResolutionHours) = (value.Urgent.ResponseHours, value.Urgent.ResolutionHours);
+        (SlaHighResponseHours, SlaHighResolutionHours) = (value.High.ResponseHours, value.High.ResolutionHours);
+        (SlaMediumResponseHours, SlaMediumResolutionHours) = (value.Medium.ResponseHours, value.Medium.ResolutionHours);
+        (SlaLowResponseHours, SlaLowResolutionHours) = (value.Low.ResponseHours, value.Low.ResolutionHours);
+        IssueAutoCloseDays = value.AutoCloseDays;
+    }
+
+    public SlaTargets ToSlaTargets() => new(
+        new SlaTarget(SlaUrgentResponseHours, SlaUrgentResolutionHours),
+        new SlaTarget(SlaHighResponseHours, SlaHighResolutionHours),
+        new SlaTarget(SlaMediumResponseHours, SlaMediumResolutionHours),
+        new SlaTarget(SlaLowResponseHours, SlaLowResolutionHours),
+        IssueAutoCloseDays);
 
     public void ApplyRent(RentSettings value)
     {

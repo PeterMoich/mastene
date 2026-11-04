@@ -409,5 +409,7 @@ public class LeaseApiTests(ApiFactory api)
 
     internal static SettingsRequest ToRequest(SettingsDto s) => new(s.ExpiryNoticeDays, s.DefaultEscalationPct,
         s.MaxEscalationPct, s.MonthToMonthOnLapse, s.TerminationNoticeDays, s.LeaseTemplateVersion, s.RentDueDay,
-        s.RentGraceDays, s.ProrateRent, s.DepositRefundDays);
+        s.RentGraceDays, s.ProrateRent, s.DepositRefundDays, s.SlaUrgentResponseHours, s.SlaUrgentResolutionHours,
+        s.SlaHighResponseHours, s.SlaHighResolutionHours, s.SlaMediumResponseHours, s.SlaMediumResolutionHours,
+        s.SlaLowResponseHours, s.SlaLowResolutionHours, s.IssueAutoCloseDays);
 }

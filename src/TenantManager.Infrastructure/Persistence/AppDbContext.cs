@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using TenantManager.Application.Abstractions;
 using TenantManager.Domain.Auditing;
 using TenantManager.Domain.Common;
+using TenantManager.Domain.Inspections;
+using TenantManager.Domain.Issues;
 using TenantManager.Domain.Leases;
 using TenantManager.Domain.Payments;
 using TenantManager.Domain.Properties;
@@ -27,6 +29,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<RentCharge> RentCharges => Set<RentCharge>();
     public DbSet<ProofOfPayment> Payments => Set<ProofOfPayment>();
     public DbSet<Deposit> Deposits => Set<Deposit>();
+    public DbSet<Issue> Issues => Set<Issue>();
+    public DbSet<Contractor> Contractors => Set<Contractor>();
+    public DbSet<Inspection> Inspections => Set<Inspection>();
 
     public async Task<string> NextReceiptNumberAsync(DateOnly today, CancellationToken cancellationToken)
     {

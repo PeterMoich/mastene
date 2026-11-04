@@ -6,6 +6,8 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using TenantManager.Application.Leases;
+using TenantManager.Domain.Inspections;
+using TenantManager.Domain.Issues;
 using TenantManager.Application.Payments;
 using TenantManager.Domain.Leases;
 using TenantManager.Domain.Payments;
@@ -72,9 +74,12 @@ public sealed class DataSeeder(
             logger.LogWarning("Seed:DemoData is on but Seed:Password is empty; skipping demo data");
             return;
         }
-        if (await users.FindByEmailAsync(LandlordEmail) is not null)
+        if (await users.FindByEmailAsync(LandlordEmail) is { } existingLandlord)
         {
             logger.LogInformation("Demo data already present");
+            // Databases seeded before Phase 4 get the maintenance demo data added once.
+            if (!await db.Contractors.IgnoreQueryFilters().AnyAsync(ct))
+                await SeedMaintenanceAsync(existingLandlord, ct);
             return;
         }
 
@@ -134,6 +139,136 @@ public sealed class DataSeeder(
         await SeedPaymentsAsync(leratoLease, tenantUsers[1], landlord, unpaidMonths: 2, partialOnFirstUnpaid: 3000m,
             submitForLatest: false, ct);
         await rent.RecordOverdueNoticesAsync(ct);
+        await SeedMaintenanceAsync(landlord, ct);
+    }
+
+    /// <summary>
+    /// Contractors, issues at different stages (one escalated, one waiting for the tenant to confirm the
+    /// fix) and completed move-in inspections, so every Phase 4 screen has something to show.
+    /// </summary>
+    private async Task SeedMaintenanceAsync(AppUser landlord, CancellationToken ct)
+    {
+        var sipho = await db.Leases.Include(l => l.Tenant).Include(l => l.Unit)
+            .FirstOrDefaultAsync(l => l.Tenant.Email == "sipho.dlamini@example.com" && l.Status == LeaseStatus.Active, ct);
+        var lerato = await db.Leases.Include(l => l.Tenant).Include(l => l.Unit)
+            .Where(l => l.Tenant.Email == "lerato.mokoena@example.com")
+            .Where(l => l.Status == LeaseStatus.Active || l.Status == LeaseStatus.Expiring).FirstOrDefaultAsync(ct);
+        var flat2 = await db.Units.Include(u => u.Property)
+            .FirstOrDefaultAsync(u => u.Label == "Flat 2" && u.Property.Name == "Jacaranda Court", ct);
+        if (sipho is null || lerato is null || flat2 is null)
+        {
+            logger.LogWarning("Demo leases not found; skipping maintenance demo data");
+            return;
+        }
+        logger.LogInformation("Seeding synthetic maintenance demo data");
+
+        var siphoUser = await users.FindByEmailAsync(sipho.Tenant.Email);
+        var leratoUser = await users.FindByEmailAsync(lerato.Tenant.Email);
+        var owner = new IssueActor(landlord.Id, landlord.DisplayName, IsTenant: false);
+        var siphoActor = new IssueActor(siphoUser!.Id, siphoUser.DisplayName, IsTenant: true);
+        var leratoActor = new IssueActor(leratoUser!.Id, leratoUser.DisplayName, IsTenant: true);
+        var targets = SlaTargets.Defaults;
+        var now = clock.UtcNow;
+
+        var plumber = new Contractor(landlord.Id, "Bongani Mthembu Plumbing", "Plumber", "082 555 0201",
+            "bongani.plumbing@example.com", "Prefers WhatsApp. Call-out fee agreed in advance.");
+        var electrician = new Contractor(landlord.Id, "Spark Bright Electrical", "Electrician", "083 555 0202",
+            "office@sparkbright.example.com", "Registered electrician; can issue a certificate of compliance.");
+        var gardener = new Contractor(landlord.Id, "Groen Garden Care", "Gardener", "084 555 0203", null, null);
+        db.Contractors.AddRange(plumber, electrician, gardener);
+        await db.SaveChangesAsync(ct);
+
+        // 1. In progress with the plumber, inside its targets.
+        var tap = new Issue(sipho.OwnerId, sipho.UnitId, sipho.Id, sipho.TenantId, IssueCategory.Plumbing,
+            IssuePriority.Medium, "Kitchen tap leaking",
+            "The cold tap in the kitchen drips all the time, even when closed tightly. There is a small puddle under the sink.",
+            siphoActor, targets, now.AddDays(-3));
+        tap.Acknowledge(owner, now.AddDays(-3).AddHours(2));
+        tap.Start(owner, now.AddDays(-2));
+        tap.AssignContractor(plumber.Id, plumber.Name, owner, now.AddDays(-2));
+        tap.AddComment("Bongani will come on Thursday morning between 8 and 10.", owner, now.AddDays(-2));
+        tap.AddComment("Thanks, I'll be home.", siphoActor, now.AddDays(-2).AddHours(1));
+        tap.AddPhoto(await StoreDemoPhotoAsync("issues", "kitchen-tap.png", 70, 130, 180, ct), siphoActor, now.AddDays(-3));
+
+        // 2. Not acknowledged, past its 24-hour response target: escalated (BR15).
+        var geyser = new Issue(lerato.OwnerId, lerato.UnitId, lerato.Id, lerato.TenantId, IssueCategory.Plumbing,
+            IssuePriority.High, "Geyser not heating",
+            "There has been no hot water since yesterday evening. The geyser light is off and the trip switch keeps tripping.",
+            leratoActor, targets, now.AddHours(-30));
+        geyser.CheckTargets(now);
+
+        // 3. Fixed and confirmed by the tenant.
+        var light = new Issue(sipho.OwnerId, sipho.UnitId, sipho.Id, sipho.TenantId, IssueCategory.Electrical,
+            IssuePriority.Urgent, "Bedroom light switch sparks",
+            "The light switch in the main bedroom sparks when I switch it on. I've stopped using it.",
+            siphoActor, targets, now.AddDays(-20));
+        light.Acknowledge(owner, now.AddDays(-20).AddHours(1));
+        light.AssignContractor(electrician.Id, electrician.Name, owner, now.AddDays(-20).AddHours(1));
+        light.Start(owner, now.AddDays(-20).AddHours(3));
+        light.Resolve("Switch and back box replaced; circuit tested.", owner, now.AddDays(-20).AddHours(9));
+        light.Close(siphoActor, now.AddDays(-19));
+
+        // 4. Resolved, waiting for the tenant to confirm or reopen.
+        var gate = new Issue(lerato.OwnerId, lerato.UnitId, lerato.Id, lerato.TenantId, IssueCategory.Security,
+            IssuePriority.Medium, "Gate remote not working",
+            "My gate remote stopped opening the main gate. I replaced the battery but it still doesn't work.",
+            leratoActor, targets, now.AddDays(-4));
+        gate.Start(owner, now.AddDays(-4).AddHours(5));
+        gate.Resolve("Remote re-coded to the gate motor. Please check it works.", owner, now.AddDays(-2));
+
+        // 5. The landlord's own job on the vacant flat (no tenant).
+        var paint = new Issue(landlord.Id, flat2.Id, null, null, IssueCategory.Structural, IssuePriority.Low,
+            "Paint touch-up before next tenant", "Touch up scuffed walls in the lounge and passage before viewings.",
+            owner, targets, now.AddDays(-2));
+
+        db.Issues.AddRange(tap, geyser, light, gate, paint);
+        await db.SaveChangesAsync(ct);
+
+        // Move-in inspections: Sipho's acknowledged; Lerato's waiting for her acknowledgement.
+        await SeedMoveInAsync(sipho, landlord, acknowledged: true, ct);
+        await SeedMoveInAsync(lerato, landlord, acknowledged: false, ct);
+    }
+
+    private async Task SeedMoveInAsync(Lease lease, AppUser landlord, bool acknowledged, CancellationToken ct)
+    {
+        var activated = lease.ActivatedOn ?? lease.StartDate;
+        var inspection = Inspection.StartMoveIn(lease, activated);
+        db.Inspections.Add(inspection);
+        await db.SaveChangesAsync(ct); // item ids are needed below
+
+        foreach (var item in inspection.Items)
+        {
+            var (condition, notes) = item.Area switch
+            {
+                "Bathroom" => (ItemCondition.Fair, "Chipped tile next to the bath."),
+                "Walls and ceilings" => (ItemCondition.Good, "Freshly painted."),
+                "Keys, remotes and access tags" => (ItemCondition.Good, "2 door keys, 1 gate remote, 1 tag."),
+                _ => (ItemCondition.Good, (string?)null),
+            };
+            inspection.UpdateItem(item.Id, condition, notes);
+        }
+        var lounge = inspection.Items.First(i => i.Area == "Lounge");
+        inspection.AddPhoto(lounge.Id, await StoreDemoPhotoAsync("inspections", "lounge.png", 200, 170, 120, ct),
+            clock.UtcNow);
+        var bathroom = inspection.Items.First(i => i.Area == "Bathroom");
+        inspection.AddPhoto(bathroom.Id, await StoreDemoPhotoAsync("inspections", "bathroom-tile.png", 150, 190, 200, ct),
+            clock.UtcNow);
+        inspection.Complete(landlord.DisplayName, clock.UtcNow);
+        if (acknowledged) inspection.Acknowledge(null, clock.UtcNow);
+        await db.SaveChangesAsync(ct);
+    }
+
+    private async Task<StoredFile> StoreDemoPhotoAsync(string folder, string name, byte r, byte g, byte b,
+        CancellationToken ct)
+    {
+        // A random tint keeps every demo photo's hash different.
+        var png = DemoImages.Png(r, g, (byte)(b ^ RandomNumberGenerator.GetInt32(0, 16)));
+        var key = $"{folder}/demo/{Guid.NewGuid():N}.png";
+        using (var stream = new MemoryStream(png, writable: false))
+        {
+            await files.SaveAsync(key, stream, "image/png", ct);
+        }
+        return new StoredFile(key, name, "image/png", png.LongLength, Convert.ToHexString(SHA256.HashData(png)));
     }
 
     private async Task SeedPaymentsAsync(Lease lease, AppUser tenantUser, AppUser landlord, int unpaidMonths,

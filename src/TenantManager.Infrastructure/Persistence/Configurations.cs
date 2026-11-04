@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TenantManager.Domain.Auditing;
+using TenantManager.Domain.Inspections;
+using TenantManager.Domain.Issues;
 using TenantManager.Domain.Leases;
 using TenantManager.Domain.Payments;
 using TenantManager.Domain.Properties;
@@ -245,5 +247,143 @@ internal sealed class DepositDeductionConfiguration : IEntityTypeConfiguration<D
     {
         b.ToTable("DepositDeductions");
         b.Property(x => x.Reason).HasMaxLength(Deposit.ReasonMax).IsRequired();
+    }
+}
+
+internal sealed class IssueConfiguration : IEntityTypeConfiguration<Issue>
+{
+    public void Configure(EntityTypeBuilder<Issue> b)
+    {
+        b.ToTable("Issues");
+        b.Property(i => i.Title).HasMaxLength(Issue.TitleMax).IsRequired();
+        b.Property(i => i.Description).HasMaxLength(Issue.DescriptionMax).IsRequired();
+        b.Property(i => i.Category).HasConversion<string>().HasMaxLength(20);
+        b.Property(i => i.Priority).HasConversion<string>().HasMaxLength(20);
+        b.Property(i => i.Status).HasConversion<string>().HasMaxLength(20);
+        b.Property(i => i.ReportedByName).HasMaxLength(120).IsRequired();
+        b.Property(i => i.ResolutionNote).HasMaxLength(Issue.NoteMax);
+        b.Property(i => i.RowVersion).IsRowVersion();
+        b.Ignore(i => i.IsFinished);
+
+        b.HasIndex(i => new { i.OwnerId, i.Status, i.OpenedAt });
+        b.HasIndex(i => new { i.TenantId, i.OpenedAt });
+        b.HasIndex(i => i.UnitId);
+        b.HasIndex(i => i.ContractorId);
+        // The SLA job looks for issues that aren't closed and are past a target.
+        b.HasIndex(i => new { i.Status, i.ResponseDueAt, i.ResolutionDueAt });
+
+        b.HasOne<Unit>().WithMany().HasForeignKey(i => i.UnitId).OnDelete(DeleteBehavior.Restrict);
+        b.HasOne<Lease>().WithMany().HasForeignKey(i => i.LeaseId).OnDelete(DeleteBehavior.Restrict);
+        b.HasOne<Tenant>().WithMany().HasForeignKey(i => i.TenantId).OnDelete(DeleteBehavior.Restrict);
+        b.HasOne<Contractor>().WithMany().HasForeignKey(i => i.ContractorId).OnDelete(DeleteBehavior.Restrict);
+
+        b.HasMany(i => i.Comments).WithOne().HasForeignKey(c => c.IssueId).OnDelete(DeleteBehavior.Cascade);
+        b.HasMany(i => i.Photos).WithOne().HasForeignKey(p => p.IssueId).OnDelete(DeleteBehavior.Cascade);
+        b.HasMany(i => i.Events).WithOne().HasForeignKey(e => e.IssueId).OnDelete(DeleteBehavior.Cascade);
+        b.Navigation(i => i.Comments).UsePropertyAccessMode(PropertyAccessMode.Field);
+        b.Navigation(i => i.Photos).UsePropertyAccessMode(PropertyAccessMode.Field);
+        b.Navigation(i => i.Events).UsePropertyAccessMode(PropertyAccessMode.Field);
+    }
+}
+
+internal sealed class IssueCommentConfiguration : IEntityTypeConfiguration<IssueComment>
+{
+    public void Configure(EntityTypeBuilder<IssueComment> b)
+    {
+        b.ToTable("IssueComments");
+        b.Property(c => c.AuthorName).HasMaxLength(120).IsRequired();
+        b.Property(c => c.Body).HasMaxLength(IssueComment.BodyMax).IsRequired();
+        b.HasIndex(c => new { c.IssueId, c.At });
+    }
+}
+
+internal sealed class IssuePhotoConfiguration : IEntityTypeConfiguration<IssuePhoto>
+{
+    public void Configure(EntityTypeBuilder<IssuePhoto> b)
+    {
+        b.ToTable("IssuePhotos");
+        b.Property(p => p.FileKey).HasMaxLength(200).IsRequired();
+        b.Property(p => p.FileName).HasMaxLength(120).IsRequired();
+        b.Property(p => p.ContentType).HasMaxLength(50).IsRequired();
+        b.Property(p => p.Sha256).HasMaxLength(64).IsFixedLength().IsRequired();
+        b.Property(p => p.UploadedByName).HasMaxLength(120).IsRequired();
+        b.HasIndex(p => new { p.IssueId, p.Sha256 }).IsUnique(); // each photo once per issue
+        b.HasIndex(p => p.FileKey).IsUnique();
+    }
+}
+
+internal sealed class IssueEventConfiguration : IEntityTypeConfiguration<IssueEvent>
+{
+    public void Configure(EntityTypeBuilder<IssueEvent> b)
+    {
+        b.ToTable("IssueEvents");
+        b.Property(e => e.Kind).HasConversion<string>().HasMaxLength(30);
+        b.Property(e => e.ByName).HasMaxLength(120).IsRequired();
+        b.Property(e => e.Note).HasMaxLength(Issue.NoteMax);
+        b.HasIndex(e => new { e.IssueId, e.At });
+    }
+}
+
+internal sealed class ContractorConfiguration : IEntityTypeConfiguration<Contractor>
+{
+    public void Configure(EntityTypeBuilder<Contractor> b)
+    {
+        b.ToTable("Contractors");
+        b.Property(c => c.Name).HasMaxLength(Contractor.NameMax).IsRequired();
+        b.Property(c => c.Trade).HasMaxLength(Contractor.TradeMax).IsRequired();
+        b.Property(c => c.Phone).HasMaxLength(20).IsRequired();
+        b.Property(c => c.Email).HasMaxLength(Contractor.EmailMax);
+        b.Property(c => c.Notes).HasMaxLength(Contractor.NotesMax);
+        b.HasIndex(c => new { c.OwnerId, c.Name });
+        b.HasQueryFilter(c => !c.IsDeleted);
+    }
+}
+
+internal sealed class InspectionConfiguration : IEntityTypeConfiguration<Inspection>
+{
+    public void Configure(EntityTypeBuilder<Inspection> b)
+    {
+        b.ToTable("Inspections");
+        b.Property(i => i.LeaseNumber).HasMaxLength(20).IsRequired();
+        b.Property(i => i.Kind).HasConversion<string>().HasMaxLength(20);
+        b.Property(i => i.Status).HasConversion<string>().HasMaxLength(20);
+        b.Property(i => i.GeneralNotes).HasMaxLength(Inspection.NotesMax);
+        b.Property(i => i.CompletedByName).HasMaxLength(120);
+        b.Property(i => i.TenantComment).HasMaxLength(Inspection.CommentMax);
+        b.Property(i => i.RowVersion).IsRowVersion();
+
+        b.HasIndex(i => new { i.LeaseNumber, i.Kind }).IsUnique(); // one move-in and one move-out per lease
+        b.HasIndex(i => new { i.TenantId, i.Status });
+        b.HasOne<Lease>().WithMany().HasForeignKey(i => i.LeaseId).OnDelete(DeleteBehavior.Restrict);
+
+        b.HasMany(i => i.Items).WithOne().HasForeignKey(x => x.InspectionId).OnDelete(DeleteBehavior.Cascade);
+        b.Navigation(i => i.Items).UsePropertyAccessMode(PropertyAccessMode.Field);
+    }
+}
+
+internal sealed class InspectionItemConfiguration : IEntityTypeConfiguration<InspectionItem>
+{
+    public void Configure(EntityTypeBuilder<InspectionItem> b)
+    {
+        b.ToTable("InspectionItems");
+        b.Property(x => x.Area).HasMaxLength(Inspection.AreaMax).IsRequired();
+        b.Property(x => x.Condition).HasConversion<string>().HasMaxLength(20);
+        b.Property(x => x.Notes).HasMaxLength(Inspection.NotesMax);
+        b.HasIndex(x => new { x.InspectionId, x.Area }).IsUnique();
+        b.HasMany(x => x.Photos).WithOne().HasForeignKey(p => p.InspectionItemId).OnDelete(DeleteBehavior.Cascade);
+        b.Navigation(x => x.Photos).UsePropertyAccessMode(PropertyAccessMode.Field);
+    }
+}
+
+internal sealed class InspectionPhotoConfiguration : IEntityTypeConfiguration<InspectionPhoto>
+{
+    public void Configure(EntityTypeBuilder<InspectionPhoto> b)
+    {
+        b.ToTable("InspectionPhotos");
+        b.Property(p => p.FileKey).HasMaxLength(200).IsRequired();
+        b.Property(p => p.FileName).HasMaxLength(120).IsRequired();
+        b.Property(p => p.ContentType).HasMaxLength(50).IsRequired();
+        b.Property(p => p.Sha256).HasMaxLength(64).IsFixedLength().IsRequired();
+        b.HasIndex(p => p.FileKey).IsUnique();
     }
 }
