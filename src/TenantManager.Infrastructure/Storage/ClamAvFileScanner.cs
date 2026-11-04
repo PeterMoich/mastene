@@ -50,11 +50,22 @@ public sealed class ClamAvFileScanner(IOptions<ScanningOptions> options, ILogger
         if (reply.EndsWith("OK", StringComparison.Ordinal)) return true;
         if (reply.EndsWith("FOUND", StringComparison.Ordinal))
         {
-            logger.LogWarning("Upload refused by the virus scanner: {Reply}", reply);
+            logger.LogWarning("Upload refused by the virus scanner: {Reply}", ForLog(reply));
             return false;
         }
-        logger.LogError("Unexpected reply from clamd: {Reply}", reply);
+        logger.LogError("Unexpected reply from clamd: {Reply}", ForLog(reply));
         throw Unavailable();
+    }
+
+    /// <summary>
+    /// The reply comes from another process, so it is made safe before it is logged: one line, printable
+    /// characters only, at most 200 of them. A reply can't forge extra log entries or flood the log.
+    /// </summary>
+    public static string ForLog(string reply)
+    {
+        var oneLine = reply.Replace("\r", " ", StringComparison.Ordinal).Replace("\n", " ", StringComparison.Ordinal);
+        var printable = new string(oneLine.Where(c => !char.IsControl(c)).Take(200).ToArray());
+        return printable.Length < oneLine.Length ? printable + "…" : printable;
     }
 
     /// <summary>The clamd INSTREAM protocol: "zINSTREAM\0", length-prefixed chunks, a zero length, then one reply.</summary>

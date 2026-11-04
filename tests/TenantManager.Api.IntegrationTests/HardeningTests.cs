@@ -192,6 +192,15 @@ public class ClamAvScannerTests
     }
 
     [Fact]
+    public void A_scanner_reply_is_made_safe_before_it_is_logged()
+    {
+        ClamAvFileScanner.ForLog("stream: Eicar FOUND\n{\"@l\":\"Information\",\"@mt\":\"forged\"}\u0007")
+            .ShouldBe("stream: Eicar FOUND {\"@l\":\"Information\",\"@mt\":\"forged\"}…");
+        ClamAvFileScanner.ForLog(new string('x', 500)).Length.ShouldBe(201);
+        ClamAvFileScanner.ForLog("stream: OK").ShouldBe("stream: OK");
+    }
+
+    [Fact]
     public async Task An_unreachable_scanner_fails_closed()
     {
         var listener = new TcpListener(IPAddress.Loopback, 0);
