@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [master]
+    branches: [master, 'phase-*']
   pull_request:
 
 permissions:
@@ -143,6 +143,16 @@ jobs:
           assert names == ["Jacaranda Court", "Marula Gardens"], names
           print(f"::notice title=Smoke test::Signed in as the demo landlord via nginx; saw {names}")
           PY
+          # The tenant can download their seeded lease PDF; it was stored in Azurite by the migrator.
+          curl -sf http://localhost:4200/api/v1/auth/login -H 'Content-Type: application/json' \
+            -d "{\"email\":\"sipho.dlamini@example.com\",\"password\":\"$SEED_PASSWORD\"}" > tenant.json
+          ttoken=$(python3 -c "import json;print(json.load(open('tenant.json'))['accessToken'])")
+          curl -sf http://localhost:4200/api/v1/leases -H "Authorization: Bearer $ttoken" > leases.json
+          lease=$(python3 -c "import json;d=json.load(open('leases.json'));assert d['totalCount']==1,d;print(d['items'][0]['id'])")
+          curl -sf http://localhost:4200/api/v1/leases/$lease -H "Authorization: Bearer $ttoken" > lease.json
+          doc=$(python3 -c "import json;d=json.load(open('lease.json'));assert d['status']=='Active',d['status'];print(d['documents'][-1]['id'])")
+          curl -sf http://localhost:4200/api/v1/leases/$lease/documents/$doc -H "Authorization: Bearer $ttoken" -o lease.pdf
+          head -c 5 lease.pdf | grep -q '%PDF-' && echo "::notice title=Smoke test::Tenant downloaded their signed lease PDF ($(stat -c %s lease.pdf) bytes) from Azurite via nginx"
           curl -sf http://localhost:4200/ | grep -q "<app-root" && echo "Web app is served"
           curl -sf http://localhost:5080/health/ready && echo " API is ready"
       - name: Show container logs on failure

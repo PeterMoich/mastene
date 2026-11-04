@@ -10,6 +10,11 @@ x-api-env: &api-env
   Seed__Password: ${SEED_PASSWORD:?Set SEED_PASSWORD in .env (copy .env.example)}
   Database__MigrateOnStartup: "false"
   ReverseProxy__Enabled: "true"
+  # Documents go to Azurite, the Azure Blob emulator. The account key below is Azurite's public,
+  # documented development key, not a secret. Switching to real Azure Storage is a config change.
+  Storage__Provider: AzureBlob
+  Storage__Container: documents
+  Storage__AzureConnectionString: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
 
 services:
   sqlserver:
@@ -26,11 +31,12 @@ services:
       retries: 12
       start_period: 20s
 
-  # Azure Blob emulator. Not used until document uploads arrive in Phase 2-3.
+  # Azure Blob emulator: stores lease PDFs (and, from Phase 3, proof of payment).
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     command: azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck
     ports: ["10000:10000"]
+    volumes: [blobdata:/data]
 
   # Applies migrations and loads synthetic demo data, then exits.
   migrator:
@@ -39,16 +45,23 @@ services:
       dockerfile: docker/api.Dockerfile
     image: tenant-manager-api:local
     command: ["migrate"]
-    environment: *api-env
+    environment:
+      <<: *api-env
+      Jobs__Enabled: "false"
     depends_on:
       sqlserver:
         condition: service_healthy
+      azurite:
+        condition: service_started
     restart: "no"
 
   api:
     image: tenant-manager-api:local
     pull_policy: never
-    environment: *api-env
+    environment:
+      <<: *api-env
+      # Hangfire runs the daily lease checks at 00:15 South African time.
+      Jobs__Enabled: "true"
     ports: ["5080:8080"]
     depends_on:
       migrator:
@@ -65,3 +78,4 @@ services:
 
 volumes:
   sqldata:
+  blobdata:
