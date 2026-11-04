@@ -21,6 +21,7 @@ public sealed class AuditingInterceptor(ICurrentUser currentUser, IClock clock) 
     private static readonly HashSet<string> SkippedFields =
     [
         nameof(Entity.CreatedAt), nameof(Entity.CreatedBy), nameof(Entity.UpdatedAt), nameof(Entity.UpdatedBy),
+        "RowVersion",
     ];
 
     private static readonly JsonSerializerOptions Json = new()

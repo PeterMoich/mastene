@@ -12,4 +12,4 @@ QuestPDF under its Community licence, behind an `IPdfRenderer` interface. Layout
 
 ## Consequences
 
-Rendering is testable (render to bytes and assert on the text). Not yet used in Phase 1.
+Rendering is testable: the integration tests extract the PDF text with PdfPig and check the parties, amounts and signature record. Implemented in Phase 2 (`QuestPdfLeaseRenderer`, template `v0-test`); receipts follow in Phase 3.

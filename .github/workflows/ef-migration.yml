@@ -23,6 +23,12 @@ jobs:
         run: |
           rc=0; dotnet build TenantManager.slnx --disable-build-servers -clp:NoSummary > build.log 2>&1 || rc=$?
           cat build.log; exit $rc
+      - name: Report resolved package versions (for pinning floating versions)
+        if: always()
+        run: |
+          dotnet list TenantManager.slnx package > packages.txt 2>&1 || true
+          msg=$(grep -E '^\s+>' packages.txt | awk '{print $2" "$NF}' | sort -u | sed ':a;N;$!ba;s/\n/%0A/g')
+          echo "::notice title=Packages::$msg"
       - name: Report build errors
         if: failure()
         run: |

@@ -18,8 +18,11 @@ interface NavItem {
 const NAV: NavItem[] = [
   { path: '/properties', label: 'Properties', icon: 'apartment', roles: ['Landlord'] },
   { path: '/tenants', label: 'Tenants', icon: 'group', roles: ['Landlord'] },
+  { path: '/leases', label: 'Leases', icon: 'contract', roles: ['Landlord'] },
   { path: '/my-details', label: 'My details', icon: 'person', roles: ['Tenant'] },
+  { path: '/leases', label: 'My leases', icon: 'contract', roles: ['Tenant'] },
   { path: '/users', label: 'Users', icon: 'manage_accounts', roles: ['Admin'] },
+  { path: '/settings', label: 'Settings', icon: 'settings', roles: ['Admin'] },
 ];
 
 @Component({
@@ -50,7 +53,7 @@ const NAV: NavItem[] = [
       <mat-sidenav mode="side" opened class="nav">
         <nav aria-label="Main">
           <mat-nav-list>
-            @for (item of items(); track item.path) {
+            @for (item of items(); track item.label) {
               <a mat-list-item [routerLink]="item.path" routerLinkActive #rla="routerLinkActive"
                  [activated]="rla.isActive" [attr.aria-current]="rla.isActive ? 'page' : null">
                 <mat-icon matListItemIcon aria-hidden="true">{{ item.icon }}</mat-icon>

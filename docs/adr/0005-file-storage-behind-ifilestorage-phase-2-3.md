@@ -12,4 +12,4 @@ An `IFileStorage` interface with a local-disk implementation for development and
 
 ## Consequences
 
-Moving to Azure is a configuration change. Azurite already runs in docker-compose.
+Moving to Azure is a configuration change. Implemented in Phase 2: docker-compose uses `AzureBlobFileStorage` against Azurite (the CI smoke test downloads a lease PDF from it), and tests and `dotnet run` use `LocalFileStorage`. Uploads with type, size and virus-scan checks arrive with proof of payment in Phase 3.

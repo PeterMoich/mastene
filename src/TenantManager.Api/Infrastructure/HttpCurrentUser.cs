@@ -17,6 +17,11 @@ public sealed class HttpCurrentUser(IHttpContextAccessor accessor) : ICurrentUse
     public string? CorrelationId =>
         Activity.Current?.TraceId.ToString() ?? accessor.HttpContext?.TraceIdentifier;
 
+    public string? DisplayName => Principal?.FindFirst(AppClaims.Name)?.Value;
+
+    /// <summary>Behind nginx this is the client's address (forwarded headers are applied first).</summary>
+    public string? IpAddress => accessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+
     private Guid? ReadGuid(string claim) =>
         Guid.TryParse(Principal?.FindFirst(claim)?.Value, out var id) ? id : null;
 }

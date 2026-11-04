@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using TenantManager.Application.Abstractions;
 using TenantManager.Domain.Auditing;
 using TenantManager.Domain.Common;
+using TenantManager.Domain.Leases;
 using TenantManager.Domain.Properties;
+using TenantManager.Domain.Settings;
 using TenantManager.Domain.Tenants;
 using TenantManager.Infrastructure.Identity;
 
@@ -19,11 +21,58 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Lease> Leases => Set<Lease>();
+    public DbSet<BusinessSettings> Settings => Set<BusinessSettings>();
+
+    public async Task<string> NextLeaseNumberAsync(DateOnly today, CancellationToken cancellationToken)
+    {
+        // Not composed with LINQ: SQL Server doesn't allow NEXT VALUE FOR inside a derived table.
+        var values = await Database
+            .SqlQuery<long>($"SELECT NEXT VALUE FOR [dbo].[LeaseNumbers] AS [Value]")
+            .ToListAsync(cancellationToken);
+        return $"L{today.Year}-{values.Single():D4}";
+    }
+
+    public async Task<T> InLockedTransactionAsync<T>(IEnumerable<string> lockKeys,
+        Func<CancellationToken, Task<T>> work, CancellationToken cancellationToken)
+    {
+        // Sorted so two requests that need the same locks always take them in the same order (no deadlock).
+        var keys = lockKeys.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToList();
+        var attempt = 0;
+        var strategy = Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
+            if (attempt++ > 0) ChangeTracker.Clear(); // a retry starts from fresh data
+            await using var transaction = await Database.BeginTransactionAsync(cancellationToken);
+            foreach (var key in keys)
+            {
+                try
+                {
+                    await Database.ExecuteSqlInterpolatedAsync($"""
+                        DECLARE @result int;
+                        EXEC @result = sp_getapplock @Resource = {key}, @LockMode = 'Exclusive',
+                            @LockOwner = 'Transaction', @LockTimeout = 15000;
+                        IF @result < 0 THROW 51001, N'Timed out waiting for a lock.', 1;
+                        """, cancellationToken);
+                }
+                catch (SqlException ex) when (ex.Number == 51001)
+                {
+                    throw new DomainRuleException("busy",
+                        "Someone else is changing this record right now. Please try again.", RuleKind.Conflict);
+                }
+            }
+
+            var result = await work(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return result;
+        });
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        builder.HasSequence<long>("LeaseNumbers").StartsAt(1);
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -42,6 +91,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         try
         {
             return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new DomainRuleException("concurrency",
+                "This record was changed by someone else. Reload it and try again.", RuleKind.Conflict);
         }
         catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 2601 or 2627 })
         {
