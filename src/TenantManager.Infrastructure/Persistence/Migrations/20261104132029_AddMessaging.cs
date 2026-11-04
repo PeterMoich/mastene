@@ -11,12 +11,13 @@ namespace TenantManager.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Matches BusinessSettings.DefaultRentReminderDaysBefore for the existing settings row.
             migrationBuilder.AddColumn<int>(
                 name: "RentReminderDaysBefore",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 3);
 
             migrationBuilder.CreateTable(
                 name: "Consents",

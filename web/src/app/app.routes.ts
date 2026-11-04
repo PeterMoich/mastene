@@ -74,6 +74,24 @@ export const routes: Routes = [
         loadComponent: () => import('./features/inspections/inspections').then((m) => m.InspectionDetail),
       },
       {
+        path: 'messages',
+        canActivate: [roleGuard('Landlord')],
+        title: 'Messages · Tenant Manager',
+        loadComponent: () => import('./features/messages/messages').then((m) => m.MessagesPage),
+      },
+      {
+        path: 'messages/:tenantId',
+        canActivate: [roleGuard('Landlord')],
+        title: 'Messages · Tenant Manager',
+        loadComponent: () => import('./features/messages/messages').then((m) => m.MessagesPage),
+      },
+      {
+        path: 'my-messages',
+        canActivate: [roleGuard('Tenant')],
+        title: 'Messages · Tenant Manager',
+        loadComponent: () => import('./features/messages/messages').then((m) => m.MyMessages),
+      },
+      {
         path: 'settings',
         canActivate: [roleGuard('Admin')],
         title: 'Settings · Tenant Manager',

@@ -19,6 +19,8 @@ namespace TenantManager.Api.IntegrationTests;
 public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     public const string SeedPassword = "Integration-Test-Pass-1";
+    public const string WhatsAppSecret = "integration-tests-whatsapp-app-secret";
+    public const string WhatsAppVerifyToken = "integration-tests-verify-token";
 
     public static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
     {
@@ -53,6 +55,9 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         Environment.SetEnvironmentVariable("Storage__Provider", "Local");
         Environment.SetEnvironmentVariable("Storage__LocalPath", FilesPath);
         Environment.SetEnvironmentVariable("Jobs__Enabled", "false"); // tests call the lease checks endpoint instead
+        Environment.SetEnvironmentVariable("WhatsApp__Provider", "Fake");
+        Environment.SetEnvironmentVariable("WhatsApp__AppSecret", WhatsAppSecret);
+        Environment.SetEnvironmentVariable("WhatsApp__VerifyToken", WhatsAppVerifyToken);
 
         _ = Server; // start the host now so migrations run once, before any test
     }
