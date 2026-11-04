@@ -46,7 +46,22 @@ function lease(overrides: Partial<Lease> = {}): Lease {
 
 describe('LeaseDetail', () => {
   const role = signal<Role>('Tenant');
-  const api = { getLease: vi.fn(), signLease: vi.fn() };
+  const api = {
+    getLease: vi.fn(),
+    signLease: vi.fn(),
+    getDeposit: vi.fn(() =>
+      of({
+        leaseNumber: 'L2026-0007', amountAgreed: 6500, amountReceived: 0, receivedOn: null, status: 'AwaitingPayment',
+        deductions: [], totalDeducted: 0, remaining: 0, amountRefunded: 0, refundedOn: null, leaseHasEnded: false,
+        leaseEndedOn: null, refundDueBy: null, allowedActions: [],
+      }),
+    ),
+    getLedger: vi.fn(() =>
+      of({ leaseId: 'l1', leaseNumber: 'L2026-0007', version: 1, totalDue: 0, totalPaid: 0, balance: 0, arrears: 0,
+           credit: 0, graceDays: 3, lines: [] }),
+    ),
+    listPayments: vi.fn(() => of({ items: [], page: 1, pageSize: 100, totalCount: 0 })),
+  };
   const dialog = { open: vi.fn(() => ({ afterClosed: () => of(true) })) };
 
   async function render(data: Lease) {

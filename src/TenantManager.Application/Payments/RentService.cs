@@ -8,9 +8,10 @@ using TenantManager.Domain.Payments;
 
 namespace TenantManager.Application.Payments;
 
+/// <param name="OverdueNoticeOn">When the overdue reminder was recorded (BR08); sent to the tenant from Phase 5.</param>
 public sealed record LedgerLineDto(
     string Period, decimal AmountDue, DateOnly DueDate, int DaysCharged, bool Prorated, decimal Paid,
-    decimal Outstanding, ChargeState State);
+    decimal Outstanding, ChargeState State, DateOnly? OverdueNoticeOn);
 
 /// <param name="Balance">Charged minus paid. Negative means the tenant is in credit.</param>
 /// <param name="Arrears">Unpaid amount on charges past their due date plus the grace period.</param>
@@ -45,7 +46,7 @@ public sealed class RentService(IApplicationDbContext db, ICurrentUser user, ICl
             var charge = byId[l.ChargeId];
             var daysInMonth = charge.BillingPeriod.DaysInMonth;
             return new LedgerLineDto(l.Period, l.AmountDue, l.DueDate, charge.DaysCharged,
-                charge.DaysCharged < daysInMonth, l.Paid, l.Outstanding, l.State);
+                charge.DaysCharged < daysInMonth, l.Paid, l.Outstanding, l.State, charge.OverdueNoticeOn);
         }).ToList();
 
         return new LedgerDto(lease.Id, lease.LeaseNumber, lease.Version, result.TotalDue, result.TotalPaid,

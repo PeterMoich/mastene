@@ -14,33 +14,35 @@ namespace TenantManager.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateSequence(
                 name: "ReceiptNumbers");
 
+            // Hand-edited: existing settings rows get the Phase 3 defaults (EF would have used 0 and false,
+            // and "rent due on day 0" is invalid). The model itself has no database defaults.
             migrationBuilder.AddColumn<int>(
                 name: "DepositRefundDays",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 14);
 
             migrationBuilder.AddColumn<bool>(
                 name: "ProrateRent",
                 table: "Settings",
                 type: "bit",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
 
             migrationBuilder.AddColumn<int>(
                 name: "RentDueDay",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 1);
 
             migrationBuilder.AddColumn<int>(
                 name: "RentGraceDays",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 3);
 
             migrationBuilder.CreateTable(
                 name: "Deposits",

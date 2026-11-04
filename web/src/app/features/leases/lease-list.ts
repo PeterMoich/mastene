@@ -174,13 +174,14 @@ export class LeaseList {
     try {
       const r = await firstValueFrom(this.api.runLeaseChecks());
       const changes =
-        r.activated + r.markedExpiring + r.noticesRecorded + r.movedToMonthToMonth + r.ended + r.terminated;
+        r.activated + r.markedExpiring + r.noticesRecorded + r.movedToMonthToMonth + r.ended + r.terminated +
+        r.chargesRaised + r.overdueNoticesRecorded;
       this.snack.open(
         changes === 0
           ? 'Daily checks done: nothing needed changing.'
           : `Daily checks done: ${r.activated} started (${r.renewed} renewals), ${r.markedExpiring} expiring, ` +
-              `${r.noticesRecorded} notices, ${r.movedToMonthToMonth} month to month, ${r.ended} ended, ` +
-              `${r.terminated} terminated.`,
+              `${r.noticesRecorded} expiry notices, ${r.movedToMonthToMonth} month to month, ${r.ended} ended, ` +
+              `${r.terminated} terminated, ${r.chargesRaised} rent charges, ${r.overdueNoticesRecorded} overdue reminders.`,
         'Close',
         { duration: 8000 },
       );
