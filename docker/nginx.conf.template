@@ -1,5 +1,13 @@
 # Serves the Angular app and proxies /api to the API container, so the browser only ever
-# talks to one origin (no CORS needed).
+# talks to one origin (no CORS needed). A template: ${API_UPSTREAM} is filled in when the container
+# starts (http://api:8080 in docker compose, http://localhost:5080 for the sidecar in Azure App Service).
+
+# Behind Azure's front end TLS ends before nginx, so keep the original scheme it reports.
+map $http_x_forwarded_proto $forwarded_proto {
+    default $http_x_forwarded_proto;
+    ""      $scheme;
+}
+
 server {
     listen 8080;
     server_name _;
@@ -11,27 +19,32 @@ server {
     include /etc/nginx/snippets/security-headers.conf;
 
     location /api/ {
-        proxy_pass http://api:8080;
+        proxy_pass ${API_UPSTREAM};
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Proto $forwarded_proto;
     }
 
     # Hangfire's dashboard (Admin only, signed in by a ticket from the API). It is a server-rendered page
     # with inline scripts, so it gets its own, looser script policy; everything else stays strict.
     location /hangfire {
-        proxy_pass http://api:8080;
+        proxy_pass ${API_UPSTREAM};
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Proto $forwarded_proto;
         add_header X-Content-Type-Options "nosniff" always;
         add_header X-Frame-Options "DENY" always;
         add_header Referrer-Policy "no-referrer" always;
         add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
     }
 
+    # Liveness and readiness, for Azure App Service's health check and the compose smoke test.
+    location /health/ {
+        proxy_pass ${API_UPSTREAM};
+    }
+
     location /swagger {
-        proxy_pass http://api:8080;
+        proxy_pass ${API_UPSTREAM};
         proxy_set_header Host $host;
     }
 

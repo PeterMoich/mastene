@@ -115,6 +115,22 @@ jobs:
           queries: security-extended
       - uses: github/codeql-action/analyze@v4
 
+  infra:
+    name: Bicep build and lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Compile and lint the Azure templates (no Azure account needed)
+        run: |
+          az bicep install > /dev/null
+          rc=0; az bicep build --file infra/main.bicep --stdout > main.json 2> bicep.log || rc=$?
+          cat bicep.log
+          if [ $rc -ne 0 ]; then echo "::error title=Bicep build failed::$(sed ':a;N;$!ba;s/%/%25/g;s/\n/%0A/g' bicep.log)"; exit $rc; fi
+          az bicep lint --file infra/main.bicep 2>&1 | tee lint.log
+          if grep -qi "error" lint.log; then echo "::error title=Bicep lint::$(grep -i error lint.log | head -20 | sed ':a;N;$!ba;s/%/%25/g;s/\n/%0A/g')"; exit 1; fi
+          echo "::notice title=Bicep::$(python3 -c "import json;print(len(json.load(open('main.json'))['resources']),'top-level resources compile')")"
+
   smoke:
     name: docker compose smoke test
     runs-on: ubuntu-24.04
@@ -174,6 +190,15 @@ jobs:
           python3 -c "import json;t=json.load(open('thread.json'));assert t['inServiceWindow'] and t['consent']['granted'],t;assert t['messages'][-1]['body']=='Smoke test reply'"
           code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:4200/api/v1/webhooks/whatsapp -H 'Content-Type: application/json' -d '{"entry":[]}')
           [ "$code" = "401" ] && echo "::notice title=Smoke test::WhatsApp thread works; unsigned webhook refused ($code)"
+          # Phase 6: the refresh token is a cookie (never in the body) and refreshes through nginx;
+          # the tenant downloads their own data.
+          curl -sf -c jar.txt http://localhost:4200/api/v1/auth/login -H 'Content-Type: application/json' \
+            -d "{\"email\":\"sipho.dlamini@example.com\",\"password\":\"$SEED_PASSWORD\"}" > session.json
+          python3 -c "import json;d=json.load(open('session.json'));assert 'refreshToken' not in d,d"
+          grep -q tm_refresh jar.txt
+          curl -sf -b jar.txt -X POST http://localhost:4200/api/v1/auth/refresh -H 'X-Requested-With: TenantManager' > refreshed.json
+          curl -sf "http://localhost:4200/api/v1/tenants/$sipho/export" -H "Authorization: Bearer $ttoken" -o export.zip
+          python3 -c "import zipfile;z=zipfile.ZipFile('export.zip');assert 'tenant.json' in z.namelist();print('::notice title=Smoke test::Refresh cookie works through nginx; tenant export has',len(z.namelist()),'files')"
           # Security headers on the page itself and on the bundles, not just on API responses.
           curl -sfI http://localhost:4200/ | grep -i "content-security-policy" | grep -q "blob:"
           js=$(curl -sf http://localhost:4200/ | grep -oE 'main-[A-Za-z0-9]+\.js' | head -1)
@@ -193,7 +218,7 @@ jobs:
 
   images:
     name: Docker images
-    needs: [backend, frontend, codeql, smoke]
+    needs: [backend, frontend, codeql, infra, smoke]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:

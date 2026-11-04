@@ -53,7 +53,8 @@ if (builder.Configuration.GetValue<bool>("ReverseProxy:Enabled"))
     builder.Services.Configure<ForwardedHeadersOptions>(o =>
     {
         o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-        o.ForwardLimit = 1;
+        // One hop (nginx) in compose; two in Azure App Service (its front end, then nginx).
+        o.ForwardLimit = builder.Configuration.GetValue("ReverseProxy:ForwardLimit", 1);
         o.KnownIPNetworks.Clear();
         o.KnownProxies.Clear();
         foreach (var cidr in networks) o.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(cidr));

@@ -1,0 +1,92 @@
+name: deploy
+# Blue-green release to Azure App Service (ADR-0017). Runs after CI passes on master, or by hand.
+# A failing test or scan never reaches here: CI must succeed first, and the images it built are the
+# ones deployed (tagged with the commit sha).
+#
+# Needs (repository settings, see docs/operations.md):
+#   secrets  AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID  (OIDC federated credential, no password)
+#   vars     AZURE_RESOURCE_GROUP, AZURE_SITE_NAME
+# Without them the job is skipped, so forks and unconfigured repos stay green.
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Commit sha whose images to deploy (defaults to the latest master build)
+        required: false
+
+permissions:
+  contents: read
+  id-token: write # OIDC sign-in to Azure
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: >-
+      vars.AZURE_SITE_NAME != '' &&
+      (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    environment: production # add required reviewers here for a manual approval gate
+    env:
+      RG: ${{ vars.AZURE_RESOURCE_GROUP }}
+      SITE: ${{ vars.AZURE_SITE_NAME }}
+      SHA: ${{ inputs.sha || github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Point the staging slot at this release's images
+        run: |
+          base="/subscriptions/$(az account show --query id -o tsv)/resourceGroups/$RG/providers/Microsoft.Web/sites/$SITE/slots/staging/sitecontainers"
+          for c in api web; do
+            body=$(az rest --method get --uri "$base/$c?api-version=2024-04-01" \
+              | jq --arg img "ghcr.io/petermoich/mastene-$c:$SHA" '{properties: (.properties | .image = $img)}')
+            az rest --method put --uri "$base/$c?api-version=2024-04-01" --body "$body" > /dev/null
+            echo "staging $c -> mastene-$c:$SHA"
+          done
+          az webapp restart -g "$RG" -n "$SITE" --slot staging
+
+      - name: Wait for staging to be ready (the new code applies database migrations here)
+        run: |
+          host=$(az webapp show -g "$RG" -n "$SITE" --slot staging --query defaultHostName -o tsv)
+          echo "STAGING=https://$host" >> "$GITHUB_ENV"
+          for i in $(seq 1 60); do
+            if curl -sf "https://$host/health/ready" > /dev/null; then echo "staging is ready"; exit 0; fi
+            sleep 10
+          done
+          echo "::error title=Staging not ready::/health/ready did not return 200 within 10 minutes"; exit 1
+
+      - name: Smoke test staging
+        run: |
+          curl -sf "$STAGING/" | grep -q "<app-root"
+          curl -sfI "$STAGING/" | grep -i "content-security-policy" > /dev/null
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$STAGING/api/v1/properties")
+          [ "$code" = "401" ] || { echo "::error::expected 401 from an unauthenticated API call, got $code"; exit 1; }
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$STAGING/api/v1/webhooks/whatsapp" -d '{}')
+          [ "$code" = "401" ] || { echo "::error::expected the unsigned webhook to be refused, got $code"; exit 1; }
+
+      - name: Swap staging into production
+        run: az webapp deployment slot swap -g "$RG" -n "$SITE" --slot staging --target-slot production
+
+      - name: Check production, and swap back if it isn't healthy
+        run: |
+          host=$(az webapp show -g "$RG" -n "$SITE" --query defaultHostName -o tsv)
+          for i in $(seq 1 30); do
+            if curl -sf "https://$host/health/ready" > /dev/null; then
+              echo "::notice title=Released::mastene $SHA is live at https://$host"; exit 0
+            fi
+            sleep 10
+          done
+          echo "::error title=Rolled back::production was not healthy after the swap; swapping back"
+          az webapp deployment slot swap -g "$RG" -n "$SITE" --slot staging --target-slot production
+          exit 1

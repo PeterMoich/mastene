@@ -28,6 +28,7 @@ const NAV: NavItem[] = [
   { path: '/issues', label: 'My issues', icon: 'build', roles: ['Tenant'] },
   { path: '/my-messages', label: 'Messages', icon: 'chat', roles: ['Tenant'] },
   { path: '/users', label: 'Users', icon: 'manage_accounts', roles: ['Admin'] },
+  { path: '/privacy', label: 'Privacy requests', icon: 'shield_person', roles: ['Admin'] },
   { path: '/settings', label: 'Settings', icon: 'settings', roles: ['Admin'] },
 ];
 

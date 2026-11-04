@@ -1,0 +1,39 @@
+name: infra
+# Creates or updates every Azure resource from infra/main.bicep (ADR-0017). Run by hand.
+# Needs the same OIDC secrets and vars as deploy.yml, plus secrets SQL_ADMIN_PASSWORD, JWT_SIGNING_KEY
+# and (for the demo data) SEED_PASSWORD; optional ALERT_EMAIL var.
+on:
+  workflow_dispatch:
+    inputs:
+      what_if:
+        description: Only show what would change
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  provision:
+    runs-on: ubuntu-24.04
+    environment: production
+    steps:
+      - uses: actions/checkout@v5
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy infra/main.bicep
+        env:
+          RG: ${{ vars.AZURE_RESOURCE_GROUP }}
+          SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
+          JWT_SIGNING_KEY: ${{ secrets.JWT_SIGNING_KEY }}
+          SEED_PASSWORD: ${{ secrets.SEED_PASSWORD }}
+          ALERT_EMAIL: ${{ vars.ALERT_EMAIL }}
+        run: |
+          mode=create; [ "${{ inputs.what_if }}" = "true" ] && mode=what-if
+          az deployment group $mode -g "$RG" -f infra/main.bicep -p infra/main.parameters.json \
+            -p sqlAdminPassword="$SQL_ADMIN_PASSWORD" jwtSigningKey="$JWT_SIGNING_KEY" \
+               seedPassword="$SEED_PASSWORD" alertEmail="$ALERT_EMAIL"

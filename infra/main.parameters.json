@@ -1,0 +1,13 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": { "value": "mastene" },
+    "environmentName": { "value": "prod" },
+    "apiImage": { "value": "ghcr.io/petermoich/mastene-api:latest" },
+    "webImage": { "value": "ghcr.io/petermoich/mastene-web:latest" },
+    "planSku": { "value": "P0v3" },
+    "seedDemoData": { "value": true },
+    "whatsAppProvider": { "value": "Fake" }
+  }
+}

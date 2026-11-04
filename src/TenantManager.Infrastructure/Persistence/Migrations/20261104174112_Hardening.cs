@@ -17,12 +17,13 @@ namespace TenantManager.Infrastructure.Persistence.Migrations
                 type: "datetimeoffset",
                 nullable: true);
 
+            // Matches BusinessSettings.DefaultRetentionYears (LEGAL REVIEW NEEDED) for the existing settings row.
             migrationBuilder.AddColumn<int>(
                 name: "RetentionYearsAfterLeaseEnd",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 5);
 
             migrationBuilder.CreateTable(
                 name: "DataProtectionKeys",

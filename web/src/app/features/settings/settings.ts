@@ -24,7 +24,7 @@ import { applyServerErrors, errorMessage, ProblemDetails } from '../../core/prob
     @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
     <p>
       <button mat-stroked-button type="button" (click)="openJobs()">Open the background jobs dashboard</button>
-      <span class="hint"> Reminders, the daily lease run and message sending. Opens in a new tab; the link works once.</span>
+      <span class="hint"> Reminders, the daily lease run and message sending. Opens in a new tab; the link is valid for two minutes.</span>
     </p>
     <mat-card appearance="outlined" class="card">
       <mat-card-content>
@@ -130,6 +130,14 @@ import { applyServerErrors, errorMessage, ProblemDetails } from '../../core/prob
             <mat-hint>0 sends it on the due day. Only tenants who agreed to WhatsApp messages get reminders.</mat-hint>
             <mat-error>{{ message('rentReminderDaysBefore') }}</mat-error>
           </mat-form-field>
+          <h2>Privacy</h2>
+          <mat-form-field>
+            <mat-label>Keep a former tenant's details after their last lease ends</mat-label>
+            <input matInput type="number" formControlName="retentionYearsAfterLeaseEnd" min="0" max="30" required />
+            <span matTextSuffix>years</span>
+            <mat-hint>{{ legal('retentionYearsAfterLeaseEnd') }} Erasure is refused before then (Privacy requests page).</mat-hint>
+            <mat-error>{{ message('retentionYearsAfterLeaseEnd') }}</mat-error>
+          </mat-form-field>
           <div class="actions">
             <button mat-flat-button type="submit" [disabled]="busy()">Save settings</button>
           </div>
@@ -187,6 +195,7 @@ export class SettingsPage {
     slaLowResolutionHours: [336, [Validators.required, Validators.min(1), Validators.max(2160)]],
     issueAutoCloseDays: [7, [Validators.required, Validators.min(1), Validators.max(60)]],
     rentReminderDaysBefore: [3, [Validators.required, Validators.min(0), Validators.max(14)]],
+    retentionYearsAfterLeaseEnd: [5, [Validators.required, Validators.min(0), Validators.max(30)]],
   });
 
   constructor() {
@@ -214,6 +223,7 @@ export class SettingsPage {
           slaLowResolutionHours: s.slaLowResolutionHours,
           issueAutoCloseDays: s.issueAutoCloseDays,
           rentReminderDaysBefore: s.rentReminderDaysBefore,
+          retentionYearsAfterLeaseEnd: s.retentionYearsAfterLeaseEnd,
         });
       })
       .catch((e: unknown) => this.error.set(errorMessage(e)));

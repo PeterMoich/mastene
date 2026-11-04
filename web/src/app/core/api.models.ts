@@ -270,6 +270,7 @@ export interface Settings {
   slaLowResolutionHours: number;
   issueAutoCloseDays: number;
   rentReminderDaysBefore: number;
+  retentionYearsAfterLeaseEnd: number;
   /** Field names whose values are placeholders needing legal review. */
   legalReviewNeeded: string[];
 }
@@ -680,4 +681,24 @@ export interface MessageTemplate {
   body: string;
   parameterNames: string[];
   manual: boolean;
+}
+
+// ---- Privacy (Phase 6) ----
+
+export interface PrivacyTenant {
+  id: string;
+  name: string;
+  email: string;
+  isDeleted: boolean;
+  anonymisedAt: string | null;
+  /** Null while a lease is running or if they never had one. */
+  lastLeaseEndedOn: string | null;
+  erasableFrom: string | null;
+  allowedActions: ('export' | 'anonymise')[];
+}
+
+export interface AnonymiseResult {
+  tenantId: string;
+  anonymisedAt: string;
+  kept: string[];
 }
