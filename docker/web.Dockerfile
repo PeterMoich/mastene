@@ -6,7 +6,7 @@ COPY web/ .
 RUN npx ng build --configuration production
 
 # Unprivileged nginx listens on 8080 and runs as a non-root user.
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM nginxinc/nginx-unprivileged:1.31-alpine
 # The nginx image fills in ${API_UPSTREAM} from the environment when it starts (envsubst on /etc/nginx/templates).
 ENV API_UPSTREAM=http://api:8080
 COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
