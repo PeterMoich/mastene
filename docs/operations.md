@@ -19,8 +19,12 @@ releases are in `.github/workflows/`.
 
 1. **Create a resource group** (South Africa North is closest): `az group create -n rg-mastene-prod -l southafricanorth`.
 2. **Let GitHub sign in to Azure without a password (OIDC).** Create an app registration with a federated
-   credential for `repo:PeterMoich/mastene:environment:production`, and give it *Contributor* and *User Access
-   Administrator* (for the Key Vault role assignments) on the resource group.
+   credential whose subject is exactly what GitHub sends, and give it *Contributor* and *User Access
+   Administrator* (for the Key Vault role assignments) on the resource group. For this repository GitHub
+   includes the owner and repository ids:
+   `repo:PeterMoich@60990711/mastene@1444888980:environment:production`. Older repositories use the plain form
+   `repo:PeterMoich/mastene:environment:production`. If the login fails with `AADSTS700213`, the error shows the
+   subject GitHub sent; add a federated credential with exactly that subject.
 3. **In GitHub → Settings → Secrets and variables → Actions** add:
    - secrets: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `SQL_ADMIN_PASSWORD`,
      `JWT_SIGNING_KEY` (e.g. `openssl rand -base64 48`), and `SEED_PASSWORD` if you want the demo data;
