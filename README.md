@@ -4,10 +4,11 @@ A web app for a small South African residential landlord: properties and units, 
 leases, rent and proof of payment, maintenance issues, and WhatsApp messaging.
 It is a portfolio and test project; all data in it is synthetic.
 
-**Status: Phase 3 of 6** — authentication and roles, properties, units and tenants (Phase 1);
-12-month leases with PDF generation, signing, renewals and a daily lifecycle job (Phase 2); and
-rent charges, proof of payment, the rent ledger, receipts and deposits (Phase 3). Issues and
-WhatsApp follow in Phases 4 and 5.
+**Status: Phase 4 of 6** — authentication and roles, properties, units and tenants (Phase 1);
+12-month leases with PDF generation, signing, renewals and a daily lifecycle job (Phase 2);
+rent charges, proof of payment, the rent ledger, receipts and deposits (Phase 3); and maintenance
+issues with photos, contractors, response and resolution targets, and move-in/move-out inspections
+(Phase 4). WhatsApp and reminders follow in Phase 5.
 
 | Layer | Technology |
 | --- | --- |
@@ -56,8 +57,15 @@ The leases come with rent history. Sipho is paid up except this month, and his p
 it is waiting on the landlord's **Payments** page. Lerato paid only part of last month and nothing
 this month, so she is in **arrears**. Every verified payment has a receipt PDF.
 
-To start again from an empty database: `docker compose down -v`. If you ran Phase 1 before, do this
-once so the Phase 2 demo leases are seeded.
+There are maintenance issues at every stage, and three contractors. Sipho's kitchen tap is in
+progress with the plumber. Lerato's geyser was reported 30 hours ago and nobody acknowledged it, so it
+missed its 24-hour response target and is **escalated**. Her gate remote is marked resolved and waits
+for her to confirm it is fixed (or reopen it). Flat 2 is vacant and has the landlord's own painting
+job. Both leases have a completed move-in inspection with photos; Sipho has acknowledged his, Lerato
+hasn't yet. All photos are synthetic coloured blocks.
+
+To start again from an empty database: `docker compose down -v`. A database from an earlier phase
+keeps its data and gets the Phase 4 demo issues, contractors and inspections added on the next start.
 
 ## Develop without Docker
 
@@ -108,8 +116,11 @@ so a failing test points straight at the rule. Covered so far:
 | BR11 — rejection needs a reason; verifying issues a receipt | `ProofOfPaymentTests`, `PaymentApiTests` |
 | BR12 — PDF/JPG/PNG up to 5 MB, typed from the file's bytes, virus-scan hook | `UploadValidatorTests`, `PaymentApiTests` |
 | BR13 — deposit kept apart from rent; deductions with reasons, never more than held | `DepositTests`, `PaymentApiTests` |
+| BR12 (photos) — JPG/PNG up to 5 MB, at most five per issue or per inspection area | `IssueTests`, `InspectionTests`, `IssueApiTests`, `InspectionApiTests` |
+| BR14 — issue flow Open → Acknowledged → In progress → Resolved → Closed, timestamped; only the tenant confirms or reopens | `IssueTests`, `IssueApiTests` |
+| BR15 — targets per priority; a missed target escalates, once; priority changes recalculate | `IssueTests`, `SlaTargetTests`, `IssueApiTests` |
 | BR19 — a tenant with a lease in force or a balance cannot be deleted; soft delete | `TenantTests`, `TenantApiTests`, `PaymentApiTests` |
-| BR20 — every state change is audited; the audit log is append-only | `AuditTests`, `LeaseApiTests` |
+| BR20 — every state change is audited; the audit log is append-only | `AuditTests`, `LeaseApiTests`, `IssueApiTests` |
 
 ## Architecture
 
@@ -184,6 +195,33 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
   when it was received; deductions (each with a reason) and the refund are recorded after the lease
   ends, and deductions can never exceed what is held.
 
+### Issues, contractors and inspections
+
+- **Logging an issue.** A tenant reports an issue on their running lease with a category, a
+  priority, a description and up to five photos (JPG or PNG, 5 MB each, typed from the file's bytes
+  and virus-scanned like proof of payment). The landlord can log one on any unit; on a let unit it
+  is shared with the tenant.
+- **Flow (BR14).** Open → Acknowledged → In progress → Resolved → Closed. The landlord moves it along
+  (starting work also acknowledges it). The tenant confirms the fix, or reopens it with a reason; if
+  they do neither, it closes by itself after 7 days (a setting). Each step is timestamped and written
+  to the issue's history, which the detail page shows together with the comments.
+- **Targets (BR15).** Each priority has a response target (acknowledge by) and a resolution target
+  (resolve by), in hours from when the issue was logged: Urgent 4 h / 24 h, High 24 h / 72 h, Medium
+  48 h / 7 days, Low 72 h / 14 days. They are calendar hours and are editable on the Settings page.
+  A job every 15 minutes flags an issue as **escalated** when a target is missed; escalation is a flag,
+  not a status, so the issue keeps its place in the flow
+  ([ADR-0015](docs/adr/0015-issue-sla-targets-and-escalation.md)). The landlord's **SLA report**
+  shows, per priority, how many issues met each target and the average times.
+- **Contractors** are a simple list (name, trade, phone), not logins. They can be assigned to an
+  issue, and the tenant sees who is coming and their number. A contractor still assigned to an
+  unfinished issue can't be deleted.
+- **Inspections.** Each lease number has one move-in and one move-out checklist. The landlord fills in
+  each area (condition, notes, up to five photos), then completes it, after which it can't change; the
+  tenant then sees it and acknowledges it, optionally with a comment. A move-out shows what each area
+  was like at move-in and flags the ones that got worse. A renewal keeps the original move-in.
+- **Photos** are served only through the API to signed-in users who may see them. The web app fetches
+  them with the user's token and shows them from `blob:` URLs, so the page's CSP allows `img-src blob:`.
+
 ### API (v1)
 
 | Method | Route | Role |
@@ -211,6 +249,18 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 | GET | `/api/v1/arrears` | Landlord |
 | GET | `/api/v1/leases/{id}/deposit` | Landlord, or the lease's tenant |
 | POST | `/api/v1/leases/{id}/deposit/receive`, `/deductions`, `/refund` | Landlord |
+| GET, POST | `/api/v1/issues` | Landlord, or the tenant (own) |
+| GET | `/api/v1/issues/{id}`, `/issues/{id}/photos/{photoId}` | Landlord, or the tenant (own) |
+| POST | `/api/v1/issues/{id}/acknowledge`, `/start`, `/resolve`; PUT `/contractor`, `/priority` | Landlord |
+| POST | `/api/v1/issues/{id}/close`, `/reopen` | the tenant (the landlord when there is no tenant) |
+| POST | `/api/v1/issues/{id}/comments`, `/photos` (multipart) | Landlord, or the tenant (own) |
+| GET | `/api/v1/issues/sla-report?days=90` | Landlord |
+| GET, POST, PUT, DELETE | `/api/v1/contractors`, `/contractors/{id}` | Landlord |
+| GET | `/api/v1/leases/{id}/inspections` | Landlord, or the lease's tenant (completed only) |
+| POST | `/api/v1/leases/{id}/inspections` | Landlord |
+| GET | `/api/v1/inspections/{id}`, `/inspections/{id}/photos/{photoId}` | Landlord, or the lease's tenant (completed only) |
+| PUT, POST | `/api/v1/inspections/{id}`, `/items`, `/items/{itemId}`, `/items/{itemId}/photos`, `/complete` | Landlord |
+| POST | `/api/v1/inspections/{id}/acknowledge` | the lease's tenant |
 | GET, PUT | `/api/v1/settings` | GET Admin and Landlord, PUT Admin |
 | GET, POST | `/api/v1/users`; PUT `/users/{id}/role`, `/users/{id}/lock` | Admin |
 | GET | `/api/v1/audit` | Admin, Landlord |
@@ -231,7 +281,7 @@ A failure in any of the first three blocks the images.
 ## Legal note
 
 South African rental law and POPIA apply to an app like this, but no legal rules are invented here.
-Notice periods, escalation limits, month-to-month continuation and the deposit refund period are settings with placeholder
+Notice periods, escalation limits, month-to-month continuation, the deposit refund period and the inspection rules are settings or flags with placeholder
 defaults marked **LEGAL REVIEW NEEDED** ([ADR-0011](docs/adr/0011-legal-values-are-configuration-flagged-for-review.md)),
 which an Admin can change on the Settings page. The lease PDF wording (template `v0-test`) is
 placeholder text, and every page carries a "SAMPLE TEST DOCUMENT - LEGAL REVIEW NEEDED" banner.

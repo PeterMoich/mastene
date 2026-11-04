@@ -24,7 +24,7 @@ describe('targetText (BR15)', () => {
 
   it('says whether a finished step met its target', () => {
     expect(targetText(due, '2026-11-04T11:59:00Z')).toEqual({ text: 'Met on time', late: false });
-    expect(targetText(due, '2026-11-04T13:00:00Z')).toEqual({ text: 'Met 60 min late', late: true });
+    expect(targetText(due, '2026-11-04T13:00:00Z')).toEqual({ text: 'Met 1 h late', late: true });
   });
 });
 
