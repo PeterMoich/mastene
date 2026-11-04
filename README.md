@@ -4,12 +4,14 @@ A web app for a small South African residential landlord: properties and units, 
 leases, rent and proof of payment, maintenance issues, and WhatsApp messaging.
 It is a portfolio and test project; all data in it is synthetic.
 
-**Status: Phase 1 of 6** — solution skeleton, CI, authentication and roles, and
-properties, units and tenants. Leases, payments, issues and WhatsApp follow in Phases 2 to 5.
+**Status: Phase 2 of 6** — authentication and roles, properties, units and tenants (Phase 1), and
+12-month leases with PDF generation, signing, renewals, termination and a daily lifecycle job
+(Phase 2). Payments, issues and WhatsApp follow in Phases 3 to 5.
 
 | Layer | Technology |
 | --- | --- |
 | API | ASP.NET Core 10, EF Core 10, SQL Server, ASP.NET Core Identity + JWT, FluentValidation, Serilog, Swagger |
+| Documents and jobs | QuestPDF (Community licence), Azure Blob Storage (Azurite locally), Hangfire on SQL Server |
 | Web | Angular 22 (standalone, signals, zoneless), Angular Material 3 |
 | Tests | xUnit + Shouldly, Testcontainers (real SQL Server), Vitest component tests |
 | Run | Docker Compose; GitHub Actions for CI and container images |
@@ -30,6 +32,7 @@ The first start takes a few minutes while SQL Server and the images download.
 | Web app | http://localhost:4200 |
 | API docs (Swagger) | http://localhost:5080/swagger |
 | SQL Server | `localhost,1433`, user `sa`, password from `.env` |
+| Azurite (blob storage) | `localhost:10000`, the emulator's standard development account |
 
 ### Demo logins
 
@@ -42,8 +45,14 @@ Every demo login uses the `SEED_PASSWORD` from your `.env`.
 | Tenant | `lerato.mokoena@example.com` | Their own details only |
 | Admin | `admin@mastene.test` | Staff user accounts only |
 
-The demo data is two properties in Gauteng with five units, and three tenants (two with logins).
-To start again from an empty database: `docker compose down -v`.
+The demo data is two properties in Gauteng with five units, three tenants (two with logins), and two
+signed leases. Sipho's (Jacaranda Court, Flat 1) started eight months ago. Lerato's (Marula Gardens,
+Cottage A) has about a month left, so it shows as **Expiring**. Johan has no lease, so you can try the
+whole flow: as the landlord, create a draft for him, send it for signing and sign it; then give Johan
+a login on the Tenants page, sign in as him and sign too.
+
+To start again from an empty database: `docker compose down -v`. If you ran Phase 1 before, do this
+once so the Phase 2 demo leases are seeded.
 
 ## Develop without Docker
 
@@ -51,7 +60,7 @@ Requirements: .NET SDK 10.0.403 or later, Node.js 22, and a SQL Server you can r
 (the compose `sqlserver` service on its own is easiest: `docker compose up sqlserver`).
 
 ```bash
-# API on http://localhost:5080 (migrates and seeds on start in Development)
+# API on http://localhost:5080 (migrates and seeds on start in Development; PDFs go to ./data/files)
 cd src/TenantManager.Api
 dotnet user-secrets set "ConnectionStrings:Default" "Server=localhost,1433;Database=TenantManager;User Id=sa;Password=<your SA password>;Encrypt=False;TrustServerCertificate=True"
 dotnet user-secrets set "Seed:DemoData" "true"
@@ -76,14 +85,20 @@ cd web && npx ng test --watch=false                   # Angular component tests
 cd web && npx ng lint                                 # ESLint incl. template accessibility rules
 ```
 
-Business rules are named in test names (e.g. `BR19_Tenant_with_active_lease_cannot_be_deleted`)
-so a failing test points straight at the rule. Phase 1 covers:
+Business rules are named in test names (e.g. `BR19_Tenant_with_an_active_lease_cannot_be_deleted`)
+so a failing test points straight at the rule. Covered so far:
 
 | Rule | Where it's tested |
 | --- | --- |
-| BR01 — a tenant only sees their own data | `AccessControlTests` |
-| BR19 — a tenant with an active lease or balance cannot be deleted; soft delete | `TenantTests`, `TenantApiTests` |
-| BR20 — every state change is audited; the audit log is append-only | `AuditTests` |
+| BR01 — a tenant only sees their own data (including leases and lease PDFs) | `AccessControlTests`, `LeaseApiTests` |
+| BR02 — a lease is always 12 months from its start (leap years included) | `LeaseTests`, `LeaseApiTests` |
+| BR03 — no overlapping leases on a unit; one lease per tenant per property; safe under concurrency | `LeaseTests`, `LeaseApiTests` |
+| BR04 — a lease can't change once sent for signing | `LeaseTests`, `LeaseApiTests` |
+| BR05 — Expiring at 90 days; notices at 90, 60 and 30 days, each once | `LeaseTests`, `LeaseApiTests` |
+| BR06 — renewal needs both signatures; escalation rounded to the nearest rand | `LeaseTests`, `LeaseApiTests` |
+| BR07 — at the end with no renewal: month-to-month or ended, per setting | `LeaseTests`, `LeaseApiTests` |
+| BR19 — a tenant with a lease in force or a balance cannot be deleted; soft delete | `TenantTests`, `TenantApiTests` |
+| BR20 — every state change is audited; the audit log is append-only | `AuditTests`, `LeaseApiTests` |
 
 ## Architecture
 
@@ -91,7 +106,8 @@ so a failing test points straight at the rule. Phase 1 covers:
 src/
   TenantManager.Domain          entities and business rules; no package references
   TenantManager.Application     use cases (services), validators, DTOs, interfaces
-  TenantManager.Infrastructure  EF Core, Identity, JWT, audit interceptor, seeding
+  TenantManager.Infrastructure  EF Core, Identity, JWT, audit interceptor, PDF rendering,
+                                file storage, Hangfire jobs, seeding
   TenantManager.Api             controllers, auth policies, ProblemDetails, rate limits
 web/                            Angular app
 tests/                          domain tests and API integration tests
@@ -115,6 +131,31 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 - **Lists** take `page`, `pageSize` (max 100), `sort` (field name, `-` prefix for descending)
   and filters such as `search` and `status`.
 
+### Leases
+
+| Status | How it gets there | What can happen next |
+| --- | --- | --- |
+| Draft | Landlord creates it | Edit, discard, send for signing |
+| Waiting for signatures | Sent for signing: the PDF is made and the lease is frozen (BR04) | Each party signs once; the landlord can cancel |
+| Active | Both have signed and the start date has come | Renew, terminate; flagged Expiring 90 days before the end |
+| Expiring | 90 days or less left (setting) | Renew, terminate |
+| Active (month to month) | End date passed with no renewal, setting on (BR07) | Renew from a chosen date, terminate |
+| Renewed | Its signed renewal started | Nothing; history |
+| Ended | End date passed with no renewal, setting off (BR07) | Nothing; history |
+| Terminated | Cancelled before signing, or its scheduled last day passed | Nothing; history |
+
+- **Signing** records the user, time and IP address in the app. It is in-app confirmation, not a
+  legal e-signature (flagged for legal review). The second signature produces a signed PDF.
+- A **renewal** is version 2 (3, …) of the same lease number. It starts the day after the current
+  lease ends, with rent raised by the agreed escalation and rounded to the nearest rand.
+- **Overlaps** (BR03) are checked under a database lock on the unit and tenant when a lease is sent
+  for signing, so two requests can't both pass ([ADR-0013](docs/adr/0013-lease-overlap-under-application-locks.md)).
+- A **daily job** (Hangfire, 00:15 South African time) starts signed leases, swaps in renewals,
+  flags expiring leases, records expiry notices for Phase 5 to send, lapses ended leases and applies
+  scheduled terminations. Landlords can also run it from the Leases page ("Run daily checks now").
+- PDFs are stored once and never overwritten, in Azure Blob Storage (Azurite locally) or a local
+  folder, chosen by `Storage:Provider`. They are only served through the API, never by public URL.
+
 ### API (v1)
 
 | Method | Route | Role |
@@ -129,6 +170,13 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 | GET | `/api/v1/tenants/{id}` | Landlord, or the tenant themself |
 | PUT, DELETE | `/api/v1/tenants/{id}` | Landlord |
 | POST | `/api/v1/tenants/{id}/login` | Landlord (returns a one-time password) |
+| GET | `/api/v1/leases`, `/leases/{id}`, `/leases/{id}/versions` | Landlord, or the tenant (own, no drafts) |
+| POST, PUT, DELETE | `/api/v1/leases`, `/leases/{id}` (drafts only) | Landlord |
+| POST | `/api/v1/leases/{id}/generate`, `/renewals`, `/terminate` | Landlord |
+| POST | `/api/v1/leases/{id}/sign` | Landlord, or the lease's tenant |
+| GET | `/api/v1/leases/{id}/documents/{documentId}` (PDF) | Landlord, or the lease's tenant |
+| POST | `/api/v1/lease-checks/run` | Landlord |
+| GET, PUT | `/api/v1/settings` | GET Admin and Landlord, PUT Admin |
 | GET, POST | `/api/v1/users`; PUT `/users/{id}/role`, `/users/{id}/lock` | Admin |
 | GET | `/api/v1/audit` | Admin, Landlord |
 | GET | `/health/live`, `/health/ready` | anyone |
@@ -148,6 +196,8 @@ A failure in any of the first three blocks the images.
 ## Legal note
 
 South African rental law and POPIA apply to an app like this, but no legal rules are invented here.
-Values such as deposit handling and notice periods will be settings with placeholder defaults
-marked **LEGAL REVIEW NEEDED** ([ADR-0011](docs/adr/0011-legal-values-are-configuration-flagged-for-review.md)).
-They must be confirmed by a qualified person before any real use.
+Notice periods, escalation limits and month-to-month continuation are settings with placeholder
+defaults marked **LEGAL REVIEW NEEDED** ([ADR-0011](docs/adr/0011-legal-values-are-configuration-flagged-for-review.md)),
+which an Admin can change on the Settings page. The lease PDF wording (template `v0-test`) is
+placeholder text, and every page carries a "SAMPLE TEST DOCUMENT - LEGAL REVIEW NEEDED" banner.
+All of it must be confirmed by a qualified person before any real use.
