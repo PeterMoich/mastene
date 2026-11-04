@@ -4,11 +4,12 @@ A web app for a small South African residential landlord: properties and units, 
 leases, rent and proof of payment, maintenance issues, and WhatsApp messaging.
 It is a portfolio and test project; all data in it is synthetic.
 
-**Status: Phase 4 of 6** — authentication and roles, properties, units and tenants (Phase 1);
+**Status: Phase 5 of 6** — authentication and roles, properties, units and tenants (Phase 1);
 12-month leases with PDF generation, signing, renewals and a daily lifecycle job (Phase 2);
-rent charges, proof of payment, the rent ledger, receipts and deposits (Phase 3); and maintenance
+rent charges, proof of payment, the rent ledger, receipts and deposits (Phase 3); maintenance
 issues with photos, contractors, response and resolution targets, and move-in/move-out inspections
-(Phase 4). WhatsApp and reminders follow in Phase 5.
+(Phase 4); and WhatsApp messaging with consent, the 24-hour window, templates, a signed webhook and
+automatic reminders (Phase 5). Deployment, observability and hardening follow in Phase 6.
 
 | Layer | Technology |
 | --- | --- |
@@ -63,6 +64,12 @@ missed its 24-hour response target and is **escalated**. Her gate remote is mark
 for her to confirm it is fixed (or reopen it). Flat 2 is vacant and has the landlord's own painting
 job. Both leases have a completed move-in inspection with photos; Sipho has acknowledged his, Lerato
 hasn't yet. All photos are synthetic coloured blocks.
+
+On **Messages**, Sipho has agreed to WhatsApp messages and wrote two hours ago about the plumber, so
+his thread is inside WhatsApp's 24-hour window and a reply goes to WhatsApp. Lerato hasn't agreed, so
+nothing goes to her on WhatsApp; replies to her stay in the app. WhatsApp itself is simulated (no Meta
+account needed): use **Simulate tenant reply** to play the tenant, and reply `STOP` to see consent
+withdrawn. Sign in as a tenant and open **My details** or **Messages** to give or withdraw consent.
 
 To start again from an empty database: `docker compose down -v`. A database from an earlier phase
 keeps its data and gets the Phase 4 demo issues, contractors and inspections added on the next start.
@@ -119,6 +126,9 @@ so a failing test points straight at the rule. Covered so far:
 | BR12 (photos) — JPG/PNG up to 5 MB, at most five per issue or per inspection area | `IssueTests`, `InspectionTests`, `IssueApiTests`, `InspectionApiTests` |
 | BR14 — issue flow Open → Acknowledged → In progress → Resolved → Closed, timestamped; only the tenant confirms or reopens | `IssueTests`, `IssueApiTests` |
 | BR15 — targets per priority; a missed target escalates, once; priority changes recalculate | `IssueTests`, `SlaTargetTests`, `IssueApiTests` |
+| BR16 — WhatsApp only to tenants whose latest consent is a grant for their current number; STOP withdraws it | `ConsentTests`, `MessagingApiTests` |
+| BR17 — free-form WhatsApp only inside the 24-hour window, templates otherwise; outside it a reply stays in the app | `ConversationTests`, `MessagingApiTests` |
+| BR18 — the webhook checks Meta's HMAC signature; retried deliveries are stored once | `MessagingApiTests` |
 | BR19 — a tenant with a lease in force or a balance cannot be deleted; soft delete | `TenantTests`, `TenantApiTests`, `PaymentApiTests` |
 | BR20 — every state change is audited; the audit log is append-only | `AuditTests`, `LeaseApiTests`, `IssueApiTests` |
 
@@ -222,6 +232,37 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 - **Photos** are served only through the API to signed-in users who may see them. The web app fetches
   them with the user's token and shows them from `blob:` URLs, so the page's CSP allows `img-src blob:`.
 
+### WhatsApp messaging and reminders
+
+- **One thread per tenant**, across WhatsApp and the app. The landlord sees all of them, unread first;
+  a tenant sees their own and can write in the app too.
+- **Consent (BR16).** Nothing goes to a tenant on WhatsApp unless their latest consent record is a
+  grant for their current phone number. Tenants agree in the app (the wording is versioned and stored
+  with each record); the landlord can record consent given another way, with a note saying how. A
+  changed phone number needs new consent. Replying `STOP` on WhatsApp withdraws it.
+- **The 24-hour window (BR17).** WhatsApp allows free-form messages only within 24 hours of the
+  tenant's last WhatsApp message. Inside it, the landlord's reply goes to WhatsApp; outside it, the
+  reply is kept in the app (the tenant still sees it there) and the screen says so. To reach the tenant
+  on WhatsApp then, send a **template**. Messages the tenant writes in the app don't open the window.
+- **Automatic messages** (all templates): a receipt when a payment is verified, the reason when one is
+  rejected, issue updates (acknowledged, work started, resolved), and the daily reminders: rent due in
+  3 days (a setting), rent overdue, lease ending (90/60/30 days) and a renewal waiting for the
+  tenant's signature. Each is sent once. Reminders older than a week aren't sent late.
+- **Outbox.** Messages are saved as queued in the same transaction as the change that caused them,
+  then sent at once and by a job every minute, with retries. Consent and the window are checked again
+  just before sending.
+- **Webhook (BR18).** `POST /api/v1/webhooks/whatsapp` takes Meta's payload, refuses anything without a
+  valid `X-Hub-Signature-256` (HMAC-SHA256 of the body with the app secret), stores messages from known
+  tenants once (by WhatsApp message id) and applies delivery statuses, which only move forward.
+  Messages from unknown numbers aren't stored.
+- **Providers.** The fake provider is the default: sends succeed (numbers ending in `0000` fail, to try
+  failures) and **Simulate tenant reply** sends a signed payload through the real webhook code. Setting
+  `WHATSAPP_PROVIDER=Meta` and the four Meta values in `.env` switches to the WhatsApp Cloud API; the
+  eight templates must first be created and approved in Meta's WhatsApp Manager with the same names
+  and wording ([ADR-0016](docs/adr/0016-whatsapp-outbox-consent-and-the-24-hour-window.md)).
+- **Background jobs dashboard.** Admins open it from **Settings**. The API issues a two-minute link,
+  which sets a 30-minute cookie for `/hangfire` only.
+
 ### API (v1)
 
 | Method | Route | Role |
@@ -261,6 +302,15 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 | GET | `/api/v1/inspections/{id}`, `/inspections/{id}/photos/{photoId}` | Landlord, or the lease's tenant (completed only) |
 | PUT, POST | `/api/v1/inspections/{id}`, `/items`, `/items/{itemId}`, `/items/{itemId}/photos`, `/complete` | Landlord |
 | POST | `/api/v1/inspections/{id}/acknowledge` | the lease's tenant |
+| GET | `/api/v1/conversations` | Landlord |
+| GET | `/api/v1/conversations/{tenantId}` | Landlord, or the tenant (own) |
+| POST | `/api/v1/conversations/{tenantId}/messages` | Landlord, or the tenant (own; kept in the app) |
+| POST | `/api/v1/conversations/{tenantId}/templates` | Landlord |
+| GET | `/api/v1/message-templates` | Landlord |
+| GET, POST | `/api/v1/tenants/{tenantId}/consents` | Landlord, or the tenant (own) |
+| GET, POST | `/api/v1/webhooks/whatsapp` | Meta (signed; GET is the verify handshake) |
+| POST | `/api/v1/dev/whatsapp/inbound` | Landlord, fake provider only |
+| POST | `/api/v1/admin/jobs-dashboard` | Admin (returns a one-time dashboard link) |
 | GET, PUT | `/api/v1/settings` | GET Admin and Landlord, PUT Admin |
 | GET, POST | `/api/v1/users`; PUT `/users/{id}/role`, `/users/{id}/lock` | Admin |
 | GET | `/api/v1/audit` | Admin, Landlord |
@@ -281,7 +331,7 @@ A failure in any of the first three blocks the images.
 ## Legal note
 
 South African rental law and POPIA apply to an app like this, but no legal rules are invented here.
-Notice periods, escalation limits, month-to-month continuation, the deposit refund period and the inspection rules are settings or flags with placeholder
+Notice periods, escalation limits, month-to-month continuation, the deposit refund period, the inspection rules and the WhatsApp consent wording are settings or flags with placeholder
 defaults marked **LEGAL REVIEW NEEDED** ([ADR-0011](docs/adr/0011-legal-values-are-configuration-flagged-for-review.md)),
 which an Admin can change on the Settings page. The lease PDF wording (template `v0-test`) is
 placeholder text, and every page carries a "SAMPLE TEST DOCUMENT - LEGAL REVIEW NEEDED" banner.

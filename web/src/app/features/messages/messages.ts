@@ -213,7 +213,8 @@ export class TemplateDialog {
 /** One conversation: messages, the composer, the 24-hour window, consent, and (fake provider) a simulated reply. */
 @Component({
   selector: 'app-thread',
-  imports: [DatePipe, ReactiveFormsModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, ConsentPanel],
+  // FormsModule gives the <form> its ngSubmit (via NgForm); the text box itself is a reactive control.
+  imports: [DatePipe, FormsModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, ConsentPanel],
   template: `
     @if (thread(); as t) {
       <header class="thread-head">

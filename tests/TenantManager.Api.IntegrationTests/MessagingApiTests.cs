@@ -165,7 +165,10 @@ public class MessagingApiTests(ApiFactory api)
         var opened = await (await s.Landlord.PostJsonAsync("/api/v1/dev/whatsapp/inbound",
             new SimulateInboundRequest(s.TenantId, "Hi, is the plumber coming today?"))).ReadAsync<ThreadDto>();
         opened.InServiceWindow.ShouldBeTrue();
-        opened.Messages.Last().Direction.ShouldBe(MessageDirection.Inbound);
+        // WhatsApp timestamps are whole seconds, so look the reply up rather than assume it sorts last.
+        var reply = opened.Messages.Single(m => m.Body == "Hi, is the plumber coming today?");
+        reply.Direction.ShouldBe(MessageDirection.Inbound);
+        reply.Channel.ShouldBe(MessageChannel.WhatsApp);
         var inside = await (await s.Landlord.PostJsonAsync($"/api/v1/conversations/{s.TenantId}/messages",
             new SendMessageRequest("Yes, at 2pm."))).ReadAsync<ThreadDto>();
         inside.Messages.Last().Channel.ShouldBe(MessageChannel.WhatsApp);

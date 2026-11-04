@@ -12,4 +12,4 @@ An `IMessagingProvider` interface (`SendTextAsync`, `SendTemplateAsync`, `ParseI
 
 ## Consequences
 
-The whole flow, including the 24-hour service window and consent checks, is testable with no Meta account.
+The whole flow, including the 24-hour service window and consent checks, is testable with no Meta account. Implemented in Phase 5 as `IWhatsAppProvider` (send only); signature checks and parsing live in `WhatsAppWebhookService`, shared by both providers. See ADR-0016.
