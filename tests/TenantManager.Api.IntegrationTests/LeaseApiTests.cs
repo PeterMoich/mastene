@@ -39,7 +39,8 @@ public class LeaseApiTests(ApiFactory api)
         active.ActivatedOn.ShouldBe(Today);
         active.Signatures.Select(x => x.Party).ShouldBe([LeaseParty.Landlord, LeaseParty.Tenant]);
         active.Documents.Select(d => d.Kind).ShouldBe([LeaseDocumentKind.Unsigned, LeaseDocumentKind.Signed]);
-        active.AllowedActions.ShouldBe(["download", "renew", "terminate"]);
+        active.AllowedActions.ShouldBe(["download"]); // SignBothAsync returns the tenant's view
+        (await s.GetAsync(draft.Id)).AllowedActions.ShouldBe(["download", "renew", "terminate"]); // landlord's view
 
         var unit = await (await s.Landlord.GetAsync($"/api/v1/units/{s.UnitId}")).ReadAsync<UnitDto>();
         unit.Status.ShouldBe("Occupied");
