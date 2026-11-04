@@ -407,6 +407,7 @@ public class LeaseApiTests(ApiFactory api)
         page.Items.ShouldContain(l => l.Status == LeaseStatus.Expiring && l.UnitLabel == "Cottage A");
     }
 
-    private static SettingsRequest ToRequest(SettingsDto s) => new(s.ExpiryNoticeDays, s.DefaultEscalationPct,
-        s.MaxEscalationPct, s.MonthToMonthOnLapse, s.TerminationNoticeDays, s.LeaseTemplateVersion);
+    internal static SettingsRequest ToRequest(SettingsDto s) => new(s.ExpiryNoticeDays, s.DefaultEscalationPct,
+        s.MaxEscalationPct, s.MonthToMonthOnLapse, s.TerminationNoticeDays, s.LeaseTemplateVersion, s.RentDueDay,
+        s.RentGraceDays, s.ProrateRent, s.DepositRefundDays);
 }

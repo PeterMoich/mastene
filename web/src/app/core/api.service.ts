@@ -2,7 +2,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  Arrears,
   CreateUserRequest,
+  Deposit,
+  Ledger,
+  Payment,
+  PaymentListQuery,
+  SubmitPayment,
   Lease,
   LeaseListQuery,
   LeaseRequest,
@@ -144,5 +150,50 @@ export class ApiService {
   }
   updateSettings(body: SettingsRequest): Observable<Settings> {
     return this.http.put<Settings>(`${BASE}/settings`, body);
+  }
+
+  // Rent, payments and deposits
+  getLedger(leaseId: string): Observable<Ledger> {
+    return this.http.get<Ledger>(`${BASE}/leases/${leaseId}/ledger`);
+  }
+  listPayments(query: PaymentListQuery = {}): Observable<PagedResult<Payment>> {
+    return this.http.get<PagedResult<Payment>>(`${BASE}/payments`, { params: toParams(query) });
+  }
+  submitPayment(p: SubmitPayment): Observable<Payment> {
+    const form = new FormData();
+    form.append('LeaseId', p.leaseId);
+    form.append('Amount', String(p.amount));
+    form.append('PaidOn', p.paidOn);
+    if (p.period) form.append('Period', p.period);
+    if (p.reference) form.append('Reference', p.reference);
+    form.append('File', p.file, p.file.name);
+    return this.http.post<Payment>(`${BASE}/payments`, form);
+  }
+  verifyPayment(id: string): Observable<Payment> {
+    return this.http.post<Payment>(`${BASE}/payments/${id}/verify`, {});
+  }
+  rejectPayment(id: string, reason: string): Observable<Payment> {
+    return this.http.post<Payment>(`${BASE}/payments/${id}/reject`, { reason });
+  }
+  paymentFile(id: string): Observable<Blob> {
+    return this.http.get(`${BASE}/payments/${id}/file`, { responseType: 'blob' });
+  }
+  paymentReceipt(id: string): Observable<Blob> {
+    return this.http.get(`${BASE}/payments/${id}/receipt`, { responseType: 'blob' });
+  }
+  listArrears(): Observable<Arrears[]> {
+    return this.http.get<Arrears[]>(`${BASE}/arrears`);
+  }
+  getDeposit(leaseId: string): Observable<Deposit> {
+    return this.http.get<Deposit>(`${BASE}/leases/${leaseId}/deposit`);
+  }
+  receiveDeposit(leaseId: string, amount: number, receivedOn: string): Observable<Deposit> {
+    return this.http.post<Deposit>(`${BASE}/leases/${leaseId}/deposit/receive`, { amount, receivedOn });
+  }
+  addDepositDeduction(leaseId: string, amount: number, reason: string): Observable<Deposit> {
+    return this.http.post<Deposit>(`${BASE}/leases/${leaseId}/deposit/deductions`, { amount, reason });
+  }
+  refundDeposit(leaseId: string, refundedOn: string): Observable<Deposit> {
+    return this.http.post<Deposit>(`${BASE}/leases/${leaseId}/deposit/refund`, { refundedOn });
   }
 }

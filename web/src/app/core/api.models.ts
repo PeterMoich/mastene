@@ -241,6 +241,8 @@ export interface LifecycleSummary {
   movedToMonthToMonth: number;
   ended: number;
   terminated: number;
+  chargesRaised: number;
+  overdueNoticesRecorded: number;
 }
 
 export interface Settings {
@@ -250,8 +252,124 @@ export interface Settings {
   monthToMonthOnLapse: boolean;
   terminationNoticeDays: number;
   leaseTemplateVersion: string;
+  rentDueDay: number;
+  rentGraceDays: number;
+  prorateRent: boolean;
+  depositRefundDays: number;
   /** Field names whose values are placeholders needing legal review. */
   legalReviewNeeded: string[];
 }
 
 export type SettingsRequest = Omit<Settings, 'legalReviewNeeded'>;
+
+// ---- Rent, payments and deposits (Phase 3) ----
+
+export type ChargeState = 'Paid' | 'Due' | 'Overdue';
+
+export interface LedgerLine {
+  /** yyyy-MM */
+  period: string;
+  amountDue: number;
+  dueDate: string;
+  daysCharged: number;
+  prorated: boolean;
+  paid: number;
+  outstanding: number;
+  state: ChargeState;
+  overdueNoticeOn: string | null;
+}
+
+export interface Ledger {
+  leaseId: string;
+  leaseNumber: string;
+  version: number;
+  totalDue: number;
+  totalPaid: number;
+  /** Negative means the tenant is in credit. */
+  balance: number;
+  arrears: number;
+  credit: number;
+  graceDays: number;
+  lines: LedgerLine[];
+}
+
+export type PaymentStatus = 'Submitted' | 'Verified' | 'Rejected';
+export type PaymentAction = 'viewFile' | 'verify' | 'reject' | 'downloadReceipt';
+
+export interface Payment {
+  id: string;
+  leaseId: string;
+  leaseNumber: string;
+  leaseVersion: number;
+  tenantId: string;
+  tenantName: string;
+  propertyName: string;
+  unitLabel: string;
+  amount: number;
+  paidOn: string;
+  period: string | null;
+  reference: string | null;
+  fileName: string;
+  contentType: string;
+  sizeBytes: number;
+  status: PaymentStatus;
+  rejectionReason: string | null;
+  reviewedByName: string | null;
+  reviewedAt: string | null;
+  receiptNumber: string | null;
+  createdAt: string;
+  allowedActions: PaymentAction[];
+}
+
+export interface PaymentListQuery extends ListQuery {
+  status?: PaymentStatus | '';
+  leaseId?: string;
+  propertyId?: string;
+  period?: string;
+}
+
+export interface SubmitPayment {
+  leaseId: string;
+  amount: number;
+  paidOn: string;
+  period: string | null;
+  reference: string | null;
+  file: File;
+}
+
+export interface Arrears {
+  leaseId: string;
+  leaseNumber: string;
+  version: number;
+  tenantId: string;
+  tenantName: string;
+  propertyName: string;
+  unitLabel: string;
+  arrears: number;
+  balance: number;
+  oldestOverduePeriod: string;
+  daysOverdue: number;
+}
+
+export type DepositStatus = 'AwaitingPayment' | 'Held' | 'PartiallyRefunded' | 'Refunded';
+
+export interface Deposit {
+  leaseNumber: string;
+  amountAgreed: number;
+  amountReceived: number;
+  receivedOn: string | null;
+  status: DepositStatus;
+  deductions: { amount: number; reason: string; createdAt: string }[];
+  totalDeducted: number;
+  remaining: number;
+  amountRefunded: number;
+  refundedOn: string | null;
+  leaseHasEnded: boolean;
+  leaseEndedOn: string | null;
+  refundDueBy: string | null;
+  allowedActions: ('receive' | 'deduct' | 'refund')[];
+}
+
+/** Proof of payment rules, mirrored from the API (BR12) so users get instant feedback. */
+export const PROOF_OF_PAYMENT_MAX_BYTES = 5 * 1024 * 1024;
+export const PROOF_OF_PAYMENT_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];

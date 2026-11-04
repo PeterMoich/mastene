@@ -26,7 +26,8 @@ public sealed class LeaseService(
     IFileStorage files,
     IValidator<LeaseRequest> leaseValidator,
     IValidator<RenewLeaseRequest> renewValidator,
-    IValidator<TerminateLeaseRequest> terminateValidator)
+    IValidator<TerminateLeaseRequest> terminateValidator,
+    Payments.RentService rent)
 {
     private static readonly Dictionary<string, Expression<Func<Lease, object>>> Sorts =
         new(StringComparer.OrdinalIgnoreCase)
@@ -39,17 +40,7 @@ public sealed class LeaseService(
             ["tenantName"] = l => l.Tenant.LastName,
         };
 
-    private IQueryable<Lease> Visible()
-    {
-        var leases = db.Leases.IgnoreQueryFilters();
-        if (user.IsTenant())
-        {
-            var tenantId = user.TenantId ?? Guid.Empty;
-            return leases.Where(l => l.TenantId == tenantId && l.Status != LeaseStatus.Draft);
-        }
-        var ownerId = user.RequireOwnerId();
-        return leases.Where(l => l.OwnerId == ownerId);
-    }
+    private IQueryable<Lease> Visible() => db.VisibleLeases(user);
 
     public Task<PagedResult<LeaseSummaryDto>> ListAsync(LeaseListQuery query, CancellationToken ct)
     {
@@ -189,6 +180,14 @@ public sealed class LeaseService(
             await db.SaveChangesAsync(c);
             return true;
         }, ct);
+        try
+        {
+            await rent.RaiseChargesAsync([id], ct); // a lease that just started gets its rent charges now
+        }
+        catch (DomainRuleException ex) when (ex.Code == "duplicate")
+        {
+            // The daily job raised them at the same moment; nothing to do.
+        }
         return await GetAsync(id, ct);
     }
 

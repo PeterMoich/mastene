@@ -63,6 +63,30 @@ import { applyServerErrors, errorMessage } from '../../core/problem';
             </mat-slide-toggle>
             <span class="hint">Off: the lease ends and the unit becomes vacant. {{ legal('monthToMonthOnLapse') }}</span>
           </div>
+          <h2>Rent and deposits</h2>
+          <mat-form-field>
+            <mat-label>Rent due day of the month</mat-label>
+            <input matInput type="number" formControlName="rentDueDay" min="1" max="28" required />
+            <mat-hint>1 to 28, so every month has it.</mat-hint>
+            <mat-error>{{ message('rentDueDay') }}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Grace period before rent is overdue</mat-label>
+            <input matInput type="number" formControlName="rentGraceDays" min="0" max="31" required />
+            <span matTextSuffix>days</span>
+            <mat-error>{{ message('rentGraceDays') }}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Deposit refund due after the lease ends</mat-label>
+            <input matInput type="number" formControlName="depositRefundDays" min="0" max="365" required />
+            <span matTextSuffix>days</span>
+            <mat-hint>{{ legal('depositRefundDays') }}</mat-hint>
+            <mat-error>{{ message('depositRefundDays') }}</mat-error>
+          </mat-form-field>
+          <div class="toggle">
+            <mat-slide-toggle formControlName="prorateRent">Charge partial first and last months by days</mat-slide-toggle>
+            <span class="hint">Off: a partial month is charged in full.</span>
+          </div>
           <div class="actions">
             <button mat-flat-button type="submit" [disabled]="busy()">Save settings</button>
           </div>
@@ -72,7 +96,7 @@ import { applyServerErrors, errorMessage } from '../../core/problem';
   `,
   styles: `
     h1 { font: var(--mat-sys-headline-medium); margin: 0 0 8px; }
-    h2 { font: var(--mat-sys-title-medium); margin: 0 0 8px; }
+    h2 { font: var(--mat-sys-title-medium); margin: 8px 0; }
     .intro { max-width: 640px; color: var(--mat-sys-on-surface-variant); }
     .legal { font-weight: 500; color: var(--mat-sys-error); }
     .card { max-width: 640px; }
@@ -96,6 +120,10 @@ export class SettingsPage {
     terminationNoticeDays: [20, [Validators.required, Validators.min(0), Validators.max(365)]],
     leaseTemplateVersion: ['', Validators.required],
     monthToMonthOnLapse: [true],
+    rentDueDay: [1, [Validators.required, Validators.min(1), Validators.max(28)]],
+    rentGraceDays: [3, [Validators.required, Validators.min(0), Validators.max(31)]],
+    depositRefundDays: [14, [Validators.required, Validators.min(0), Validators.max(365)]],
+    prorateRent: [true],
   });
 
   constructor() {
@@ -109,6 +137,10 @@ export class SettingsPage {
           terminationNoticeDays: s.terminationNoticeDays,
           leaseTemplateVersion: s.leaseTemplateVersion,
           monthToMonthOnLapse: s.monthToMonthOnLapse,
+          rentDueDay: s.rentDueDay,
+          rentGraceDays: s.rentGraceDays,
+          depositRefundDays: s.depositRefundDays,
+          prorateRent: s.prorateRent,
         });
       })
       .catch((e: unknown) => this.error.set(errorMessage(e)));

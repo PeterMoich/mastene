@@ -44,6 +44,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/leases/lease-detail').then((m) => m.LeaseDetail),
       },
       {
+        path: 'payments',
+        canActivate: [roleGuard('Landlord')],
+        title: 'Payments · Tenant Manager',
+        loadComponent: () => import('./features/payments/payments-page').then((m) => m.PaymentsPage),
+      },
+      {
         path: 'settings',
         canActivate: [roleGuard('Admin')],
         title: 'Settings · Tenant Manager',

@@ -153,6 +153,11 @@ jobs:
           doc=$(python3 -c "import json;d=json.load(open('lease.json'));assert d['status']=='Active',d['status'];print(d['documents'][-1]['id'])")
           curl -sf http://localhost:4200/api/v1/leases/$lease/documents/$doc -H "Authorization: Bearer $ttoken" -o lease.pdf
           head -c 5 lease.pdf | grep -q '%PDF-' && echo "::notice title=Smoke test::Tenant downloaded their signed lease PDF ($(stat -c %s lease.pdf) bytes) from Azurite via nginx"
+          # Phase 3: the tenant's verified payments have receipts stored in Azurite.
+          curl -sf "http://localhost:4200/api/v1/payments?status=Verified&pageSize=1" -H "Authorization: Bearer $ttoken" > payments.json
+          pay=$(python3 -c "import json;d=json.load(open('payments.json'));assert d['totalCount']>0,d;print(d['items'][0]['id'])")
+          curl -sf http://localhost:4200/api/v1/payments/$pay/receipt -H "Authorization: Bearer $ttoken" -o receipt.pdf
+          head -c 5 receipt.pdf | grep -q '%PDF-' && echo "::notice title=Smoke test::Tenant downloaded a rent receipt ($(stat -c %s receipt.pdf) bytes)"
           curl -sf http://localhost:4200/ | grep -q "<app-root" && echo "Web app is served"
           curl -sf http://localhost:5080/health/ready && echo " API is ready"
       - name: Show container logs on failure

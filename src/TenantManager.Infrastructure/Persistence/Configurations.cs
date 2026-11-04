@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TenantManager.Domain.Auditing;
 using TenantManager.Domain.Leases;
+using TenantManager.Domain.Payments;
 using TenantManager.Domain.Properties;
 using TenantManager.Domain.Settings;
 using TenantManager.Domain.Tenants;
@@ -180,5 +181,69 @@ internal sealed class BusinessSettingsConfiguration : IEntityTypeConfiguration<B
         b.Property(s => s.DefaultEscalationPct).HasPrecision(5, 2);
         b.Property(s => s.MaxEscalationPct).HasPrecision(5, 2);
         b.Property(s => s.LeaseTemplateVersion).HasMaxLength(Lease.TemplateVersionMax).IsRequired();
+    }
+}
+
+internal sealed class RentChargeConfiguration : IEntityTypeConfiguration<RentCharge>
+{
+    public void Configure(EntityTypeBuilder<RentCharge> b)
+    {
+        b.ToTable("RentCharges");
+        b.Property(c => c.Period).HasMaxLength(7).IsFixedLength().IsRequired();
+        b.Ignore(c => c.BillingPeriod);
+        b.HasIndex(c => new { c.LeaseId, c.Period }).IsUnique(); // one charge per lease per month
+        b.HasIndex(c => new { c.OverdueNoticeOn, c.DueDate });
+        b.HasOne<Lease>().WithMany().HasForeignKey(c => c.LeaseId).OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+internal sealed class ProofOfPaymentConfiguration : IEntityTypeConfiguration<ProofOfPayment>
+{
+    public void Configure(EntityTypeBuilder<ProofOfPayment> b)
+    {
+        b.ToTable("Payments");
+        b.Property(p => p.Period).HasMaxLength(7).IsFixedLength();
+        b.Property(p => p.Reference).HasMaxLength(ProofOfPayment.ReferenceMax);
+        b.Property(p => p.FileKey).HasMaxLength(200).IsRequired();
+        b.Property(p => p.FileName).HasMaxLength(ProofOfPayment.FileNameMax).IsRequired();
+        b.Property(p => p.ContentType).HasMaxLength(50).IsRequired();
+        b.Property(p => p.Sha256).HasMaxLength(64).IsFixedLength().IsRequired();
+        b.Property(p => p.Status).HasConversion<string>().HasMaxLength(20);
+        b.Property(p => p.RejectionReason).HasMaxLength(ProofOfPayment.ReasonMax);
+        b.Property(p => p.ReviewedByName).HasMaxLength(120);
+        b.Property(p => p.ReceiptNumber).HasMaxLength(20);
+        b.Property(p => p.ReceiptKey).HasMaxLength(200);
+        b.Property(p => p.RowVersion).IsRowVersion();
+
+        // BR10: the same file can't be submitted twice for a lease, unless the earlier one was rejected.
+        b.HasIndex(p => new { p.LeaseId, p.Sha256 }).IsUnique().HasFilter("[Status] <> N'Rejected'");
+        b.HasIndex(p => new { p.OwnerId, p.Status, p.CreatedAt });
+        b.HasIndex(p => new { p.TenantId, p.CreatedAt });
+        b.HasIndex(p => p.ReceiptNumber).IsUnique().HasFilter("[ReceiptNumber] IS NOT NULL");
+        b.HasOne<Lease>().WithMany().HasForeignKey(p => p.LeaseId).OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+internal sealed class DepositConfiguration : IEntityTypeConfiguration<Deposit>
+{
+    public void Configure(EntityTypeBuilder<Deposit> b)
+    {
+        b.ToTable("Deposits");
+        b.Property(d => d.LeaseNumber).HasMaxLength(20).IsRequired();
+        b.Property(d => d.Status).HasConversion<string>().HasMaxLength(20);
+        b.Ignore(d => d.TotalDeducted);
+        b.Ignore(d => d.Remaining);
+        b.HasIndex(d => d.LeaseNumber).IsUnique(); // one deposit per lease, shared by its renewals
+        b.HasMany(d => d.Deductions).WithOne().HasForeignKey(x => x.DepositId).OnDelete(DeleteBehavior.Cascade);
+        b.Navigation(d => d.Deductions).UsePropertyAccessMode(PropertyAccessMode.Field);
+    }
+}
+
+internal sealed class DepositDeductionConfiguration : IEntityTypeConfiguration<DepositDeduction>
+{
+    public void Configure(EntityTypeBuilder<DepositDeduction> b)
+    {
+        b.ToTable("DepositDeductions");
+        b.Property(x => x.Reason).HasMaxLength(Deposit.ReasonMax).IsRequired();
     }
 }

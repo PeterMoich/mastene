@@ -40,6 +40,14 @@ public sealed class ApiExceptionHandler(IProblemDetailsService problemDetails) :
                 Title = d.Message,
                 Extensions = { ["code"] = d.Code },
             },
+            BadHttpRequestException b => new ProblemDetails
+            {
+                Status = b.StatusCode,
+                Title = b.StatusCode == StatusCodes.Status413PayloadTooLarge
+                    ? "The upload is too large. Files can be up to 5 MB."
+                    : "The request could not be read.",
+                Extensions = { ["code"] = b.StatusCode == StatusCodes.Status413PayloadTooLarge ? "file.too_large" : "bad_request" },
+            },
             UnauthorizedAccessException => new ProblemDetails
             {
                 Status = StatusCodes.Status403Forbidden,

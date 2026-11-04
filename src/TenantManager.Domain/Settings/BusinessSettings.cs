@@ -1,6 +1,7 @@
 using System.Globalization;
 using TenantManager.Domain.Common;
 using TenantManager.Domain.Leases;
+using TenantManager.Domain.Payments;
 
 namespace TenantManager.Domain.Settings;
 
@@ -29,12 +30,41 @@ public sealed class BusinessSettings : Entity, IAuditable
     /// <summary>LEGAL REVIEW NEEDED.</summary>
     public string LeaseTemplateVersion { get; private set; } = string.Empty;
 
+    /// <summary>Day of the month rent is due (1 to 28, so every month has it).</summary>
+    public int RentDueDay { get; private set; }
+
+    /// <summary>Days after the due day before unpaid rent is overdue.</summary>
+    public int RentGraceDays { get; private set; }
+
+    /// <summary>Charge partial first and last months by days. A commercial choice.</summary>
+    public bool ProrateRent { get; private set; }
+
+    /// <summary>LEGAL REVIEW NEEDED. Days after the lease ends by which the deposit should be refunded.</summary>
+    public int DepositRefundDays { get; private set; }
+
     public static BusinessSettings CreateDefault()
     {
         var settings = new BusinessSettings();
         settings.Apply(LeaseSettings.Defaults);
+        settings.ApplyRent(RentSettings.Defaults);
         return settings;
     }
+
+    public void ApplyRent(RentSettings value)
+    {
+        if (value.DueDay is < 1 or > 28)
+            throw new DomainRuleException("rentDueDay.invalid", "Rent due day must be between 1 and 28.");
+        if (value.GraceDays is < 0 or > 31)
+            throw new DomainRuleException("rentGraceDays.invalid", "Grace period must be between 0 and 31 days.");
+        if (value.DepositRefundDays is < 0 or > 365)
+            throw new DomainRuleException("depositRefundDays.invalid", "Refund days must be between 0 and 365.");
+        RentDueDay = value.DueDay;
+        RentGraceDays = value.GraceDays;
+        ProrateRent = value.ProrateFirstAndLastMonth;
+        DepositRefundDays = value.DepositRefundDays;
+    }
+
+    public RentSettings ToRentSettings() => new(RentDueDay, RentGraceDays, ProrateRent, DepositRefundDays);
 
     public void Apply(LeaseSettings value)
     {

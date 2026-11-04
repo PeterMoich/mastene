@@ -13,7 +13,7 @@ No legal rule is hard-coded. Each value below is a setting with a placeholder de
 | Setting | Placeholder default | Why it needs review |
 | --- | --- | --- |
 | `Deposit.InterestBearingAccountRequired` | true | Rental Housing Act deposit handling |
-| `Deposit.RefundDaysAfterMoveOut` | 14 | Refund timing depends on inspection and deductions |
+| `DepositRefundDays` (implemented in Phase 3) | 14 | Refund timing depends on inspection and deductions |
 | `Deposit.RequireJointInspection` | true | Move-in and move-out inspection rules |
 | `Lease.TerminationNoticeDaysTenant` | 20 business days | CPA cancellation rules for fixed-term leases |
 | `Lease.RenewalNoticeDaysBeforeEnd` | 40 business days | CPA expiry notice requirement |

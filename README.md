@@ -4,9 +4,10 @@ A web app for a small South African residential landlord: properties and units, 
 leases, rent and proof of payment, maintenance issues, and WhatsApp messaging.
 It is a portfolio and test project; all data in it is synthetic.
 
-**Status: Phase 2 of 6** — authentication and roles, properties, units and tenants (Phase 1), and
-12-month leases with PDF generation, signing, renewals, termination and a daily lifecycle job
-(Phase 2). Payments, issues and WhatsApp follow in Phases 3 to 5.
+**Status: Phase 3 of 6** — authentication and roles, properties, units and tenants (Phase 1);
+12-month leases with PDF generation, signing, renewals and a daily lifecycle job (Phase 2); and
+rent charges, proof of payment, the rent ledger, receipts and deposits (Phase 3). Issues and
+WhatsApp follow in Phases 4 and 5.
 
 | Layer | Technology |
 | --- | --- |
@@ -50,6 +51,10 @@ signed leases. Sipho's (Jacaranda Court, Flat 1) started eight months ago. Lerat
 Cottage A) has about a month left, so it shows as **Expiring**. Johan has no lease, so you can try the
 whole flow: as the landlord, create a draft for him, send it for signing and sign it; then give Johan
 a login on the Tenants page, sign in as him and sign too.
+
+The leases come with rent history. Sipho is paid up except this month, and his proof of payment for
+it is waiting on the landlord's **Payments** page. Lerato paid only part of last month and nothing
+this month, so she is in **arrears**. Every verified payment has a receipt PDF.
 
 To start again from an empty database: `docker compose down -v`. If you ran Phase 1 before, do this
 once so the Phase 2 demo leases are seeded.
@@ -97,7 +102,13 @@ so a failing test points straight at the rule. Covered so far:
 | BR05 — Expiring at 90 days; notices at 90, 60 and 30 days, each once | `LeaseTests`, `LeaseApiTests` |
 | BR06 — renewal needs both signatures; escalation rounded to the nearest rand | `LeaseTests`, `LeaseApiTests` |
 | BR07 — at the end with no renewal: month-to-month or ended, per setting | `LeaseTests`, `LeaseApiTests` |
-| BR19 — a tenant with a lease in force or a balance cannot be deleted; soft delete | `TenantTests`, `TenantApiTests` |
+| BR08 — rent due on a set day with a grace period, then overdue; one reminder per month | `RentLedgerTests`, `PaymentApiTests` |
+| BR09 — partial payments, oldest month first, arrears | `RentLedgerTests`, `PaymentApiTests` |
+| BR10 — the same proof file can't be submitted twice | `PaymentApiTests` |
+| BR11 — rejection needs a reason; verifying issues a receipt | `ProofOfPaymentTests`, `PaymentApiTests` |
+| BR12 — PDF/JPG/PNG up to 5 MB, typed from the file's bytes, virus-scan hook | `UploadValidatorTests`, `PaymentApiTests` |
+| BR13 — deposit kept apart from rent; deductions with reasons, never more than held | `DepositTests`, `PaymentApiTests` |
+| BR19 — a tenant with a lease in force or a balance cannot be deleted; soft delete | `TenantTests`, `TenantApiTests`, `PaymentApiTests` |
 | BR20 — every state change is audited; the audit log is append-only | `AuditTests`, `LeaseApiTests` |
 
 ## Architecture
@@ -156,6 +167,23 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 - PDFs are stored once and never overwritten, in Azure Blob Storage (Azurite locally) or a local
   folder, chosen by `Storage:Provider`. They are only served through the API, never by public URL.
 
+### Rent, payments and deposits
+
+- **Charges.** Each month a lease is in force gets one rent charge, raised when the lease starts and
+  then by the daily job on the 1st. A partial first or last month is charged by days (a setting).
+  Rent is due on the configured day and is **overdue** after the grace period; the job records one
+  overdue reminder per month for Phase 5 to send.
+- **Proof of payment.** The tenant (or the landlord on their behalf) uploads a PDF, JPG or PNG up to
+  5 MB. The server checks the real file type from its first bytes, scans it, and refuses an exact
+  duplicate. The landlord **verifies** it (it then counts, and a receipt PDF is issued) or **rejects**
+  it with a reason.
+- **Ledger.** Worked out from charges and verified payments each time it is shown, never stored, so
+  it can't drift ([ADR-0014](docs/adr/0014-rent-ledger-is-computed-not-stored.md)). A payment pays
+  the month it was marked for, then the oldest unpaid months; anything extra is credit.
+- **Deposit.** Kept apart from rent and shared by every version of a lease. The landlord records
+  when it was received; deductions (each with a reason) and the refund are recorded after the lease
+  ends, and deductions can never exceed what is held.
+
 ### API (v1)
 
 | Method | Route | Role |
@@ -176,6 +204,13 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 | POST | `/api/v1/leases/{id}/sign` | Landlord, or the lease's tenant |
 | GET | `/api/v1/leases/{id}/documents/{documentId}` (PDF) | Landlord, or the lease's tenant |
 | POST | `/api/v1/lease-checks/run` | Landlord |
+| GET | `/api/v1/leases/{id}/ledger` | Landlord, or the lease's tenant |
+| GET, POST | `/api/v1/payments` (POST is a multipart upload) | Landlord, or the tenant (own) |
+| GET | `/api/v1/payments/{id}`, `/payments/{id}/file`, `/payments/{id}/receipt` | Landlord, or the tenant (own) |
+| POST | `/api/v1/payments/{id}/verify`, `/payments/{id}/reject` | Landlord |
+| GET | `/api/v1/arrears` | Landlord |
+| GET | `/api/v1/leases/{id}/deposit` | Landlord, or the lease's tenant |
+| POST | `/api/v1/leases/{id}/deposit/receive`, `/deductions`, `/refund` | Landlord |
 | GET, PUT | `/api/v1/settings` | GET Admin and Landlord, PUT Admin |
 | GET, POST | `/api/v1/users`; PUT `/users/{id}/role`, `/users/{id}/lock` | Admin |
 | GET | `/api/v1/audit` | Admin, Landlord |
@@ -196,7 +231,7 @@ A failure in any of the first three blocks the images.
 ## Legal note
 
 South African rental law and POPIA apply to an app like this, but no legal rules are invented here.
-Notice periods, escalation limits and month-to-month continuation are settings with placeholder
+Notice periods, escalation limits, month-to-month continuation and the deposit refund period are settings with placeholder
 defaults marked **LEGAL REVIEW NEEDED** ([ADR-0011](docs/adr/0011-legal-values-are-configuration-flagged-for-review.md)),
 which an Admin can change on the Settings page. The lease PDF wording (template `v0-test`) is
 placeholder text, and every page carries a "SAMPLE TEST DOCUMENT - LEGAL REVIEW NEEDED" banner.

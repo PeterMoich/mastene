@@ -15,6 +15,8 @@ import { AuthService } from '../../core/auth.service';
 import { applyServerErrors, errorMessage } from '../../core/problem';
 import { confirm } from '../../shared/dialogs';
 import { LeaseForm } from './lease-form';
+import { LeaseDeposit, LeaseRent } from './lease-money';
+import { saveBlob } from '../../shared/download';
 import { addDaysIso, escalatedRent, LeaseStatusChip, todayIso } from './lease-shared';
 
 @Component({
@@ -182,7 +184,7 @@ export class TerminateDialog {
 
 @Component({
   selector: 'app-lease-detail',
-  imports: [RouterLink, CurrencyPipe, DatePipe, DecimalPipe, MatButtonModule, MatIconModule, LeaseStatusChip],
+  imports: [RouterLink, CurrencyPipe, DatePipe, DecimalPipe, MatButtonModule, MatIconModule, LeaseStatusChip, LeaseRent, LeaseDeposit],
   template: `
     <a mat-button routerLink="/leases"><mat-icon aria-hidden="true">arrow_back</mat-icon> {{ isTenant() ? 'My leases' : 'All leases' }}</a>
     @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
@@ -267,6 +269,13 @@ export class TerminateDialog {
           </ul>
         }
       </section>
+
+      @if (l.activatedOn) {
+        <app-lease-rent [leaseId]="l.id" />
+      }
+      @if (l.status !== 'Draft') {
+        <app-lease-deposit [leaseId]="l.id" />
+      }
 
       @if (l.documents.length > 0) {
         <section aria-labelledby="doc-heading">
@@ -433,12 +442,7 @@ export class LeaseDetail {
   protected async download(l: Lease, d: LeaseDocument): Promise<void> {
     try {
       const blob = await firstValueFrom(this.api.leaseDocument(l.id, d.id));
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${l.leaseNumber}-v${l.version}-${d.kind === 'Signed' ? 'signed' : 'for-signing'}.pdf`;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      saveBlob(blob, `${l.leaseNumber}-v${l.version}-${d.kind === 'Signed' ? 'signed' : 'for-signing'}.pdf`);
     } catch (e) {
       this.snack.open(errorMessage(e), 'Close');
     }
