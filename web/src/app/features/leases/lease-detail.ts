@@ -15,6 +15,7 @@ import { AuthService } from '../../core/auth.service';
 import { applyServerErrors, errorMessage } from '../../core/problem';
 import { confirm } from '../../shared/dialogs';
 import { LeaseForm } from './lease-form';
+import { LeaseInspectionsSection } from '../inspections/inspections';
 import { LeaseDeposit, LeaseRent } from './lease-money';
 import { saveBlob } from '../../shared/download';
 import { addDaysIso, escalatedRent, LeaseStatusChip, todayIso } from './lease-shared';
@@ -184,7 +185,7 @@ export class TerminateDialog {
 
 @Component({
   selector: 'app-lease-detail',
-  imports: [RouterLink, CurrencyPipe, DatePipe, DecimalPipe, MatButtonModule, MatIconModule, LeaseStatusChip, LeaseRent, LeaseDeposit],
+  imports: [RouterLink, CurrencyPipe, DatePipe, DecimalPipe, MatButtonModule, MatIconModule, LeaseStatusChip, LeaseRent, LeaseDeposit, LeaseInspectionsSection],
   template: `
     <a mat-button routerLink="/leases"><mat-icon aria-hidden="true">arrow_back</mat-icon> {{ isTenant() ? 'My leases' : 'All leases' }}</a>
     @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
@@ -275,6 +276,7 @@ export class TerminateDialog {
       }
       @if (l.status !== 'Draft') {
         <app-lease-deposit [leaseId]="l.id" />
+        <app-lease-inspections [leaseId]="l.id" />
       }
 
       @if (l.documents.length > 0) {

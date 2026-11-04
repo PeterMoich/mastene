@@ -11,68 +11,69 @@ namespace TenantManager.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Defaults match SlaTargets.Defaults so an existing settings row gets valid targets.
             migrationBuilder.AddColumn<int>(
                 name: "IssueAutoCloseDays",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 7);
 
             migrationBuilder.AddColumn<int>(
                 name: "SlaHighResolutionHours",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 72);
 
             migrationBuilder.AddColumn<int>(
                 name: "SlaHighResponseHours",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 24);
 
             migrationBuilder.AddColumn<int>(
                 name: "SlaLowResolutionHours",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 336);
 
             migrationBuilder.AddColumn<int>(
                 name: "SlaLowResponseHours",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 72);
 
             migrationBuilder.AddColumn<int>(
                 name: "SlaMediumResolutionHours",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 168);
 
             migrationBuilder.AddColumn<int>(
                 name: "SlaMediumResponseHours",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 48);
 
             migrationBuilder.AddColumn<int>(
                 name: "SlaUrgentResolutionHours",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 24);
 
             migrationBuilder.AddColumn<int>(
                 name: "SlaUrgentResponseHours",
                 table: "Settings",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 4);
 
             migrationBuilder.CreateTable(
                 name: "Contractors",

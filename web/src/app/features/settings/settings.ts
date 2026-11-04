@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,7 +9,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../core/api.service';
-import { applyServerErrors, errorMessage } from '../../core/problem';
+import { applyServerErrors, errorMessage, ProblemDetails } from '../../core/problem';
 
 /** Admin: environment settings. Fields the API flags are placeholders needing legal review (ADR-0011). */
 @Component({
@@ -87,6 +88,36 @@ import { applyServerErrors, errorMessage } from '../../core/problem';
             <mat-slide-toggle formControlName="prorateRent">Charge partial first and last months by days</mat-slide-toggle>
             <span class="hint">Off: a partial month is charged in full.</span>
           </div>
+          <h2>Maintenance targets</h2>
+          <p class="hint">
+            Hours from when an issue is logged, counted around the clock. An issue that misses a target is escalated.
+            More urgent priorities can't have slower targets. These are suggestions, not legal deadlines.
+          </p>
+          <div class="sla" role="group" aria-label="Response and resolution targets per priority">
+            @for (p of slaRows; track p.key) {
+              <span class="prio" [id]="'sla-' + p.key">{{ p.label }}</span>
+              <mat-form-field subscriptSizing="dynamic">
+                <mat-label>Respond within</mat-label>
+                <input matInput type="number" [formControlName]="p.response" min="1" max="2160" required
+                       [attr.aria-describedby]="'sla-' + p.key" />
+                <span matTextSuffix>h</span>
+              </mat-form-field>
+              <mat-form-field subscriptSizing="dynamic">
+                <mat-label>Resolve within</mat-label>
+                <input matInput type="number" [formControlName]="p.resolution" min="1" max="2160" required
+                       [attr.aria-describedby]="'sla-' + p.key" />
+                <span matTextSuffix>h</span>
+              </mat-form-field>
+            }
+          </div>
+          @if (slaError()) { <p class="error" role="alert">{{ slaError() }}</p> }
+          <mat-form-field>
+            <mat-label>Close a resolved issue automatically after</mat-label>
+            <input matInput type="number" formControlName="issueAutoCloseDays" min="1" max="60" required />
+            <span matTextSuffix>days</span>
+            <mat-hint>If the tenant neither confirms the fix nor reopens it.</mat-hint>
+            <mat-error>{{ message('issueAutoCloseDays') }}</mat-error>
+          </mat-form-field>
           <div class="actions">
             <button mat-flat-button type="submit" [disabled]="busy()">Save settings</button>
           </div>
@@ -104,6 +135,9 @@ import { applyServerErrors, errorMessage } from '../../core/problem';
     .toggle { display: flex; flex-direction: column; gap: 4px; margin: 8px 0 16px; }
     .hint { font: var(--mat-sys-body-small); color: var(--mat-sys-on-surface-variant); }
     .error { color: var(--mat-sys-error); }
+    .sla { display: grid; grid-template-columns: 90px 1fr 1fr; gap: 8px 12px; align-items: center; margin: 8px 0 16px; }
+    .prio { font: var(--mat-sys-label-large); }
+    @media (max-width: 520px) { .sla { grid-template-columns: 1fr 1fr; } .prio { grid-column: 1 / -1; } }
   `,
 })
 export class SettingsPage {
@@ -112,6 +146,13 @@ export class SettingsPage {
   protected readonly busy = signal(false);
   protected readonly error = signal<string | null>(null);
   private readonly flagged = signal<string[]>([]);
+  protected readonly slaError = signal<string | null>(null);
+  protected readonly slaRows = (['Urgent', 'High', 'Medium', 'Low'] as const).map((label) => ({
+    key: label.toLowerCase(),
+    label,
+    response: `sla${label}ResponseHours` as const,
+    resolution: `sla${label}ResolutionHours` as const,
+  }));
 
   protected readonly form = inject(FormBuilder).nonNullable.group({
     expiryNoticeDays: ['', [Validators.required, Validators.pattern(/^\s*\d+(\s*,\s*\d+)*\s*$/)]],
@@ -124,6 +165,15 @@ export class SettingsPage {
     rentGraceDays: [3, [Validators.required, Validators.min(0), Validators.max(31)]],
     depositRefundDays: [14, [Validators.required, Validators.min(0), Validators.max(365)]],
     prorateRent: [true],
+    slaUrgentResponseHours: [4, [Validators.required, Validators.min(1), Validators.max(2160)]],
+    slaUrgentResolutionHours: [24, [Validators.required, Validators.min(1), Validators.max(2160)]],
+    slaHighResponseHours: [24, [Validators.required, Validators.min(1), Validators.max(2160)]],
+    slaHighResolutionHours: [72, [Validators.required, Validators.min(1), Validators.max(2160)]],
+    slaMediumResponseHours: [48, [Validators.required, Validators.min(1), Validators.max(2160)]],
+    slaMediumResolutionHours: [168, [Validators.required, Validators.min(1), Validators.max(2160)]],
+    slaLowResponseHours: [72, [Validators.required, Validators.min(1), Validators.max(2160)]],
+    slaLowResolutionHours: [336, [Validators.required, Validators.min(1), Validators.max(2160)]],
+    issueAutoCloseDays: [7, [Validators.required, Validators.min(1), Validators.max(60)]],
   });
 
   constructor() {
@@ -141,6 +191,15 @@ export class SettingsPage {
           rentGraceDays: s.rentGraceDays,
           depositRefundDays: s.depositRefundDays,
           prorateRent: s.prorateRent,
+          slaUrgentResponseHours: s.slaUrgentResponseHours,
+          slaUrgentResolutionHours: s.slaUrgentResolutionHours,
+          slaHighResponseHours: s.slaHighResponseHours,
+          slaHighResolutionHours: s.slaHighResolutionHours,
+          slaMediumResponseHours: s.slaMediumResponseHours,
+          slaMediumResolutionHours: s.slaMediumResolutionHours,
+          slaLowResponseHours: s.slaLowResponseHours,
+          slaLowResolutionHours: s.slaLowResolutionHours,
+          issueAutoCloseDays: s.issueAutoCloseDays,
         });
       })
       .catch((e: unknown) => this.error.set(errorMessage(e)));
@@ -165,6 +224,7 @@ export class SettingsPage {
       return;
     }
     this.busy.set(true);
+    this.slaError.set(null);
     const v = this.form.getRawValue();
     try {
       await firstValueFrom(
@@ -175,7 +235,9 @@ export class SettingsPage {
       );
       this.snack.open('Settings saved.', undefined, { duration: 3000 });
     } catch (e) {
-      if (!applyServerErrors(this.form, e)) this.error.set(errorMessage(e));
+      const sla = e instanceof HttpErrorResponse ? (e.error as ProblemDetails | null)?.errors?.['sla'] : undefined;
+      if (sla) this.slaError.set(sla[0]);
+      else if (!applyServerErrors(this.form, e)) this.error.set(errorMessage(e));
     } finally {
       this.busy.set(false);
     }

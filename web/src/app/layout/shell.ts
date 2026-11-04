@@ -20,8 +20,11 @@ const NAV: NavItem[] = [
   { path: '/tenants', label: 'Tenants', icon: 'group', roles: ['Landlord'] },
   { path: '/leases', label: 'Leases', icon: 'contract', roles: ['Landlord'] },
   { path: '/payments', label: 'Payments', icon: 'payments', roles: ['Landlord'] },
+  { path: '/issues', label: 'Issues', icon: 'build', roles: ['Landlord'] },
+  { path: '/contractors', label: 'Contractors', icon: 'engineering', roles: ['Landlord'] },
   { path: '/my-details', label: 'My details', icon: 'person', roles: ['Tenant'] },
   { path: '/leases', label: 'My leases', icon: 'contract', roles: ['Tenant'] },
+  { path: '/issues', label: 'My issues', icon: 'build', roles: ['Tenant'] },
   { path: '/users', label: 'Users', icon: 'manage_accounts', roles: ['Admin'] },
   { path: '/settings', label: 'Settings', icon: 'settings', roles: ['Admin'] },
 ];

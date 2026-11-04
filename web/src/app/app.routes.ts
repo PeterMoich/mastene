@@ -50,6 +50,30 @@ export const routes: Routes = [
         loadComponent: () => import('./features/payments/payments-page').then((m) => m.PaymentsPage),
       },
       {
+        path: 'issues',
+        canActivate: [roleGuard('Landlord', 'Tenant')],
+        title: 'Issues · Tenant Manager',
+        loadComponent: () => import('./features/issues/issue-list').then((m) => m.IssueList),
+      },
+      {
+        path: 'issues/:id',
+        canActivate: [roleGuard('Landlord', 'Tenant')],
+        title: 'Issue · Tenant Manager',
+        loadComponent: () => import('./features/issues/issue-detail').then((m) => m.IssueDetail),
+      },
+      {
+        path: 'contractors',
+        canActivate: [roleGuard('Landlord')],
+        title: 'Contractors · Tenant Manager',
+        loadComponent: () => import('./features/contractors/contractor-list').then((m) => m.ContractorList),
+      },
+      {
+        path: 'inspections/:id',
+        canActivate: [roleGuard('Landlord', 'Tenant')],
+        title: 'Inspection · Tenant Manager',
+        loadComponent: () => import('./features/inspections/inspections').then((m) => m.InspectionDetail),
+      },
+      {
         path: 'settings',
         canActivate: [roleGuard('Admin')],
         title: 'Settings · Tenant Manager',
