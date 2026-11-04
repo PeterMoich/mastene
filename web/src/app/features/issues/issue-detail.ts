@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -52,7 +52,7 @@ export function activity(issue: Issue): ActivityEntry[] {
 @Component({
   selector: 'app-issue-detail',
   imports: [
-    RouterLink, DatePipe, ReactiveFormsModule, MatButtonModule, MatIconModule, MatMenuModule, MatFormFieldModule,
+    RouterLink, DatePipe, FormsModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatMenuModule, MatFormFieldModule,
     MatInputModule, IssueStatusChip, IssuePriorityLabel, EscalatedBadge, PhotoStrip,
   ],
   template: `

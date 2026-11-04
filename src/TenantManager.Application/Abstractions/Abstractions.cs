@@ -3,6 +3,7 @@ using TenantManager.Domain.Auditing;
 using TenantManager.Domain.Inspections;
 using TenantManager.Domain.Issues;
 using TenantManager.Domain.Leases;
+using TenantManager.Domain.Messaging;
 using TenantManager.Domain.Payments;
 using TenantManager.Domain.Properties;
 using TenantManager.Domain.Settings;
@@ -28,6 +29,9 @@ public interface IApplicationDbContext
     DbSet<Issue> Issues { get; }
     DbSet<Contractor> Contractors { get; }
     DbSet<Inspection> Inspections { get; }
+    DbSet<ConsentRecord> Consents { get; }
+    DbSet<Conversation> Conversations { get; }
+    DbSet<Message> Messages { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>Next lease number, e.g. L2026-0007, from a database sequence (never reused).</summary>

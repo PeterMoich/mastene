@@ -22,6 +22,8 @@ No legal rule is hard-coded. Each value below is a setting with a placeholder de
 | `Arrears.LateFeeEnabled` | false | Limits on penalties and interest |
 | `Popia.RetentionYearsAfterLeaseEnd` | 5 | Retention versus erasure requests |
 | `Lease.TemplateVersion` | v0-test | The template wording itself |
+| WhatsApp consent wording (`wa-consent-v1`, Phase 5) | placeholder text | POPIA: consent must be voluntary, specific and informed |
+| WhatsApp opt-out words (Phase 5) | STOP, UNSUBSCRIBE, STOP ALL | Whether other replies must also count as withdrawal |
 
 Phase 1 also collects no ID numbers: POPIA's minimality principle says not to collect them until a feature needs them.
 

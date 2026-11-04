@@ -245,6 +245,8 @@ export interface LifecycleSummary {
   overdueNoticesRecorded: number;
   issuesEscalated: number;
   issuesAutoClosed: number;
+  remindersQueued: number;
+  messagesSent: number;
 }
 
 export interface Settings {
@@ -267,6 +269,7 @@ export interface Settings {
   slaLowResponseHours: number;
   slaLowResolutionHours: number;
   issueAutoCloseDays: number;
+  rentReminderDaysBefore: number;
   /** Field names whose values are placeholders needing legal review. */
   legalReviewNeeded: string[];
 }
@@ -605,3 +608,76 @@ export interface Inspection {
 export const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 export const PHOTO_TYPES = ['image/jpeg', 'image/png'];
 export const MAX_PHOTOS = 5;
+
+// ---- Messaging (Phase 5) ----
+
+export type MessageDirection = 'Inbound' | 'Outbound';
+export type MessageChannel = 'WhatsApp' | 'App';
+export type MessageStatus = 'Queued' | 'Sent' | 'Delivered' | 'Read' | 'Failed' | 'Received';
+export type ConsentSource = 'Tenant' | 'Landlord' | 'WhatsAppStop';
+
+export interface ChatMessage {
+  id: string;
+  direction: MessageDirection;
+  channel: MessageChannel;
+  kind: 'Text' | 'Template';
+  templateName: string | null;
+  body: string;
+  status: MessageStatus;
+  error: string | null;
+  at: string;
+  sentAt: string | null;
+  byName: string | null;
+}
+
+export interface ConsentEntry {
+  granted: boolean;
+  at: string;
+  source: ConsentSource;
+  recordedByName: string;
+  textVersion: string;
+  phone: string;
+  note: string | null;
+}
+
+export interface ConsentStatus {
+  granted: boolean;
+  phone: string;
+  textVersion: string;
+  text: string;
+  latest: ConsentEntry | null;
+  history: ConsentEntry[];
+}
+
+export interface ConversationSummary {
+  tenantId: string;
+  tenantName: string;
+  phone: string;
+  lastMessageAt: string | null;
+  lastMessagePreview: string | null;
+  unread: number;
+  inServiceWindow: boolean;
+  consentGranted: boolean;
+}
+
+export interface Thread {
+  tenantId: string;
+  tenantName: string;
+  phone: string;
+  consent: ConsentStatus;
+  inServiceWindow: boolean;
+  serviceWindowEndsAt: string | null;
+  /** A free-form reply goes to WhatsApp now (consent and inside the 24-hour window). */
+  whatsAppTextAllowed: boolean;
+  /** The fake WhatsApp provider is in use, so the landlord can simulate the tenant replying. */
+  simulationAvailable: boolean;
+  messages: ChatMessage[];
+}
+
+export interface MessageTemplate {
+  name: string;
+  description: string;
+  body: string;
+  parameterNames: string[];
+  manual: boolean;
+}

@@ -22,6 +22,10 @@ import { applyServerErrors, errorMessage, ProblemDetails } from '../../core/prob
       They are not legal advice and must be confirmed by a qualified person before any real use.
     </p>
     @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+    <p>
+      <button mat-stroked-button type="button" (click)="openJobs()">Open the background jobs dashboard</button>
+      <span class="hint"> Reminders, the daily lease run and message sending. Opens in a new tab; the link works once.</span>
+    </p>
     <mat-card appearance="outlined" class="card">
       <mat-card-content>
         <form [formGroup]="form" (ngSubmit)="save()" novalidate class="fields">
@@ -118,6 +122,14 @@ import { applyServerErrors, errorMessage, ProblemDetails } from '../../core/prob
             <mat-hint>If the tenant neither confirms the fix nor reopens it.</mat-hint>
             <mat-error>{{ message('issueAutoCloseDays') }}</mat-error>
           </mat-form-field>
+          <h2>WhatsApp reminders</h2>
+          <mat-form-field>
+            <mat-label>Remind tenants before rent is due</mat-label>
+            <input matInput type="number" formControlName="rentReminderDaysBefore" min="0" max="14" required />
+            <span matTextSuffix>days</span>
+            <mat-hint>0 sends it on the due day. Only tenants who agreed to WhatsApp messages get reminders.</mat-hint>
+            <mat-error>{{ message('rentReminderDaysBefore') }}</mat-error>
+          </mat-form-field>
           <div class="actions">
             <button mat-flat-button type="submit" [disabled]="busy()">Save settings</button>
           </div>
@@ -174,6 +186,7 @@ export class SettingsPage {
     slaLowResponseHours: [72, [Validators.required, Validators.min(1), Validators.max(2160)]],
     slaLowResolutionHours: [336, [Validators.required, Validators.min(1), Validators.max(2160)]],
     issueAutoCloseDays: [7, [Validators.required, Validators.min(1), Validators.max(60)]],
+    rentReminderDaysBefore: [3, [Validators.required, Validators.min(0), Validators.max(14)]],
   });
 
   constructor() {
@@ -200,9 +213,23 @@ export class SettingsPage {
           slaLowResponseHours: s.slaLowResponseHours,
           slaLowResolutionHours: s.slaLowResolutionHours,
           issueAutoCloseDays: s.issueAutoCloseDays,
+          rentReminderDaysBefore: s.rentReminderDaysBefore,
         });
       })
       .catch((e: unknown) => this.error.set(errorMessage(e)));
+  }
+
+  protected async openJobs(): Promise<void> {
+    // Open the tab first (in the click), then point it at the one-time link, so pop-up blockers allow it.
+    const tab = window.open('', '_blank');
+    try {
+      const link = await firstValueFrom(this.api.jobsDashboardLink());
+      if (tab) tab.location.href = link.url;
+      else window.location.href = link.url;
+    } catch (e) {
+      tab?.close();
+      this.snack.open(errorMessage(e), 'Close');
+    }
   }
 
   protected legal(field: string): string {

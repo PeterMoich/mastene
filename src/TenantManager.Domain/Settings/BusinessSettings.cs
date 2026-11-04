@@ -56,13 +56,27 @@ public sealed class BusinessSettings : Entity, IAuditable
     /// <summary>Days after an issue is resolved before it closes by itself if the tenant doesn't reply.</summary>
     public int IssueAutoCloseDays { get; private set; }
 
+    /// <summary>Days before rent is due that the tenant gets a WhatsApp reminder (Phase 5).</summary>
+    public int RentReminderDaysBefore { get; private set; }
+
+    public const int DefaultRentReminderDaysBefore = 3;
+
     public static BusinessSettings CreateDefault()
     {
         var settings = new BusinessSettings();
         settings.Apply(LeaseSettings.Defaults);
         settings.ApplyRent(RentSettings.Defaults);
         settings.ApplySla(SlaTargets.Defaults);
+        settings.ApplyReminders(DefaultRentReminderDaysBefore);
         return settings;
+    }
+
+    public void ApplyReminders(int rentReminderDaysBefore)
+    {
+        if (rentReminderDaysBefore is < 0 or > 14)
+            throw new DomainRuleException("rentReminderDaysBefore.invalid",
+                "The rent reminder must be 0 to 14 days before the due date (0 means on the day).");
+        RentReminderDaysBefore = rentReminderDaysBefore;
     }
 
     public void ApplySla(SlaTargets value)

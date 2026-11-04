@@ -4,6 +4,7 @@ using TenantManager.Domain.Auditing;
 using TenantManager.Domain.Inspections;
 using TenantManager.Domain.Issues;
 using TenantManager.Domain.Leases;
+using TenantManager.Domain.Messaging;
 using TenantManager.Domain.Payments;
 using TenantManager.Domain.Properties;
 using TenantManager.Domain.Settings;
@@ -385,5 +386,63 @@ internal sealed class InspectionPhotoConfiguration : IEntityTypeConfiguration<In
         b.Property(p => p.ContentType).HasMaxLength(50).IsRequired();
         b.Property(p => p.Sha256).HasMaxLength(64).IsFixedLength().IsRequired();
         b.HasIndex(p => p.FileKey).IsUnique();
+    }
+}
+
+internal sealed class ConsentRecordConfiguration : IEntityTypeConfiguration<ConsentRecord>
+{
+    public void Configure(EntityTypeBuilder<ConsentRecord> b)
+    {
+        b.ToTable("Consents");
+        b.Property(c => c.Channel).HasMaxLength(20).IsRequired();
+        b.Property(c => c.Phone).HasMaxLength(20).IsRequired();
+        b.Property(c => c.Source).HasConversion<string>().HasMaxLength(20);
+        b.Property(c => c.TextVersion).HasMaxLength(30).IsRequired();
+        b.Property(c => c.RecordedByName).HasMaxLength(120).IsRequired();
+        b.Property(c => c.Note).HasMaxLength(ConsentRecord.NoteMax);
+        b.HasIndex(c => new { c.TenantId, c.At });
+        b.HasOne<Tenant>().WithMany().HasForeignKey(c => c.TenantId).OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+internal sealed class ConversationConfiguration : IEntityTypeConfiguration<Conversation>
+{
+    public void Configure(EntityTypeBuilder<Conversation> b)
+    {
+        b.ToTable("Conversations");
+        b.Property(c => c.LastMessagePreview).HasMaxLength(Conversation.PreviewMax);
+        b.Property(c => c.RowVersion).IsRowVersion();
+        b.Ignore(c => c.ServiceWindowEndsAt);
+        b.HasIndex(c => c.TenantId).IsUnique(); // one thread per tenant
+        b.HasIndex(c => new { c.OwnerId, c.LastMessageAt });
+        b.HasOne<Tenant>().WithMany().HasForeignKey(c => c.TenantId).OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
+{
+    public void Configure(EntityTypeBuilder<Message> b)
+    {
+        b.ToTable("Messages");
+        b.Property(m => m.Direction).HasConversion<string>().HasMaxLength(10);
+        b.Property(m => m.Channel).HasConversion<string>().HasMaxLength(10);
+        b.Property(m => m.Kind).HasConversion<string>().HasMaxLength(10);
+        b.Property(m => m.Status).HasConversion<string>().HasMaxLength(10);
+        b.Property(m => m.Body).HasMaxLength(Message.BodyMax).IsRequired();
+        b.Property(m => m.TemplateName).HasMaxLength(60);
+        b.Property(m => m.TemplateParameters).HasMaxLength(2000);
+        b.Property(m => m.ProviderMessageId).HasMaxLength(128);
+        b.Property(m => m.DedupeKey).HasMaxLength(100);
+        b.Property(m => m.Error).HasMaxLength(Message.ErrorMax);
+        b.Property(m => m.ByName).HasMaxLength(120);
+        b.Property(m => m.RowVersion).IsRowVersion();
+        b.Ignore(m => m.Parameters);
+
+        b.HasIndex(m => new { m.ConversationId, m.At });
+        // A webhook delivered twice stores one message; a reminder is queued once.
+        b.HasIndex(m => m.ProviderMessageId).IsUnique().HasFilter("[ProviderMessageId] IS NOT NULL");
+        b.HasIndex(m => m.DedupeKey).IsUnique().HasFilter("[DedupeKey] IS NOT NULL");
+        b.HasIndex(m => new { m.Status, m.Channel, m.At }); // the dispatcher's queue
+        b.HasOne<Conversation>().WithMany().HasForeignKey(m => m.ConversationId).OnDelete(DeleteBehavior.Cascade);
     }
 }

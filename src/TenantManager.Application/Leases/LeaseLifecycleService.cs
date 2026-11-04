@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TenantManager.Application.Abstractions;
 using TenantManager.Application.Issues;
+using TenantManager.Application.Messaging;
 using TenantManager.Application.Payments;
 using TenantManager.Application.Settings;
 using TenantManager.Domain.Leases;
@@ -11,7 +12,8 @@ namespace TenantManager.Application.Leases;
 /// <summary>What one daily run changed.</summary>
 public sealed record DailyChecksSummary(
     int Activated, int Renewed, int MarkedExpiring, int NoticesRecorded, int MovedToMonthToMonth, int Ended,
-    int Terminated, int ChargesRaised, int OverdueNoticesRecorded, int IssuesEscalated, int IssuesAutoClosed);
+    int Terminated, int ChargesRaised, int OverdueNoticesRecorded, int IssuesEscalated, int IssuesAutoClosed,
+    int RemindersQueued, int MessagesSent);
 
 /// <summary>
 /// Runs the daily rules for every landlord: start signed leases, swap in renewals, flag Expiring and
@@ -21,16 +23,25 @@ public sealed record DailyChecksSummary(
 /// every 15 minutes on their own).
 /// </summary>
 public sealed class LeaseLifecycleService(IApplicationDbContext db, IClock clock, SettingsService settings,
-    RentService rent, IssueSlaService issues)
+    RentService rent, IssueSlaService issues, ReminderService reminders, MessageDispatcher dispatcher)
 {
-    public async Task<DailyChecksSummary> RunAsync(CancellationToken ct)
+    public Task<DailyChecksSummary> RunAsync(CancellationToken ct) => RunAsync(includeReminders: true, ct);
+
+    /// <param name="includeReminders">
+    /// Also queue and send the WhatsApp reminders. The midnight job leaves them to the morning reminder
+    /// job, so nobody gets a message at 00:15; the "run checks now" button does everything at once.
+    /// </param>
+    public async Task<DailyChecksSummary> RunAsync(bool includeReminders, CancellationToken ct)
     {
         var leases = await RunLeaseRulesAsync(ct);
         var charges = await rent.RaiseChargesAsync(null, ct);
         var overdue = await rent.RecordOverdueNoticesAsync(ct);
         var sla = await issues.RunAsync(ct);
+        var queued = includeReminders ? (await reminders.RunAsync(ct)).Total : 0;
+        var sent = includeReminders ? await dispatcher.TryDispatchAsync(ct) : 0;
         return new DailyChecksSummary(leases.Activated, leases.Renewed, leases.MarkedExpiring, leases.NoticesRecorded,
-            leases.MovedToMonthToMonth, leases.Ended, leases.Terminated, charges, overdue, sla.Escalated, sla.AutoClosed);
+            leases.MovedToMonthToMonth, leases.Ended, leases.Terminated, charges, overdue, sla.Escalated, sla.AutoClosed,
+            queued, sent);
     }
 
     private async Task<LifecycleSummary> RunLeaseRulesAsync(CancellationToken ct)

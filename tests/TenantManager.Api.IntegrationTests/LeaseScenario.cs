@@ -49,12 +49,23 @@ public sealed class LeaseScenario
     {
         TenantEmail = $"lease-{Guid.NewGuid():N}@example.com";
         var tenant = await (await Landlord.PostJsonAsync("/api/v1/tenants",
-            new TenantRequest("Lease", "Tester", TenantEmail, "0825550188"))).ReadAsync<TenantDto>();
+            new TenantRequest("Lease", "Tester", TenantEmail, UniquePhone()))).ReadAsync<TenantDto>();
         var login = await (await Landlord.PostAsync($"/api/v1/tenants/{tenant.Id}/login", null))
             .ReadAsync<TenantLoginCreated>();
         TenantId = tenant.Id;
         TenantPassword = login.TemporaryPassword;
         return tenant.Id;
+    }
+
+    /// <summary>The tenant's number, E.164. Unique per scenario so WhatsApp webhooks find the right tenant.</summary>
+    public string TenantPhone { get; private set; } = string.Empty;
+
+    /// <summary>A random South African mobile number that doesn't end in 0000 (the fake provider fails those).</summary>
+    public string UniquePhone()
+    {
+        TenantPhone = "+277" + Random.Shared.Next(10_000_000, 99_999_999).ToString("D8", System.Globalization.CultureInfo.InvariantCulture)
+            [..7] + Random.Shared.Next(1, 10);
+        return TenantPhone;
     }
 
     public Task<HttpClient> TenantClientAsync() => Api.ClientForAsync(TenantEmail, TenantPassword);

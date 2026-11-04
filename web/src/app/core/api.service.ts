@@ -3,6 +3,10 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   Arrears,
+  ConsentStatus,
+  ConversationSummary,
+  MessageTemplate,
+  Thread,
   Contractor,
   ContractorRequest,
   CreateIssueRequest,
@@ -303,5 +307,34 @@ export class ApiService {
   }
   acknowledgeInspection(id: string, comment: string | null): Observable<Inspection> {
     return this.http.post<Inspection>(`${BASE}/inspections/${id}/acknowledge`, { comment });
+  }
+
+  // Messaging (Phase 5)
+  listConversations(): Observable<ConversationSummary[]> {
+    return this.http.get<ConversationSummary[]>(`${BASE}/conversations`);
+  }
+  getThread(tenantId: string): Observable<Thread> {
+    return this.http.get<Thread>(`${BASE}/conversations/${tenantId}`);
+  }
+  sendMessage(tenantId: string, body: string): Observable<Thread> {
+    return this.http.post<Thread>(`${BASE}/conversations/${tenantId}/messages`, { body });
+  }
+  sendTemplate(tenantId: string, name: string, parameters: string[]): Observable<Thread> {
+    return this.http.post<Thread>(`${BASE}/conversations/${tenantId}/templates`, { name, parameters });
+  }
+  messageTemplates(): Observable<MessageTemplate[]> {
+    return this.http.get<MessageTemplate[]>(`${BASE}/message-templates`);
+  }
+  getConsent(tenantId: string): Observable<ConsentStatus> {
+    return this.http.get<ConsentStatus>(`${BASE}/tenants/${tenantId}/consents`);
+  }
+  setConsent(tenantId: string, granted: boolean, note: string | null): Observable<ConsentStatus> {
+    return this.http.post<ConsentStatus>(`${BASE}/tenants/${tenantId}/consents`, { granted, note });
+  }
+  simulateInbound(tenantId: string, body: string): Observable<Thread> {
+    return this.http.post<Thread>(`${BASE}/dev/whatsapp/inbound`, { tenantId, body });
+  }
+  jobsDashboardLink(): Observable<{ url: string; expiresAt: string }> {
+    return this.http.post<{ url: string; expiresAt: string }>(`${BASE}/admin/jobs-dashboard`, {});
   }
 }

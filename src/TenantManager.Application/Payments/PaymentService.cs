@@ -5,6 +5,7 @@ using TenantManager.Application.Abstractions;
 using TenantManager.Application.Common;
 using TenantManager.Application.Files;
 using TenantManager.Application.Leases;
+using TenantManager.Application.Messaging;
 using TenantManager.Domain.Common;
 using TenantManager.Domain.Leases;
 using TenantManager.Domain.Payments;
@@ -71,6 +72,8 @@ public sealed class PaymentService(
     UploadValidator uploads,
     IFileStorage files,
     ReceiptFactory receipts,
+    Notifier notifier,
+    MessageDispatcher dispatcher,
     IValidator<SubmitPaymentRequest> submitValidator,
     IValidator<RejectPaymentRequest> rejectValidator)
 {
@@ -165,9 +168,12 @@ public sealed class PaymentService(
             var payment = await db.Payments.FirstAsync(p => p.Id == id, c);
             payment.Verify(user.RequireUserId(), user.DisplayName ?? "Landlord", clock.UtcNow);
             await receipts.IssueAsync(payment, c);
+            await notifier.QueueAsync(payment.TenantId, Domain.Messaging.MessageTemplates.PaymentReceived,
+                t => [t.FirstName, MessageFormat.Money(payment.Amount), payment.ReceiptNumber!], $"payment-received:{payment.Id}", c);
             await db.SaveChangesAsync(c);
             return true;
         }, ct);
+        await dispatcher.TryDispatchAsync(ct);
         return await GetAsync(id, ct);
     }
 
@@ -177,7 +183,10 @@ public sealed class PaymentService(
         await OwnedLeaseIdAsync(id, ct);
         var payment = await db.Payments.FirstAsync(p => p.Id == id, ct);
         payment.Reject(request.Reason, user.RequireUserId(), user.DisplayName ?? "Landlord", clock.UtcNow);
+        await notifier.QueueAsync(payment.TenantId, Domain.Messaging.MessageTemplates.PaymentRejected,
+            t => [t.FirstName, MessageFormat.Money(payment.Amount), request.Reason], $"payment-rejected:{payment.Id}", ct);
         await db.SaveChangesAsync(ct);
+        await dispatcher.TryDispatchAsync(ct);
         return await GetAsync(id, ct);
     }
 

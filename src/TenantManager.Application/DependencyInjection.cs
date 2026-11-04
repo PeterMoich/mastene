@@ -6,6 +6,7 @@ using TenantManager.Application.Files;
 using TenantManager.Application.Inspections;
 using TenantManager.Application.Issues;
 using TenantManager.Application.Leases;
+using TenantManager.Application.Messaging;
 using TenantManager.Application.Payments;
 using TenantManager.Application.Properties;
 using TenantManager.Application.Settings;
@@ -35,6 +36,11 @@ public static class DependencyInjection
         services.AddScoped<IssueSlaService>();
         services.AddScoped<ContractorService>();
         services.AddScoped<InspectionService>();
+        services.AddScoped<Notifier>();
+        services.AddScoped<MessageDispatcher>();
+        services.AddScoped<WhatsAppWebhookService>();
+        services.AddScoped<MessagingService>();
+        services.AddScoped<ReminderService>();
         return services;
     }
 }

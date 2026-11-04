@@ -166,6 +166,14 @@ jobs:
           curl -sf http://localhost:4200/api/v1/issues/$issue/photos/$photo -H "Authorization: Bearer $ttoken" -o photo.png
           head -c 8 photo.png | od -An -tx1 | grep -q "89 50 4e 47" && echo "::notice title=Smoke test::Tenant viewed an issue photo ($(stat -c %s photo.png) bytes)"
           curl -sf "http://localhost:4200/api/v1/issues?escalated=true" -H "Authorization: Bearer $token" | grep -q "Geyser not heating"
+          # Phase 5: the seeded WhatsApp thread, a simulated reply through the signed webhook path,
+          # and an unsigned webhook call refused.
+          sipho=$(python3 -c "import json;print(json.load(open('tenant.json'))['user']['tenantId'])")
+          curl -sf http://localhost:4200/api/v1/dev/whatsapp/inbound -H "Authorization: Bearer $token" \
+            -H 'Content-Type: application/json' -d "{\"tenantId\":\"$sipho\",\"body\":\"Smoke test reply\"}" > thread.json
+          python3 -c "import json;t=json.load(open('thread.json'));assert t['inServiceWindow'] and t['consent']['granted'],t;assert t['messages'][-1]['body']=='Smoke test reply'"
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:4200/api/v1/webhooks/whatsapp -H 'Content-Type: application/json' -d '{"entry":[]}')
+          [ "$code" = "401" ] && echo "::notice title=Smoke test::WhatsApp thread works; unsigned webhook refused ($code)"
           # Security headers on the page itself and on the bundles, not just on API responses.
           curl -sfI http://localhost:4200/ | grep -i "content-security-policy" | grep -q "blob:"
           js=$(curl -sf http://localhost:4200/ | grep -oE 'main-[A-Za-z0-9]+\.js' | head -1)

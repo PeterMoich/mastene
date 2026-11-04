@@ -38,7 +38,7 @@ describe('activity', () => {
 
 describe('IssueDetail', () => {
   const role = signal<Role>('Landlord');
-  const api = { getIssue: vi.fn(), issueStep: vi.fn(), issuePhotoUrl: vi.fn(() => '/x'), image: vi.fn() };
+  const api = { getIssue: vi.fn(), issueStep: vi.fn(), commentOnIssue: vi.fn(), issuePhotoUrl: vi.fn(() => '/x'), image: vi.fn() };
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -100,5 +100,19 @@ describe('IssueDetail', () => {
     expect(api.issueStep).toHaveBeenCalledWith('i1', 'acknowledge');
     expect(el.textContent).toContain('Acknowledged');
     expect(buttons(el)).toEqual(['construction Start work']);
+  });
+
+  it('posts a comment when the form is submitted', async () => {
+    role.set('Tenant');
+    api.commentOnIssue.mockReturnValue(of(issue()));
+    const { fixture, el } = await render(issue({ allowedActions: ['comment'] }));
+    const box = el.querySelector('form.comment textarea') as HTMLTextAreaElement;
+    box.value = 'Any news?';
+    box.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    (el.querySelector('form.comment') as HTMLFormElement).dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+
+    expect(api.commentOnIssue).toHaveBeenCalledWith('i1', 'Any news?');
   });
 });

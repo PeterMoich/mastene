@@ -16,7 +16,7 @@ public sealed class LeaseLifecycleJob(LeaseLifecycleService lifecycle, ILogger<L
     [DisableConcurrentExecution(timeoutInSeconds: 600)]
     public async Task RunAsync(CancellationToken cancellationToken)
     {
-        var summary = await lifecycle.RunAsync(cancellationToken);
+        var summary = await lifecycle.RunAsync(includeReminders: false, cancellationToken);
         logger.LogInformation("Lease lifecycle run finished: {@Summary}", summary);
     }
 }
