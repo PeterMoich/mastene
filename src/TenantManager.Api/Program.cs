@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using Hangfire;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
@@ -10,6 +11,7 @@ using TenantManager.Application;
 using TenantManager.Application.Abstractions;
 using TenantManager.Infrastructure;
 using TenantManager.Infrastructure.Identity;
+using TenantManager.Infrastructure.Jobs;
 using TenantManager.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +60,15 @@ if (migrateOnly || app.Configuration.GetValue<bool>("Database:MigrateOnStartup")
     await seeder.SeedAsync(scope.ServiceProvider.GetRequiredService<IOptions<SeedOptions>>().Value,
         CancellationToken.None);
     if (migrateOnly) return;
+}
+
+if (app.Configuration.GetValue<bool>("Jobs:Enabled"))
+{
+    app.Services.GetRequiredService<IRecurringJobManager>().AddOrUpdate<LeaseLifecycleJob>(
+        LeaseLifecycleJob.Id,
+        job => job.RunAsync(CancellationToken.None),
+        app.Configuration["Jobs:LeaseLifecycleCron"] ?? LeaseLifecycleJob.DefaultCron,
+        new RecurringJobOptions { TimeZone = BusinessTime.Zone });
 }
 
 if (app.Services.GetRequiredService<JwtSigningKey>().IsGenerated)

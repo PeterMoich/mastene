@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TenantManager.Domain.Auditing;
+using TenantManager.Domain.Leases;
 using TenantManager.Domain.Properties;
+using TenantManager.Domain.Settings;
 using TenantManager.Domain.Tenants;
 using TenantManager.Infrastructure.Identity;
 
@@ -96,5 +98,87 @@ internal sealed class RefreshTokenConfiguration : IEntityTypeConfiguration<Refre
         b.Property(t => t.ReplacedByTokenHash).HasMaxLength(64);
         b.HasIndex(t => t.TokenHash).IsUnique();
         b.HasOne(t => t.User).WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+internal sealed class LeaseConfiguration : IEntityTypeConfiguration<Lease>
+{
+    public void Configure(EntityTypeBuilder<Lease> b)
+    {
+        b.ToTable("Leases");
+        b.Property(l => l.LeaseNumber).HasMaxLength(20).IsRequired();
+        b.Property(l => l.Status).HasConversion<string>().HasMaxLength(20);
+        b.Property(l => l.EscalationPct).HasPrecision(5, 2);
+        b.Property(l => l.TerminationReason).HasMaxLength(Lease.ReasonMax);
+        b.Property(l => l.LandlordName).HasMaxLength(Lease.NameMax);
+        b.Property(l => l.TemplateVersion).HasMaxLength(Lease.TemplateVersionMax);
+        b.Property(l => l.RowVersion).IsRowVersion();
+        b.Ignore(l => l.IsRenewal);
+        b.Ignore(l => l.IsCurrent);
+        b.Ignore(l => l.IsFullySigned);
+        b.Ignore(l => l.EffectiveEndDate);
+
+        b.HasIndex(l => new { l.LeaseNumber, l.Version }).IsUnique();
+        b.HasIndex(l => new { l.UnitId, l.Status });
+        b.HasIndex(l => new { l.TenantId, l.Status });
+        b.HasIndex(l => new { l.OwnerId, l.StartDate });
+        // A lease has at most one renewal that hasn't been cancelled.
+        b.HasIndex(l => l.PreviousLeaseId).IsUnique().HasFilter("[PreviousLeaseId] IS NOT NULL AND [Status] <> N'Terminated'");
+
+        b.HasOne(l => l.Unit).WithMany().HasForeignKey(l => l.UnitId).OnDelete(DeleteBehavior.Restrict);
+        b.HasOne(l => l.Tenant).WithMany().HasForeignKey(l => l.TenantId).OnDelete(DeleteBehavior.Restrict);
+        b.HasOne(l => l.Previous).WithMany().HasForeignKey(l => l.PreviousLeaseId).OnDelete(DeleteBehavior.Restrict);
+
+        b.HasMany(l => l.Signatures).WithOne().HasForeignKey(s => s.LeaseId).OnDelete(DeleteBehavior.Cascade);
+        b.HasMany(l => l.Documents).WithOne().HasForeignKey(d => d.LeaseId).OnDelete(DeleteBehavior.Cascade);
+        b.HasMany(l => l.ExpiryNotices).WithOne().HasForeignKey(n => n.LeaseId).OnDelete(DeleteBehavior.Cascade);
+        b.Navigation(l => l.Signatures).UsePropertyAccessMode(PropertyAccessMode.Field);
+        b.Navigation(l => l.Documents).UsePropertyAccessMode(PropertyAccessMode.Field);
+        b.Navigation(l => l.ExpiryNotices).UsePropertyAccessMode(PropertyAccessMode.Field);
+    }
+}
+
+internal sealed class LeaseSignatureConfiguration : IEntityTypeConfiguration<LeaseSignature>
+{
+    public void Configure(EntityTypeBuilder<LeaseSignature> b)
+    {
+        b.ToTable("LeaseSignatures");
+        b.Property(s => s.Party).HasConversion<string>().HasMaxLength(20);
+        b.Property(s => s.SignerName).HasMaxLength(Lease.NameMax).IsRequired();
+        b.Property(s => s.IpAddress).HasMaxLength(45);
+        b.HasIndex(s => new { s.LeaseId, s.Party }).IsUnique(); // each party signs once
+    }
+}
+
+internal sealed class LeaseDocumentConfiguration : IEntityTypeConfiguration<LeaseDocument>
+{
+    public void Configure(EntityTypeBuilder<LeaseDocument> b)
+    {
+        b.ToTable("LeaseDocuments");
+        b.Property(d => d.Kind).HasConversion<string>().HasMaxLength(20);
+        b.Property(d => d.BlobKey).HasMaxLength(200).IsRequired();
+        b.Property(d => d.Sha256).HasMaxLength(64).IsFixedLength().IsRequired();
+        b.HasIndex(d => d.BlobKey).IsUnique();
+    }
+}
+
+internal sealed class LeaseExpiryNoticeConfiguration : IEntityTypeConfiguration<LeaseExpiryNotice>
+{
+    public void Configure(EntityTypeBuilder<LeaseExpiryNotice> b)
+    {
+        b.ToTable("LeaseExpiryNotices");
+        b.HasIndex(n => new { n.LeaseId, n.DaysBefore }).IsUnique(); // BR05: each notice once
+    }
+}
+
+internal sealed class BusinessSettingsConfiguration : IEntityTypeConfiguration<BusinessSettings>
+{
+    public void Configure(EntityTypeBuilder<BusinessSettings> b)
+    {
+        b.ToTable("Settings");
+        b.Property(s => s.ExpiryNoticeDays).HasMaxLength(50).IsRequired();
+        b.Property(s => s.DefaultEscalationPct).HasPrecision(5, 2);
+        b.Property(s => s.MaxEscalationPct).HasPrecision(5, 2);
+        b.Property(s => s.LeaseTemplateVersion).HasMaxLength(Lease.TemplateVersionMax).IsRequired();
     }
 }

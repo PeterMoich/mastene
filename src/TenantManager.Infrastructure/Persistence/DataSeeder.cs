@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TenantManager.Application.Abstractions;
+using TenantManager.Application.Leases;
+using TenantManager.Domain.Leases;
 using TenantManager.Domain.Properties;
+using TenantManager.Domain.Settings;
 using TenantManager.Domain.Tenants;
 using TenantManager.Infrastructure.Identity;
 
@@ -29,6 +32,7 @@ public sealed class DataSeeder(
     UserManager<AppUser> users,
     RoleManager<IdentityRole<Guid>> roles,
     IClock clock,
+    LeaseDocumentFactory leaseDocuments,
     ILogger<DataSeeder> logger)
 {
     public const string AdminEmail = "admin@mastene.test";
@@ -46,6 +50,12 @@ public sealed class DataSeeder(
         {
             if (!await roles.RoleExistsAsync(role))
                 await roles.CreateAsync(new IdentityRole<Guid>(role));
+        }
+
+        if (!await db.Settings.AnyAsync(ct))
+        {
+            db.Settings.Add(BusinessSettings.CreateDefault());
+            await db.SaveChangesAsync(ct);
         }
 
         if (!options.DemoData) return;
@@ -87,8 +97,48 @@ public sealed class DataSeeder(
         await db.SaveChangesAsync(ct);
 
         // The first two tenants get logins so the tenant view can be tried out.
+        var tenantUsers = new List<AppUser>();
         foreach (var tenant in tenants.Take(2))
-            await CreateUserAsync(tenant.Email, tenant.FullName, Roles.Tenant, options.Password, tenant.Id, landlord.Id);
+            tenantUsers.Add(await CreateUserAsync(tenant.Email, tenant.FullName, Roles.Tenant, options.Password,
+                tenant.Id, landlord.Id));
+
+        // Two signed leases: Sipho's started eight months ago; Lerato's has about a month left, so the
+        // lifecycle run below flags it Expiring. Johan has no lease, so he can be given one in the demo.
+        var today = clock.Today();
+        var firstOfMonth = new DateOnly(today.Year, today.Month, 1);
+        await SeedSignedLeaseAsync(jacaranda.Units.First(u => u.Label == "Flat 1"), tenants[0], tenantUsers[0],
+            landlord, firstOfMonth.AddMonths(-8), escalationPct: 8m, ct);
+        await SeedSignedLeaseAsync(marula.Units.First(u => u.Label == "Cottage A"), tenants[1], tenantUsers[1],
+            landlord, firstOfMonth.AddMonths(-11), escalationPct: 6m, ct);
+
+        var inForce = LeaseTerm.InForce;
+        var leases = await db.Leases.Where(l => inForce.Contains(l.Status))
+            .Include(l => l.Unit).Include(l => l.Previous).Include(l => l.Signatures).Include(l => l.ExpiryNotices)
+            .ToListAsync(ct);
+        LeaseLifecycle.Run(leases, today, LeaseSettings.Defaults);
+        await db.SaveChangesAsync(ct);
+    }
+
+    private async Task SeedSignedLeaseAsync(Unit unit, Tenant tenant, AppUser tenantUser, AppUser landlord,
+        DateOnly start, decimal escalationPct, CancellationToken ct)
+    {
+        var settings = LeaseSettings.Defaults;
+        var today = clock.Today();
+        var lease = Lease.CreateDraft(await db.NextLeaseNumberAsync(today, ct), unit, tenant, start,
+            unit.RentAmount, unit.DepositAmount, escalationPct, settings);
+        db.Leases.Add(lease);
+        await db.SaveChangesAsync(ct); // the lease id is part of the document's storage key
+
+        var unsigned = await leaseDocuments.CreateAsync(lease, LeaseDocumentKind.Unsigned, landlord.DisplayName,
+            settings.TemplateVersion, ct);
+        lease.Generate(landlord.DisplayName, settings.TemplateVersion, unsigned);
+
+        var signedAt = clock.UtcNow;
+        lease.Sign(LeaseParty.Landlord, landlord.Id, landlord.DisplayName, "127.0.0.1", signedAt, today);
+        lease.Sign(LeaseParty.Tenant, tenantUser.Id, tenantUser.DisplayName, "127.0.0.1", signedAt, today);
+        lease.AddSignedDocument(await leaseDocuments.CreateAsync(lease, LeaseDocumentKind.Signed, landlord.DisplayName,
+            settings.TemplateVersion, ct));
+        await db.SaveChangesAsync(ct);
     }
 
     private async Task<AppUser> CreateUserAsync(string email, string name, string role, string password,

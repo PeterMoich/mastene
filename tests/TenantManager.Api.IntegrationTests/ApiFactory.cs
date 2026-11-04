@@ -1,19 +1,13 @@
-using System.Collections.Concurrent;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using Testcontainers.MsSql;
-using TenantManager.Application.Abstractions;
 using TenantManager.Application.Accounts;
-using TenantManager.Domain.Tenants;
 
 namespace TenantManager.Api.IntegrationTests;
 
@@ -33,7 +27,8 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private readonly MsSqlContainer _sql = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest").Build();
 
-    public FakeTenantObligations Obligations { get; } = new();
+    /// <summary>Lease PDFs written by the tests (Storage:Provider=Local). Deleted after the run.</summary>
+    public string FilesPath { get; } = Path.Combine(Path.GetTempPath(), $"tm-tests-{Guid.NewGuid():N}");
 
     public string ConnectionString { get; private set; } = string.Empty;
 
@@ -55,6 +50,9 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         Environment.SetEnvironmentVariable("Seed__Password", SeedPassword);
         Environment.SetEnvironmentVariable("RateLimits__AuthPerMinute", "100000");
         Environment.SetEnvironmentVariable("RateLimits__GeneralPerMinute", "100000");
+        Environment.SetEnvironmentVariable("Storage__Provider", "Local");
+        Environment.SetEnvironmentVariable("Storage__LocalPath", FilesPath);
+        Environment.SetEnvironmentVariable("Jobs__Enabled", "false"); // tests call the lease checks endpoint instead
 
         _ = Server; // start the host now so migrations run once, before any test
     }
@@ -63,17 +61,10 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         await base.DisposeAsync();
         await _sql.DisposeAsync();
+        if (Directory.Exists(FilesPath)) Directory.Delete(FilesPath, recursive: true);
     }
 
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.UseEnvironment("Testing");
-        builder.ConfigureTestServices(services =>
-        {
-            services.RemoveAll<ITenantObligationsProvider>();
-            services.AddSingleton<ITenantObligationsProvider>(Obligations);
-        });
-    }
+    protected override void ConfigureWebHost(IWebHostBuilder builder) => builder.UseEnvironment("Testing");
 
     public async Task<HttpClient> ClientForAsync(string email, string password = SeedPassword)
     {
@@ -90,17 +81,6 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         response.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
         return (await response.Content.ReadFromJsonAsync<TokenResponse>(Json))!;
     }
-}
-
-/// <summary>Lets tests say "this tenant has an active lease / owes money" before Phase 2 and 3 exist.</summary>
-public sealed class FakeTenantObligations : ITenantObligationsProvider
-{
-    private readonly ConcurrentDictionary<Guid, TenantObligations> _values = new();
-
-    public void Set(Guid tenantId, TenantObligations obligations) => _values[tenantId] = obligations;
-
-    public Task<TenantObligations> GetAsync(Guid tenantId, CancellationToken cancellationToken) =>
-        Task.FromResult(_values.GetValueOrDefault(tenantId, TenantObligations.None));
 }
 
 [CollectionDefinition(Name)]

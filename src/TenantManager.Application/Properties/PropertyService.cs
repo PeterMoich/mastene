@@ -3,6 +3,8 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using TenantManager.Application.Abstractions;
 using TenantManager.Application.Common;
+using TenantManager.Domain.Common;
+using TenantManager.Domain.Leases;
 using TenantManager.Domain.Properties;
 
 namespace TenantManager.Application.Properties;
@@ -87,6 +89,10 @@ public sealed class PropertyService(
     public async Task DeleteAsync(Guid id, CancellationToken ct)
     {
         var property = await LoadForWriteAsync(id, ct);
+        var inForce = LeaseTerm.InForce;
+        if (await db.Leases.AnyAsync(l => l.Unit.PropertyId == id && inForce.Contains(l.Status), ct))
+            throw new DomainRuleException("property.has_leases",
+                "A property with leases in force (signed or waiting for signatures) cannot be deleted.", RuleKind.Conflict);
         property.Delete(user.RequireUserId(), clock.UtcNow);
         await db.SaveChangesAsync(ct);
     }
@@ -130,6 +136,10 @@ public sealed class PropertyService(
     public async Task DeleteUnitAsync(Guid unitId, CancellationToken ct)
     {
         var unit = await LoadUnitForWriteAsync(unitId, ct);
+        var inForce = LeaseTerm.InForce;
+        if (await db.Leases.AnyAsync(l => l.UnitId == unitId && inForce.Contains(l.Status), ct))
+            throw new DomainRuleException("unit.has_lease",
+                "A unit with a lease in force (signed or waiting for signatures) cannot be deleted.", RuleKind.Conflict);
         unit.Delete(user.RequireUserId(), clock.UtcNow);
         await db.SaveChangesAsync(ct);
     }

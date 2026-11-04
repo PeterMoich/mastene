@@ -4,7 +4,6 @@ using TenantManager.Application.Accounts;
 using TenantManager.Application.Common;
 using TenantManager.Application.Properties;
 using TenantManager.Application.Tenants;
-using TenantManager.Domain.Tenants;
 
 namespace TenantManager.Api.IntegrationTests;
 
@@ -121,27 +120,29 @@ public class TenantApiTests(ApiFactory api)
     }
 
     [Fact]
-    public async Task BR19_Tenant_with_active_lease_cannot_be_deleted()
+    public async Task BR19_Tenant_with_an_active_lease_cannot_be_deleted()
     {
         var landlord = await api.ClientForAsync(Seeded.Landlord);
-        var tenant = await (await landlord.PostJsonAsync("/api/v1/tenants", NewTenant(UniqueEmail()))).ReadAsync<TenantDto>();
-        api.Obligations.Set(tenant.Id, new TenantObligations(HasActiveLease: true, OutstandingBalance: 0));
+        var lease = await LeaseScenario.ActiveLeaseAsync(api, landlord, LeaseScenario.Today);
 
-        await (await landlord.DeleteAsync($"/api/v1/tenants/{tenant.Id}"))
+        await (await landlord.DeleteAsync($"/api/v1/tenants/{lease.TenantId}"))
             .ShouldBeAsync(HttpStatusCode.Conflict, "tenant.has_active_lease");
-        (await landlord.GetAsync($"/api/v1/tenants/{tenant.Id}")).StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await landlord.GetAsync($"/api/v1/tenants/{lease.TenantId}")).StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
-    public async Task BR19_Tenant_with_outstanding_balance_cannot_be_deleted()
+    public async Task BR19_Tenant_with_a_lease_waiting_for_signatures_cannot_be_deleted()
     {
         var landlord = await api.ClientForAsync(Seeded.Landlord);
-        var tenant = await (await landlord.PostJsonAsync("/api/v1/tenants", NewTenant(UniqueEmail()))).ReadAsync<TenantDto>();
-        api.Obligations.Set(tenant.Id, new TenantObligations(HasActiveLease: false, OutstandingBalance: 1500m));
+        var scenario = await LeaseScenario.CreateAsync(api, landlord);
+        var draft = await scenario.DraftAsync(LeaseScenario.Today.AddDays(10));
+        await (await landlord.PostAsync($"/api/v1/leases/{draft.Id}/generate", null)).ShouldBeAsync(HttpStatusCode.OK);
 
-        await (await landlord.DeleteAsync($"/api/v1/tenants/{tenant.Id}"))
-            .ShouldBeAsync(HttpStatusCode.Conflict, "tenant.has_outstanding_balance");
+        await (await landlord.DeleteAsync($"/api/v1/tenants/{scenario.TenantId}"))
+            .ShouldBeAsync(HttpStatusCode.Conflict, "tenant.has_active_lease");
     }
+
+    // BR19's "outstanding balance" half is covered by TenantTests until the rent ledger exists (Phase 3).
 
     [Fact]
     public async Task Duplicate_tenant_email_returns_409()
