@@ -46,7 +46,30 @@ public sealed partial class Tenant : Entity, IOwned, ISoftDeletable, IAuditable
     public DateTimeOffset? DeletedAt { get; private set; }
     public Guid? DeletedBy { get; private set; }
 
+    /// <summary>Set when the tenant's personal details were erased (POPIA). The record stays for the history.</summary>
+    public DateTimeOffset? AnonymisedAt { get; private set; }
+
     public string FullName => $"{FirstName} {LastName}";
+
+    /// <summary>
+    /// Replaces the name, email and phone with placeholders and soft-deletes the record. The caller
+    /// checks that the law lets the data go (no lease in force, nothing owed, retention period over).
+    /// </summary>
+    public void Anonymise(Guid by, DateTimeOffset at)
+    {
+        if (AnonymisedAt is not null) return;
+        FirstName = "Former";
+        LastName = "tenant";
+        Email = $"anonymised-{Id:N}@invalid.example";
+        Phone = "+27000000000";
+        AnonymisedAt = at;
+        if (!IsDeleted)
+        {
+            IsDeleted = true;
+            DeletedAt = at;
+            DeletedBy = by;
+        }
+    }
 
     public void Update(string firstName, string lastName, string email, string phone)
     {

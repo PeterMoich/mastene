@@ -61,6 +61,21 @@ public sealed class BusinessSettings : Entity, IAuditable
 
     public const int DefaultRentReminderDaysBefore = 3;
 
+    /// <summary>
+    /// LEGAL REVIEW NEEDED. Years after a tenant's last lease ends before their personal details may be
+    /// erased (records kept for tax and legal claims). A placeholder, not legal advice.
+    /// </summary>
+    public int RetentionYearsAfterLeaseEnd { get; private set; }
+
+    public const int DefaultRetentionYears = 5;
+
+    public void ApplyRetention(int years)
+    {
+        if (years is < 0 or > 30)
+            throw new DomainRuleException("retentionYearsAfterLeaseEnd.invalid", "Retention must be between 0 and 30 years.");
+        RetentionYearsAfterLeaseEnd = years;
+    }
+
     public static BusinessSettings CreateDefault()
     {
         var settings = new BusinessSettings();
@@ -68,6 +83,7 @@ public sealed class BusinessSettings : Entity, IAuditable
         settings.ApplyRent(RentSettings.Defaults);
         settings.ApplySla(SlaTargets.Defaults);
         settings.ApplyReminders(DefaultRentReminderDaysBefore);
+        settings.ApplyRetention(DefaultRetentionYears);
         return settings;
     }
 

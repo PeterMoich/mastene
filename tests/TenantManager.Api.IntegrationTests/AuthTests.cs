@@ -10,12 +10,20 @@ public class AuthTests(ApiFactory api)
     [Fact]
     public async Task Login_returns_tokens_and_the_users_role()
     {
-        var tokens = await api.LoginAsync(Seeded.Landlord);
+        using var client = api.CreateClient(new Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactoryClientOptions { HandleCookies = false });
+        var response = await client.PostJsonAsync("/api/v1/auth/login", new LoginRequest(Seeded.Landlord, ApiFactory.SeedPassword));
+        var tokens = await response.ReadAsync<SessionResponse>();
 
         tokens.AccessToken.ShouldNotBeNullOrWhiteSpace();
-        tokens.RefreshToken.ShouldNotBeNullOrWhiteSpace();
         tokens.User.Role.ShouldBe("Landlord");
         tokens.AccessTokenExpiresAt.ShouldBeLessThan(tokens.RefreshTokenExpiresAt);
+        // The refresh token is never in the body, only in an HttpOnly, SameSite=Strict cookie for the auth endpoints.
+        (await response.Content.ReadAsStringAsync()).ShouldNotContain("refreshToken\"");
+        var cookie = response.Headers.GetValues("Set-Cookie").Single(c => c.StartsWith("tm_refresh=", StringComparison.Ordinal));
+        cookie.ShouldContain("httponly", Case.Insensitive);
+        cookie.ShouldContain("samesite=strict", Case.Insensitive);
+        cookie.ShouldContain("path=/api/v1/auth", Case.Insensitive);
+        response.Headers.CacheControl!.NoStore.ShouldBeTrue();
     }
 
     [Fact]
@@ -48,31 +56,39 @@ public class AuthTests(ApiFactory api)
     [Fact]
     public async Task Refresh_rotates_the_token_and_reuse_revokes_the_whole_session()
     {
-        using var client = api.CreateClient();
-        var first = await api.LoginAsync(Seeded.Landlord);
+        var (_, first) = await api.LoginWithCookieAsync(Seeded.Landlord);
 
-        var refreshed = await client.PostJsonAsync("/api/v1/auth/refresh", new RefreshRequest(first.RefreshToken));
+        var refreshed = await api.PostWithCookieAsync("/api/v1/auth/refresh", first);
         await refreshed.ShouldBeAsync(HttpStatusCode.OK);
-        var second = await refreshed.ReadAsync<TokenResponse>();
-        second.RefreshToken.ShouldNotBe(first.RefreshToken);
+        (await refreshed.ReadAsync<SessionResponse>()).AccessToken.ShouldNotBeNullOrWhiteSpace();
+        var second = ApiFactory.RefreshCookieOf(refreshed);
+        second.ShouldNotBe(first);
 
         // Replaying the old token looks like theft: it fails, and so does the newer token.
-        var replay = await client.PostJsonAsync("/api/v1/auth/refresh", new RefreshRequest(first.RefreshToken));
-        await replay.ShouldBeAsync(HttpStatusCode.Unauthorized);
-        var afterReplay = await client.PostJsonAsync("/api/v1/auth/refresh", new RefreshRequest(second.RefreshToken));
-        await afterReplay.ShouldBeAsync(HttpStatusCode.Unauthorized);
+        await (await api.PostWithCookieAsync("/api/v1/auth/refresh", first)).ShouldBeAsync(HttpStatusCode.Unauthorized);
+        await (await api.PostWithCookieAsync("/api/v1/auth/refresh", second)).ShouldBeAsync(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Refresh_needs_the_cookie_and_the_anti_forgery_header()
+    {
+        var (_, cookie) = await api.LoginWithCookieAsync(Seeded.Landlord);
+
+        await (await api.PostWithCookieAsync("/api/v1/auth/refresh", null)).ShouldBeAsync(HttpStatusCode.Unauthorized);
+        // A cross-site form post would carry no custom header.
+        await (await api.PostWithCookieAsync("/api/v1/auth/refresh", cookie, csrfHeader: false))
+            .ShouldBeAsync(HttpStatusCode.Unauthorized);
+        // The cookie wasn't used up by the refused call.
+        await (await api.PostWithCookieAsync("/api/v1/auth/refresh", cookie)).ShouldBeAsync(HttpStatusCode.OK);
     }
 
     [Fact]
     public async Task Logout_revokes_the_refresh_token()
     {
-        using var client = api.CreateClient();
-        var tokens = await api.LoginAsync(Seeded.Landlord);
+        var (_, cookie) = await api.LoginWithCookieAsync(Seeded.Landlord);
 
-        (await client.PostJsonAsync("/api/v1/auth/logout", new RefreshRequest(tokens.RefreshToken)))
-            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        await (await client.PostJsonAsync("/api/v1/auth/refresh", new RefreshRequest(tokens.RefreshToken)))
-            .ShouldBeAsync(HttpStatusCode.Unauthorized);
+        (await api.PostWithCookieAsync("/api/v1/auth/logout", cookie)).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        await (await api.PostWithCookieAsync("/api/v1/auth/refresh", cookie)).ShouldBeAsync(HttpStatusCode.Unauthorized);
     }
 
     [Fact]

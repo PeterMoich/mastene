@@ -9,43 +9,87 @@ using TenantManager.Application.Accounts;
 
 namespace TenantManager.Api.Controllers;
 
+/// <summary>
+/// Sign-in. The access token (15 minutes) is returned in the body and kept in memory by the app. The
+/// refresh token (7 days, rotating) is an HttpOnly, SameSite=Strict cookie scoped to /api/v1/auth, so
+/// scripts on the page, including injected ones, can't read it (ADR-0019).
+/// </summary>
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/auth")]
 [AllowAnonymous]
 [EnableRateLimiting(RateLimitPolicies.Auth)]
-public sealed class AuthController(IAuthService auth, IValidator<LoginRequest> loginValidator) : ControllerBase
+public sealed class AuthController(IAuthService auth, IValidator<LoginRequest> loginValidator, IConfiguration configuration)
+    : ControllerBase
 {
+    public const string RefreshCookie = "tm_refresh";
+    public const string CookiePath = "/api/v1/auth";
+
+    /// <summary>
+    /// Requests that use the cookie must carry this header. A plain cross-site form can't add headers,
+    /// and a cross-site script would need a CORS preflight, which the API never allows.
+    /// </summary>
+    public const string CsrfHeader = "X-Requested-With";
+
     /// <summary>Signs in with email and password. Five wrong passwords lock the account for 15 minutes.</summary>
     [HttpPost("login")]
-    [ProducesResponseType<TokenResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<SessionResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<TokenResponse>> Login(LoginRequest request, CancellationToken ct)
+    public async Task<ActionResult<SessionResponse>> Login(LoginRequest request, CancellationToken ct)
     {
         await loginValidator.ValidateAndThrowAsync(request, ct);
         var result = await auth.LoginAsync(request, ct);
-        return result is null ? InvalidCredentials("Email or password is incorrect.") : Ok(result);
+        return result is null ? InvalidCredentials("Email or password is incorrect.") : Session(result);
     }
 
-    /// <summary>Swaps a refresh token for a new access token and a new refresh token. Each refresh token works once.</summary>
+    /// <summary>Swaps the refresh cookie for a new access token and a new refresh cookie. Each refresh token works once.</summary>
     [HttpPost("refresh")]
-    [ProducesResponseType<TokenResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<SessionResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<TokenResponse>> Refresh(RefreshRequest request, CancellationToken ct)
+    public async Task<ActionResult<SessionResponse>> Refresh(CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(request.RefreshToken)) return InvalidCredentials("Session has expired.");
-        var result = await auth.RefreshAsync(request.RefreshToken, ct);
-        return result is null ? InvalidCredentials("Session has expired. Please sign in again.") : Ok(result);
+        if (!Request.Headers.ContainsKey(CsrfHeader)) return InvalidCredentials("Missing the X-Requested-With header.");
+        var token = Request.Cookies[RefreshCookie];
+        if (string.IsNullOrWhiteSpace(token)) return InvalidCredentials("Session has expired.");
+        var result = await auth.RefreshAsync(token, ct);
+        if (result is null)
+        {
+            ClearCookie();
+            return InvalidCredentials("Session has expired. Please sign in again.");
+        }
+        return Session(result);
     }
 
-    /// <summary>Ends the session by revoking the refresh token.</summary>
+    /// <summary>Ends the session: revokes the refresh token and deletes the cookie.</summary>
     [HttpPost("logout")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> Logout(RefreshRequest request, CancellationToken ct)
+    public async Task<IActionResult> Logout(CancellationToken ct)
     {
-        if (!string.IsNullOrWhiteSpace(request.RefreshToken)) await auth.LogoutAsync(request.RefreshToken, ct);
+        var token = Request.Cookies[RefreshCookie];
+        if (Request.Headers.ContainsKey(CsrfHeader) && !string.IsNullOrWhiteSpace(token)) await auth.LogoutAsync(token, ct);
+        ClearCookie();
         return NoContent();
     }
+
+    private SessionResponse Session(TokenResponse tokens)
+    {
+        Response.Cookies.Append(RefreshCookie, tokens.RefreshToken, CookieOptions(tokens.RefreshTokenExpiresAt));
+        Response.Headers.CacheControl = "no-store";
+        return new SessionResponse(tokens.AccessToken, tokens.AccessTokenExpiresAt, tokens.RefreshTokenExpiresAt, tokens.User);
+    }
+
+    private void ClearCookie() => Response.Cookies.Delete(RefreshCookie, CookieOptions(null));
+
+    /// <summary>Secure whenever the request is HTTPS, and always when Auth:SecureCookies is on (production).</summary>
+    private CookieOptions CookieOptions(DateTimeOffset? expires) => new()
+    {
+        HttpOnly = true,
+        SameSite = SameSiteMode.Strict,
+        Secure = Request.IsHttps || configuration.GetValue<bool>("Auth:SecureCookies"),
+        Path = CookiePath,
+        Expires = expires,
+        IsEssential = true,
+    };
 
     private ObjectResult InvalidCredentials(string title) => Problem(
         title: title, statusCode: StatusCodes.Status401Unauthorized,

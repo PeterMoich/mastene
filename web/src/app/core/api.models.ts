@@ -27,10 +27,10 @@ export interface Me {
   tenantId: string | null;
 }
 
-export interface TokenResponse {
+/** Sign-in or refresh. The refresh token is an HttpOnly cookie the page can't read, so it isn't here. */
+export interface SessionResponse {
   accessToken: string;
   accessTokenExpiresAt: string;
-  refreshToken: string;
   refreshTokenExpiresAt: string;
   user: Me;
 }

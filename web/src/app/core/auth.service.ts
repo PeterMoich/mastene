@@ -2,16 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom, Observable, shareReplay, tap, finalize } from 'rxjs';
-import { Me, Role, TokenResponse } from './api.models';
+import { Me, Role, SessionResponse } from './api.models';
 
-const REFRESH_KEY = 'tm.refreshToken';
+/** The API refuses cookie-based auth calls without it (a cross-site form can't send custom headers). */
+const CSRF_HEADERS = { 'X-Requested-With': 'TenantManager' };
 
 /**
- * Holds the signed-in user and tokens.
+ * Holds the signed-in user and the access token.
  * - The access token (15 min) lives only in memory.
- * - The refresh token is kept in sessionStorage so a page reload keeps you signed in,
- *   but closing the tab ends the session. Moving it to an httpOnly cookie is listed as
- *   Phase 6 hardening, since any XSS could read sessionStorage.
+ * - The refresh token is an HttpOnly, SameSite=Strict cookie set by the API for /api/v1/auth only.
+ *   The page never sees it, so a script injected into the page can't steal it (ADR-0019). After a
+ *   reload the app asks /auth/refresh for a new access token, and the browser sends the cookie.
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -20,7 +21,7 @@ export class AuthService {
 
   private readonly _user = signal<Me | null>(null);
   private accessToken: string | null = null;
-  private refreshInFlight: Observable<TokenResponse> | null = null;
+  private refreshInFlight: Observable<SessionResponse> | null = null;
 
   readonly user = this._user.asReadonly();
   readonly isSignedIn = computed(() => this._user() !== null);
@@ -32,15 +33,14 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<Me> {
     const tokens = await firstValueFrom(
-      this.http.post<TokenResponse>('/api/v1/auth/login', { email, password }),
+      this.http.post<SessionResponse>('/api/v1/auth/login', { email, password }),
     );
     this.store(tokens);
     return tokens.user;
   }
 
-  /** Called at startup: resumes a session from sessionStorage if there is one. */
+  /** Called at startup: resumes the session if the browser still holds a valid refresh cookie. */
   async restore(): Promise<void> {
-    if (!this.storedRefreshToken()) return;
     try {
       await firstValueFrom(this.refresh());
     } catch {
@@ -49,11 +49,10 @@ export class AuthService {
   }
 
   /** One refresh at a time: concurrent 401s all wait on the same request. */
-  refresh(): Observable<TokenResponse> {
+  refresh(): Observable<SessionResponse> {
     if (!this.refreshInFlight) {
-      const refreshToken = this.storedRefreshToken() ?? '';
       this.refreshInFlight = this.http
-        .post<TokenResponse>('/api/v1/auth/refresh', { refreshToken })
+        .post<SessionResponse>('/api/v1/auth/refresh', null, { headers: CSRF_HEADERS })
         .pipe(
           tap((tokens) => this.store(tokens)),
           finalize(() => (this.refreshInFlight = null)),
@@ -64,11 +63,8 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    const refreshToken = this.storedRefreshToken();
     this.clear();
-    if (refreshToken) {
-      await firstValueFrom(this.http.post('/api/v1/auth/logout', { refreshToken })).catch(() => undefined);
-    }
+    await firstValueFrom(this.http.post('/api/v1/auth/logout', null, { headers: CSRF_HEADERS })).catch(() => undefined);
     await this.router.navigateByUrl('/login');
   }
 
@@ -94,16 +90,10 @@ export class AuthService {
   clear(): void {
     this.accessToken = null;
     this._user.set(null);
-    sessionStorage.removeItem(REFRESH_KEY);
   }
 
-  private store(tokens: TokenResponse): void {
+  private store(tokens: SessionResponse): void {
     this.accessToken = tokens.accessToken;
-    sessionStorage.setItem(REFRESH_KEY, tokens.refreshToken);
     this._user.set(tokens.user);
-  }
-
-  private storedRefreshToken(): string | null {
-    return sessionStorage.getItem(REFRESH_KEY);
   }
 }

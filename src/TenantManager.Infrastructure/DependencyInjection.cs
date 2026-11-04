@@ -1,5 +1,6 @@
 using Hangfire;
 using Hangfire.SqlServer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -53,6 +54,12 @@ public static class DependencyInjection
         services.AddSingleton(sp => new JwtSigningKey(
             sp.GetRequiredService<IOptions<JwtOptions>>(), allowGenerated: environment.IsDevelopment()));
         services.AddScoped<TokenService>();
+        services.AddScoped<SecurityAudit>();
+        services.AddSingleton<IFeatureFlags, ConfigurationFeatureFlags>();
+
+        // Data Protection keys (they encrypt the jobs-dashboard cookie) live in the database, so every
+        // instance and both deployment slots share them and they survive restarts.
+        services.AddDataProtection().SetApplicationName("TenantManager").PersistKeysToDbContext<AppDbContext>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserAccountService, UserAccountService>();
 
@@ -60,7 +67,11 @@ public static class DependencyInjection
         QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
         services.AddSingleton<ILeaseDocumentRenderer, QuestPdfLeaseRenderer>();
         services.AddSingleton<IReceiptRenderer, QuestPdfReceiptRenderer>();
-        services.AddSingleton<IFileScanner, EicarOnlyFileScanner>();
+        services.Configure<ScanningOptions>(configuration.GetSection(ScanningOptions.Section));
+        if (string.Equals(configuration[$"{ScanningOptions.Section}:Provider"], "ClamAv", StringComparison.OrdinalIgnoreCase))
+            services.AddSingleton<IFileScanner, ClamAvFileScanner>();
+        else
+            services.AddSingleton<IFileScanner, EicarOnlyFileScanner>();
         services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.Section));
         var storageProvider = configuration[$"{StorageOptions.Section}:Provider"] ?? "Local";
         if (string.Equals(storageProvider, "AzureBlob", StringComparison.OrdinalIgnoreCase))

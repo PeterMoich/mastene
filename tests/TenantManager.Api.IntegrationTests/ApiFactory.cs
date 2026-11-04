@@ -79,12 +79,30 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         return client;
     }
 
-    public async Task<TokenResponse> LoginAsync(string email, string password = SeedPassword)
+    public async Task<SessionResponse> LoginAsync(string email, string password = SeedPassword) =>
+        (await LoginWithCookieAsync(email, password)).Session;
+
+    /// <summary>Signs in and returns the refresh cookie too ("tm_refresh=..."), as a browser would keep it.</summary>
+    public async Task<(SessionResponse Session, string Cookie)> LoginWithCookieAsync(string email, string password = SeedPassword)
     {
-        using var anonymous = CreateClient();
+        using var anonymous = CreateClient(new WebApplicationFactoryClientOptions { HandleCookies = false });
         var response = await anonymous.PostAsJsonAsync("/api/v1/auth/login", new LoginRequest(email, password), Json);
         response.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
-        return (await response.Content.ReadFromJsonAsync<TokenResponse>(Json))!;
+        return ((await response.Content.ReadFromJsonAsync<SessionResponse>(Json))!, RefreshCookieOf(response));
+    }
+
+    public static string RefreshCookieOf(HttpResponseMessage response) =>
+        response.Headers.GetValues("Set-Cookie").Select(c => c.Split(';')[0])
+            .Last(c => c.StartsWith("tm_refresh=", StringComparison.Ordinal));
+
+    /// <summary>Posts to an auth endpoint with the refresh cookie and the anti-forgery header, as the web app does.</summary>
+    public async Task<HttpResponseMessage> PostWithCookieAsync(string url, string? cookie, bool csrfHeader = true)
+    {
+        using var client = CreateClient(new WebApplicationFactoryClientOptions { HandleCookies = false });
+        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+        if (cookie is not null) request.Headers.Add("Cookie", cookie);
+        if (csrfHeader) request.Headers.Add("X-Requested-With", "TenantManager");
+        return await client.SendAsync(request);
     }
 }
 

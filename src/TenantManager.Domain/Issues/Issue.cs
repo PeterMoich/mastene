@@ -137,6 +137,15 @@ public sealed class Issue : Entity, IOwned, IAuditable
 
     public bool IsFinished => Status == IssueStatus.Closed;
 
+    /// <summary>POPIA erasure: removes the tenant's name and words from the issue; the maintenance history stays.</summary>
+    public void RedactTenant(Guid tenantUserId)
+    {
+        if (ReportedBy == tenantUserId) ReportedByName = Privacy.FormerTenant;
+        foreach (var c in _comments.Where(c => c.AuthorId == tenantUserId)) c.Redact();
+        foreach (var p in _photos.Where(p => p.UploadedBy == tenantUserId)) p.RedactUploader();
+        foreach (var e in _events.Where(e => e.ById == tenantUserId)) e.RedactActor();
+    }
+
     /// <summary>True when acknowledged before the response target, false when late, null while still waiting.</summary>
     public bool? ResponseMet(DateTimeOffset now) =>
         AcknowledgedAt is { } at ? at <= ResponseDueAt : now > ResponseDueAt ? false : null;
@@ -339,6 +348,12 @@ public sealed class IssueComment : Entity, IAuditable
         At = at;
     }
 
+    internal void Redact()
+    {
+        AuthorName = Privacy.FormerTenant;
+        Body = Privacy.Removed;
+    }
+
     public Guid IssueId { get; private set; }
     public Guid AuthorId { get; private set; }
     public string AuthorName { get; private set; } = string.Empty;
@@ -363,6 +378,8 @@ public sealed class IssuePhoto : Entity, IAuditable
         At = at;
     }
 
+    internal void RedactUploader() => UploadedByName = Privacy.FormerTenant;
+
     public Guid IssueId { get; private set; }
     public string FileKey { get; private set; } = string.Empty;
     public string FileName { get; private set; } = string.Empty;
@@ -386,6 +403,12 @@ public sealed class IssueEvent : Entity
         ByName = by?.Name ?? "System";
         At = at;
         Note = note;
+    }
+
+    internal void RedactActor()
+    {
+        ByName = Privacy.FormerTenant;
+        if (Kind == IssueEventKind.Reopened) Note = Privacy.Removed;
     }
 
     public Guid IssueId { get; private set; }

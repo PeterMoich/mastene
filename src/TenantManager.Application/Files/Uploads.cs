@@ -41,7 +41,7 @@ public interface IFileScanner
 /// <summary>
 /// Checks uploads on the server (BR12): size, then the real type from the file's first bytes (not its
 /// name or the browser's claim), then the virus scan. A renamed .exe is refused because its bytes
-/// aren't a PDF, JPEG or PNG.
+/// aren't a PDF, JPEG or PNG. Photos then have their location metadata removed.
 /// </summary>
 public sealed partial class UploadValidator(IFileScanner scanner)
 {
@@ -74,6 +74,9 @@ public sealed partial class UploadValidator(IFileScanner scanner)
 
         if (!await scanner.IsCleanAsync(bytes, ct))
             throw new DomainRuleException("file.infected", "The file failed the virus scan and was not saved.");
+
+        // Photos lose their GPS location and other identifying metadata before they are stored (POPIA).
+        bytes = ImageMetadata.Clean(bytes, type.Value);
 
         var (contentType, extension) = type.Value switch
         {

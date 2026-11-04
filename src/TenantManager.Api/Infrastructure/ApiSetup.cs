@@ -16,6 +16,7 @@ public static class Policies
     public const string Landlord = "LandlordOnly";
     public const string AdminOrLandlord = "AdminOrLandlord";
     public const string LandlordOrTenant = "LandlordOrTenant";
+    public const string AdminOrTenant = "AdminOrTenant";
 }
 
 public static class RateLimitPolicies
@@ -60,6 +61,7 @@ public static class ApiSetup
             .AddPolicy(Policies.Landlord, p => p.RequireRole(Roles.Landlord))
             .AddPolicy(Policies.AdminOrLandlord, p => p.RequireRole(Roles.Admin, Roles.Landlord))
             .AddPolicy(Policies.LandlordOrTenant, p => p.RequireRole(Roles.Landlord, Roles.Tenant))
+            .AddPolicy(Policies.AdminOrTenant, p => p.RequireRole(Roles.Admin, Roles.Tenant))
             // Secure by default: an endpoint without [AllowAnonymous] always needs a signed-in user.
             .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 
