@@ -10,6 +10,7 @@ using TenantManager.Domain.Inspections;
 using TenantManager.Domain.Issues;
 using TenantManager.Application.Payments;
 using TenantManager.Domain.Leases;
+using TenantManager.Domain.Messaging;
 using TenantManager.Domain.Payments;
 using TenantManager.Domain.Properties;
 using TenantManager.Domain.Settings;
@@ -80,6 +81,8 @@ public sealed class DataSeeder(
             // Databases seeded before Phase 4 get the maintenance demo data added once.
             if (!await db.Contractors.IgnoreQueryFilters().AnyAsync(ct))
                 await SeedMaintenanceAsync(existingLandlord, ct);
+            if (!await db.Consents.AnyAsync(ct))
+                await SeedMessagingAsync(ct);
             return;
         }
 
@@ -140,6 +143,48 @@ public sealed class DataSeeder(
             submitForLatest: false, ct);
         await rent.RecordOverdueNoticesAsync(ct);
         await SeedMaintenanceAsync(landlord, ct);
+        await SeedMessagingAsync(ct);
+    }
+
+    /// <summary>
+    /// Sipho agreed to WhatsApp messages and wrote two hours ago, so his thread is inside the 24-hour
+    /// window. Lerato hasn't agreed, so she gets no WhatsApp messages; Johan has no conversation yet.
+    /// </summary>
+    private async Task SeedMessagingAsync(CancellationToken ct)
+    {
+        var sipho = await db.Tenants.FirstOrDefaultAsync(t => t.Email == "sipho.dlamini@example.com", ct);
+        if (sipho is null) return;
+        logger.LogInformation("Seeding synthetic messaging demo data");
+        var siphoUser = await users.FindByEmailAsync(sipho.Email);
+        var now = clock.UtcNow;
+
+        db.Consents.Add(ConsentRecord.Grant(sipho.OwnerId, sipho.Id, sipho.Phone, ConsentSource.Tenant, sipho.FullName,
+            siphoUser?.Id, null, now.AddDays(-60)));
+        var conversation = new Conversation(sipho.OwnerId, sipho.Id);
+        db.Conversations.Add(conversation);
+
+        var lastPayment = await db.Payments.Where(p => p.TenantId == sipho.Id && p.ReceiptNumber != null)
+            .OrderByDescending(p => p.ReviewedAt).FirstOrDefaultAsync(ct);
+        var thread = new List<Message>();
+        if (lastPayment is not null)
+        {
+            var receipt = Message.OutboundTemplate(conversation.Id, MessageTemplates.PaymentReceived.Render(
+                    [sipho.FirstName, Application.Messaging.MessageFormat.Money(lastPayment.Amount), lastPayment.ReceiptNumber!]),
+                now.AddDays(-5), Application.Messaging.Notifier.SystemName, $"payment-received:{lastPayment.Id}");
+            receipt.BeginAttempt(now.AddDays(-5));
+            receipt.MarkSent($"wamid.SEED{Guid.NewGuid():N}", now.AddDays(-5));
+            receipt.ApplyProviderStatus(MessageStatus.Read, null);
+            thread.Add(receipt);
+        }
+        thread.Add(Message.InboundWhatsApp(conversation.Id,
+            "Hi Thandi, the plumber didn't come this morning. Can he come tomorrow instead?",
+            $"wamid.SEED{Guid.NewGuid():N}", now.AddHours(-2), sipho.FullName));
+        foreach (var m in thread)
+        {
+            db.Messages.Add(m);
+            conversation.Touch(m);
+        }
+        await db.SaveChangesAsync(ct);
     }
 
     /// <summary>

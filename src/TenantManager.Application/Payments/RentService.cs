@@ -163,6 +163,25 @@ public sealed class RentService(IApplicationDbContext db, ICurrentUser user, ICl
             RentLedger.Compute(ToInputs(charges[id]), payments[id], clock.Today(), rentSettings.GraceDays).Balance));
     }
 
+    /// <summary>Unpaid charges of the given leases with what is still owing on each, for reminders.</summary>
+    internal async Task<List<(RentCharge Charge, decimal Outstanding, ChargeState State)>> UnpaidChargesAsync(
+        IReadOnlyCollection<Guid> leaseIds, CancellationToken ct)
+    {
+        if (leaseIds.Count == 0) return [];
+        var rentSettings = await settings.GetRentSettingsAsync(ct);
+        var charges = (await db.RentCharges.AsNoTracking().Where(c => leaseIds.Contains(c.LeaseId)).ToListAsync(ct))
+            .ToLookup(c => c.LeaseId);
+        var payments = (await VerifiedPaymentsWithLeaseAsync(leaseIds, ct)).ToLookup(p => p.LeaseId, p => p.Input);
+        var result = new List<(RentCharge, decimal, ChargeState)>();
+        foreach (var leaseId in leaseIds)
+        {
+            var byId = charges[leaseId].ToDictionary(c => c.Id);
+            var ledger = RentLedger.Compute(ToInputs(byId.Values), payments[leaseId], clock.Today(), rentSettings.GraceDays);
+            result.AddRange(ledger.Lines.Where(l => l.Outstanding > 0).Select(l => (byId[l.ChargeId], l.Outstanding, l.State)));
+        }
+        return result;
+    }
+
     /// <summary>The ledger for one lease as it would be with <paramref name="extra"/> also verified (for receipts).</summary>
     internal async Task<LedgerResult> ComputeWithAsync(Guid leaseId, LedgerPaymentInput extra, CancellationToken ct)
     {

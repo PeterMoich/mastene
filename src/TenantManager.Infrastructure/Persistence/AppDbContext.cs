@@ -8,6 +8,7 @@ using TenantManager.Domain.Common;
 using TenantManager.Domain.Inspections;
 using TenantManager.Domain.Issues;
 using TenantManager.Domain.Leases;
+using TenantManager.Domain.Messaging;
 using TenantManager.Domain.Payments;
 using TenantManager.Domain.Properties;
 using TenantManager.Domain.Settings;
@@ -32,6 +33,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<Issue> Issues => Set<Issue>();
     public DbSet<Contractor> Contractors => Set<Contractor>();
     public DbSet<Inspection> Inspections => Set<Inspection>();
+    public DbSet<ConsentRecord> Consents => Set<ConsentRecord>();
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+    public DbSet<Message> Messages => Set<Message>();
 
     public async Task<string> NextReceiptNumberAsync(DateOnly today, CancellationToken cancellationToken)
     {

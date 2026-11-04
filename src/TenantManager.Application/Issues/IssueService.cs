@@ -5,6 +5,7 @@ using TenantManager.Application.Abstractions;
 using TenantManager.Application.Common;
 using TenantManager.Application.Files;
 using TenantManager.Application.Leases;
+using TenantManager.Application.Messaging;
 using TenantManager.Application.Settings;
 using TenantManager.Domain.Common;
 using TenantManager.Domain.Issues;
@@ -25,6 +26,8 @@ public sealed class IssueService(
     SettingsService settings,
     UploadValidator uploads,
     IFileStorage files,
+    Notifier notifier,
+    MessageDispatcher dispatcher,
     IValidator<CreateIssueRequest> createValidator,
     IValidator<ResolveIssueRequest> resolveValidator,
     IValidator<ReopenIssueRequest> reopenValidator,
@@ -168,15 +171,19 @@ public sealed class IssueService(
     }
 
     public Task<IssueDto> AcknowledgeAsync(Guid id, CancellationToken ct) =>
-        ChangeAsync(id, i => i.Acknowledge(Actor, clock.UtcNow), ct);
+        ChangeAsync(id, i => i.Acknowledge(Actor, clock.UtcNow), ct,
+            i => ($"issue-acknowledged:{i.Id}", "we have seen it and will be in touch about the next steps."));
 
     public Task<IssueDto> StartAsync(Guid id, CancellationToken ct) =>
-        ChangeAsync(id, i => i.Start(Actor, clock.UtcNow), ct);
+        ChangeAsync(id, i => i.Start(Actor, clock.UtcNow), ct,
+            i => ($"issue-started:{i.Id}", "work has started."));
 
     public async Task<IssueDto> ResolveAsync(Guid id, ResolveIssueRequest request, CancellationToken ct)
     {
         await resolveValidator.ValidateAndThrowAsync(request, ct);
-        return await ChangeAsync(id, i => i.Resolve(request.Note, Actor, clock.UtcNow), ct);
+        return await ChangeAsync(id, i => i.Resolve(request.Note, Actor, clock.UtcNow), ct,
+            i => ($"issue-resolved:{i.Id}:{i.ReopenCount}",
+                "it has been marked as fixed. Please confirm in the Tenant Manager app, or reopen it if it isn't."));
     }
 
     public Task<IssueDto> CloseAsync(Guid id, CancellationToken ct) =>
@@ -288,11 +295,20 @@ public sealed class IssueService(
         return new SlaReportDto(today.AddDays(-days), today, priorities);
     }
 
-    private async Task<IssueDto> ChangeAsync(Guid id, Action<Issue> change, CancellationToken ct)
+    /// <param name="update">For steps the tenant hears about on WhatsApp: the dedupe key and the update text.</param>
+    private async Task<IssueDto> ChangeAsync(Guid id, Action<Issue> change, CancellationToken ct,
+        Func<Issue, (string Key, string Text)>? update = null)
     {
         var issue = await Visible().FirstOrDefaultAsync(i => i.Id == id, ct) ?? throw new NotFoundException("Issue", id);
         change(issue);
+        if (update is not null && issue.TenantId is { } tenantId)
+        {
+            var (key, text) = update(issue);
+            await notifier.QueueAsync(tenantId, Domain.Messaging.MessageTemplates.IssueUpdate,
+                t => [t.FirstName, issue.Title, text], key, ct);
+        }
         await db.SaveChangesAsync(ct);
+        if (update is not null) await dispatcher.TryDispatchAsync(ct);
         return await GetAsync(id, ct);
     }
 

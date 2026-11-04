@@ -15,6 +15,8 @@ using TenantManager.Application.Payments;
 using TenantManager.Infrastructure.Documents;
 using TenantManager.Infrastructure.Identity;
 using TenantManager.Infrastructure.Jobs;
+using TenantManager.Infrastructure.Messaging;
+using TenantManager.Application.Messaging;
 using TenantManager.Infrastructure.Persistence;
 using TenantManager.Infrastructure.Storage;
 
@@ -66,9 +68,20 @@ public static class DependencyInjection
         else
             services.AddSingleton<IFileStorage, LocalFileStorage>();
 
+        // WhatsApp (ADR-0006, ADR-0016): the fake provider unless WhatsApp:Provider is Meta.
+        services.Configure<WhatsAppOptions>(configuration.GetSection(WhatsAppOptions.Section));
+        services.AddSingleton<IWhatsAppConfig, WhatsAppConfig>();
+        var whatsApp = configuration.GetSection(WhatsAppOptions.Section).Get<WhatsAppOptions>() ?? new WhatsAppOptions();
+        if (whatsApp.IsFake)
+            services.AddSingleton<IWhatsAppProvider, FakeWhatsAppProvider>();
+        else
+            services.AddHttpClient<IWhatsAppProvider, MetaCloudWhatsAppProvider>(c => c.Timeout = TimeSpan.FromSeconds(15));
+
         // Background jobs (ADR-0009). Off in tests and in the one-shot migrator.
         services.AddScoped<LeaseLifecycleJob>();
         services.AddScoped<IssueSlaJob>();
+        services.AddScoped<MessageDispatchJob>();
+        services.AddScoped<ReminderJob>();
         if (configuration.GetValue<bool>("Jobs:Enabled"))
         {
             services.AddHangfire(config => config

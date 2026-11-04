@@ -80,6 +80,16 @@ if (app.Configuration.GetValue<bool>("Jobs:Enabled"))
         job => job.RunAsync(CancellationToken.None),
         app.Configuration["Jobs:IssueSlaCron"] ?? IssueSlaJob.DefaultCron,
         new RecurringJobOptions { TimeZone = BusinessTime.Zone });
+    app.Services.GetRequiredService<IRecurringJobManager>().AddOrUpdate<MessageDispatchJob>(
+        MessageDispatchJob.Id,
+        job => job.RunAsync(CancellationToken.None),
+        app.Configuration["Jobs:MessageDispatchCron"] ?? MessageDispatchJob.DefaultCron,
+        new RecurringJobOptions { TimeZone = BusinessTime.Zone });
+    app.Services.GetRequiredService<IRecurringJobManager>().AddOrUpdate<ReminderJob>(
+        ReminderJob.Id,
+        job => job.RunAsync(CancellationToken.None),
+        app.Configuration["Jobs:ReminderCron"] ?? ReminderJob.DefaultCron,
+        new RecurringJobOptions { TimeZone = BusinessTime.Zone });
 }
 
 if (app.Services.GetRequiredService<JwtSigningKey>().IsGenerated)
@@ -104,6 +114,8 @@ if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger
     app.UseSwagger();
     app.UseSwaggerUI(o => o.SwaggerEndpoint("/swagger/v1/swagger.json", "Tenant Manager API v1"));
 }
+
+if (app.Configuration.GetValue<bool>("Jobs:Enabled")) app.UseJobsDashboard(); // Admin only, see JobsDashboard
 
 app.UseAuthentication();
 app.UseAuthorization();
