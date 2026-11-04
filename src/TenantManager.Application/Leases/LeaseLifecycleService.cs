@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TenantManager.Application.Abstractions;
+using TenantManager.Application.Issues;
 using TenantManager.Application.Payments;
 using TenantManager.Application.Settings;
 using TenantManager.Domain.Leases;
@@ -10,24 +11,26 @@ namespace TenantManager.Application.Leases;
 /// <summary>What one daily run changed.</summary>
 public sealed record DailyChecksSummary(
     int Activated, int Renewed, int MarkedExpiring, int NoticesRecorded, int MovedToMonthToMonth, int Ended,
-    int Terminated, int ChargesRaised, int OverdueNoticesRecorded);
+    int Terminated, int ChargesRaised, int OverdueNoticesRecorded, int IssuesEscalated, int IssuesAutoClosed);
 
 /// <summary>
 /// Runs the daily rules for every landlord: start signed leases, swap in renewals, flag Expiring and
 /// record notices (BR05), lapse to month-to-month or Ended (BR07), apply scheduled terminations, then
 /// raise this month's rent charges and record overdue notices (BR08). Called by the Hangfire job and
-/// by the "run checks now" endpoint.
+/// by the "run checks now" endpoint, which also runs the issue SLA checks (BR15; Hangfire runs those
+/// every 15 minutes on their own).
 /// </summary>
 public sealed class LeaseLifecycleService(IApplicationDbContext db, IClock clock, SettingsService settings,
-    RentService rent)
+    RentService rent, IssueSlaService issues)
 {
     public async Task<DailyChecksSummary> RunAsync(CancellationToken ct)
     {
         var leases = await RunLeaseRulesAsync(ct);
         var charges = await rent.RaiseChargesAsync(null, ct);
         var overdue = await rent.RecordOverdueNoticesAsync(ct);
+        var sla = await issues.RunAsync(ct);
         return new DailyChecksSummary(leases.Activated, leases.Renewed, leases.MarkedExpiring, leases.NoticesRecorded,
-            leases.MovedToMonthToMonth, leases.Ended, leases.Terminated, charges, overdue);
+            leases.MovedToMonthToMonth, leases.Ended, leases.Terminated, charges, overdue, sla.Escalated, sla.AutoClosed);
     }
 
     private async Task<LifecycleSummary> RunLeaseRulesAsync(CancellationToken ct)

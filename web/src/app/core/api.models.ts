@@ -243,6 +243,8 @@ export interface LifecycleSummary {
   terminated: number;
   chargesRaised: number;
   overdueNoticesRecorded: number;
+  issuesEscalated: number;
+  issuesAutoClosed: number;
 }
 
 export interface Settings {
@@ -256,6 +258,15 @@ export interface Settings {
   rentGraceDays: number;
   prorateRent: boolean;
   depositRefundDays: number;
+  slaUrgentResponseHours: number;
+  slaUrgentResolutionHours: number;
+  slaHighResponseHours: number;
+  slaHighResolutionHours: number;
+  slaMediumResponseHours: number;
+  slaMediumResolutionHours: number;
+  slaLowResponseHours: number;
+  slaLowResolutionHours: number;
+  issueAutoCloseDays: number;
   /** Field names whose values are placeholders needing legal review. */
   legalReviewNeeded: string[];
 }
@@ -373,3 +384,224 @@ export interface Deposit {
 /** Proof of payment rules, mirrored from the API (BR12) so users get instant feedback. */
 export const PROOF_OF_PAYMENT_MAX_BYTES = 5 * 1024 * 1024;
 export const PROOF_OF_PAYMENT_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
+
+// ---- Issues, contractors and inspections (Phase 4) ----
+
+export const ISSUE_CATEGORIES = ['Plumbing', 'Electrical', 'Appliance', 'Structural', 'Pest', 'Security', 'Garden', 'Other'] as const;
+export type IssueCategory = (typeof ISSUE_CATEGORIES)[number];
+export const ISSUE_PRIORITIES = ['Urgent', 'High', 'Medium', 'Low'] as const;
+export type IssuePriority = (typeof ISSUE_PRIORITIES)[number];
+export const ISSUE_STATUSES = ['Open', 'Acknowledged', 'InProgress', 'Resolved', 'Closed'] as const;
+export type IssueStatus = (typeof ISSUE_STATUSES)[number];
+export type IssueEventKind =
+  | 'Opened' | 'Acknowledged' | 'Started' | 'ContractorAssigned' | 'ContractorRemoved' | 'PriorityChanged'
+  | 'Resolved' | 'Reopened' | 'Closed' | 'AutoClosed' | 'ResponseTargetMissed' | 'ResolutionTargetMissed';
+export type IssueAction =
+  | 'acknowledge' | 'start' | 'resolve' | 'close' | 'reopen' | 'assignContractor' | 'changePriority' | 'comment'
+  | 'addPhoto';
+
+export interface IssueSummary {
+  id: string;
+  title: string;
+  category: IssueCategory;
+  priority: IssuePriority;
+  status: IssueStatus;
+  unitId: string;
+  propertyName: string;
+  unitLabel: string;
+  tenantName: string | null;
+  contractorName: string | null;
+  openedAt: string;
+  responseDueAt: string;
+  resolutionDueAt: string;
+  isEscalated: boolean;
+  photoCount: number;
+}
+
+export interface IssuePhoto {
+  id: string;
+  fileName: string;
+  contentType: string;
+  sizeBytes: number;
+  uploadedByName: string;
+  at: string;
+}
+
+export interface IssueComment {
+  id: string;
+  authorName: string;
+  byTenant: boolean;
+  body: string;
+  at: string;
+}
+
+export interface IssueEvent {
+  kind: IssueEventKind;
+  byName: string;
+  at: string;
+  note: string | null;
+}
+
+export interface Issue {
+  id: string;
+  title: string;
+  description: string;
+  category: IssueCategory;
+  priority: IssuePriority;
+  status: IssueStatus;
+  unitId: string;
+  propertyName: string;
+  unitLabel: string;
+  leaseId: string | null;
+  leaseNumber: string | null;
+  tenantId: string | null;
+  tenantName: string | null;
+  reportedByName: string;
+  contractor: { id: string; name: string; trade: string; phone: string } | null;
+  openedAt: string;
+  acknowledgedAt: string | null;
+  startedAt: string | null;
+  resolvedAt: string | null;
+  closedAt: string | null;
+  responseDueAt: string;
+  resolutionDueAt: string;
+  /** true on time, false late (or waiting past the target), null still waiting. */
+  responseMet: boolean | null;
+  resolutionMet: boolean | null;
+  isEscalated: boolean;
+  responseMissedAt: string | null;
+  resolutionMissedAt: string | null;
+  resolutionNote: string | null;
+  reopenCount: number;
+  autoCloseDays: number;
+  photos: IssuePhoto[];
+  comments: IssueComment[];
+  events: IssueEvent[];
+  allowedActions: IssueAction[];
+}
+
+export interface IssueListQuery extends ListQuery {
+  status?: IssueStatus | '';
+  priority?: IssuePriority | '';
+  propertyId?: string;
+  leaseId?: string;
+  contractorId?: string;
+  escalated?: boolean | '';
+  openOnly?: boolean | '';
+}
+
+export interface CreateIssueRequest {
+  leaseId: string | null;
+  unitId: string | null;
+  category: IssueCategory;
+  priority: IssuePriority;
+  title: string;
+  description: string;
+}
+
+export interface SlaPriority {
+  priority: IssuePriority;
+  responseTargetHours: number;
+  resolutionTargetHours: number;
+  opened: number;
+  acknowledged: number;
+  acknowledgedOnTime: number;
+  resolved: number;
+  resolvedOnTime: number;
+  averageResponseHours: number | null;
+  averageResolutionHours: number | null;
+  escalated: number;
+  stillOpen: number;
+}
+
+export interface SlaReport {
+  from: string;
+  to: string;
+  priorities: SlaPriority[];
+}
+
+export interface Contractor {
+  id: string;
+  name: string;
+  trade: string;
+  phone: string;
+  email: string | null;
+  notes: string | null;
+  unfinishedIssues: number;
+}
+
+export interface ContractorRequest {
+  name: string;
+  trade: string;
+  phone: string;
+  email: string | null;
+  notes: string | null;
+}
+
+export type InspectionKind = 'MoveIn' | 'MoveOut';
+export type InspectionStatus = 'Draft' | 'Completed';
+export const ITEM_CONDITIONS = ['Good', 'Fair', 'Poor', 'Damaged', 'Missing'] as const;
+export type ItemCondition = (typeof ITEM_CONDITIONS)[number];
+
+export interface InspectionSummary {
+  id: string;
+  kind: InspectionKind;
+  status: InspectionStatus;
+  inspectedOn: string;
+  completedAt: string | null;
+  tenantAcknowledgedAt: string | null;
+  areas: number;
+  areasChecked: number;
+  photos: number;
+}
+
+export interface LeaseInspections {
+  leaseNumber: string;
+  items: InspectionSummary[];
+  allowedActions: ('startMoveIn' | 'startMoveOut')[];
+}
+
+export interface InspectionPhoto {
+  id: string;
+  fileName: string;
+  contentType: string;
+  sizeBytes: number;
+  at: string;
+}
+
+export interface InspectionItem {
+  id: string;
+  area: string;
+  order: number;
+  condition: ItemCondition | null;
+  notes: string | null;
+  photos: InspectionPhoto[];
+  moveInCondition: ItemCondition | null;
+  moveInNotes: string | null;
+  moveInPhotos: InspectionPhoto[];
+}
+
+export interface Inspection {
+  id: string;
+  leaseId: string;
+  leaseNumber: string;
+  kind: InspectionKind;
+  status: InspectionStatus;
+  inspectedOn: string;
+  generalNotes: string | null;
+  completedAt: string | null;
+  completedByName: string | null;
+  tenantAcknowledgedAt: string | null;
+  tenantComment: string | null;
+  propertyName: string;
+  unitLabel: string;
+  tenantName: string;
+  moveInInspectionId: string | null;
+  items: InspectionItem[];
+  allowedActions: ('edit' | 'complete' | 'acknowledge')[];
+}
+
+/** Photo rules, mirrored from the API (BR12): JPG or PNG, up to 5 MB, five per issue or per inspection area. */
+export const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
+export const PHOTO_TYPES = ['image/jpeg', 'image/png'];
+export const MAX_PHOTOS = 5;

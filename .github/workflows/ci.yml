@@ -158,6 +158,19 @@ jobs:
           pay=$(python3 -c "import json;d=json.load(open('payments.json'));assert d['totalCount']>0,d;print(d['items'][0]['id'])")
           curl -sf http://localhost:4200/api/v1/payments/$pay/receipt -H "Authorization: Bearer $ttoken" -o receipt.pdf
           head -c 5 receipt.pdf | grep -q '%PDF-' && echo "::notice title=Smoke test::Tenant downloaded a rent receipt ($(stat -c %s receipt.pdf) bytes)"
+          # Phase 4: the tenant's seeded issue has a photo (a real PNG) stored in Azurite.
+          curl -sf "http://localhost:4200/api/v1/issues?pageSize=50" -H "Authorization: Bearer $ttoken" > issues.json
+          issue=$(python3 -c "import json;d=json.load(open('issues.json'));print(next(i['id'] for i in d['items'] if i['photoCount']>0))")
+          curl -sf http://localhost:4200/api/v1/issues/$issue -H "Authorization: Bearer $ttoken" > issue.json
+          photo=$(python3 -c "import json;print(json.load(open('issue.json'))['photos'][0]['id'])")
+          curl -sf http://localhost:4200/api/v1/issues/$issue/photos/$photo -H "Authorization: Bearer $ttoken" -o photo.png
+          head -c 8 photo.png | od -An -tx1 | grep -q "89 50 4e 47" && echo "::notice title=Smoke test::Tenant viewed an issue photo ($(stat -c %s photo.png) bytes)"
+          curl -sf "http://localhost:4200/api/v1/issues?escalated=true" -H "Authorization: Bearer $token" | grep -q "Geyser not heating"
+          # Security headers on the page itself and on the bundles, not just on API responses.
+          curl -sfI http://localhost:4200/ | grep -i "content-security-policy" | grep -q "blob:"
+          js=$(curl -sf http://localhost:4200/ | grep -oE 'main-[A-Za-z0-9]+\.js' | head -1)
+          curl -sfI "http://localhost:4200/$js" | grep -qi "x-content-type-options: nosniff"
+          echo "::notice title=Smoke test::Security headers present on index.html and $js"
           curl -sf http://localhost:4200/ | grep -q "<app-root" && echo "Web app is served"
           curl -sf http://localhost:5080/health/ready && echo " API is ready"
       - name: Show container logs on failure

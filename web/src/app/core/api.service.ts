@@ -3,6 +3,18 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   Arrears,
+  Contractor,
+  ContractorRequest,
+  CreateIssueRequest,
+  Inspection,
+  InspectionKind,
+  Issue,
+  IssueListQuery,
+  IssuePriority,
+  IssueSummary,
+  ItemCondition,
+  LeaseInspections,
+  SlaReport,
   CreateUserRequest,
   Deposit,
   Ledger,
@@ -195,5 +207,101 @@ export class ApiService {
   }
   refundDeposit(leaseId: string, refundedOn: string): Observable<Deposit> {
     return this.http.post<Deposit>(`${BASE}/leases/${leaseId}/deposit/refund`, { refundedOn });
+  }
+
+  // Issues (Phase 4)
+  listIssues(query: IssueListQuery = {}): Observable<PagedResult<IssueSummary>> {
+    return this.http.get<PagedResult<IssueSummary>>(`${BASE}/issues`, { params: toParams(query) });
+  }
+  getIssue(id: string): Observable<Issue> {
+    return this.http.get<Issue>(`${BASE}/issues/${id}`);
+  }
+  createIssue(body: CreateIssueRequest): Observable<Issue> {
+    return this.http.post<Issue>(`${BASE}/issues`, body);
+  }
+  /** acknowledge, start or close. */
+  issueStep(id: string, step: 'acknowledge' | 'start' | 'close'): Observable<Issue> {
+    return this.http.post<Issue>(`${BASE}/issues/${id}/${step}`, {});
+  }
+  resolveIssue(id: string, note: string | null): Observable<Issue> {
+    return this.http.post<Issue>(`${BASE}/issues/${id}/resolve`, { note });
+  }
+  reopenIssue(id: string, reason: string): Observable<Issue> {
+    return this.http.post<Issue>(`${BASE}/issues/${id}/reopen`, { reason });
+  }
+  assignContractor(id: string, contractorId: string | null): Observable<Issue> {
+    return this.http.put<Issue>(`${BASE}/issues/${id}/contractor`, { contractorId });
+  }
+  changeIssuePriority(id: string, priority: IssuePriority): Observable<Issue> {
+    return this.http.put<Issue>(`${BASE}/issues/${id}/priority`, { priority });
+  }
+  commentOnIssue(id: string, body: string): Observable<Issue> {
+    return this.http.post<Issue>(`${BASE}/issues/${id}/comments`, { body });
+  }
+  addIssuePhoto(id: string, file: File): Observable<Issue> {
+    const form = new FormData();
+    form.append('File', file, file.name);
+    return this.http.post<Issue>(`${BASE}/issues/${id}/photos`, form);
+  }
+  issuePhotoUrl(id: string, photoId: string): string {
+    return `${BASE}/issues/${id}/photos/${photoId}`;
+  }
+  slaReport(days = 90): Observable<SlaReport> {
+    return this.http.get<SlaReport>(`${BASE}/issues/sla-report`, { params: toParams({ days }) });
+  }
+  /** Fetches an image with the signed-in user's token (photos are never public). */
+  image(url: string): Observable<Blob> {
+    return this.http.get(url, { responseType: 'blob' });
+  }
+
+  // Contractors
+  listContractors(query: ListQuery = {}): Observable<PagedResult<Contractor>> {
+    return this.http.get<PagedResult<Contractor>>(`${BASE}/contractors`, { params: toParams(query) });
+  }
+  createContractor(body: ContractorRequest): Observable<Contractor> {
+    return this.http.post<Contractor>(`${BASE}/contractors`, body);
+  }
+  updateContractor(id: string, body: ContractorRequest): Observable<Contractor> {
+    return this.http.put<Contractor>(`${BASE}/contractors/${id}`, body);
+  }
+  deleteContractor(id: string): Observable<void> {
+    return this.http.delete<void>(`${BASE}/contractors/${id}`);
+  }
+
+  // Inspections
+  leaseInspections(leaseId: string): Observable<LeaseInspections> {
+    return this.http.get<LeaseInspections>(`${BASE}/leases/${leaseId}/inspections`);
+  }
+  startInspection(leaseId: string, kind: InspectionKind): Observable<Inspection> {
+    return this.http.post<Inspection>(`${BASE}/leases/${leaseId}/inspections`, { kind });
+  }
+  getInspection(id: string): Observable<Inspection> {
+    return this.http.get<Inspection>(`${BASE}/inspections/${id}`);
+  }
+  updateInspection(id: string, inspectedOn: string, generalNotes: string | null): Observable<Inspection> {
+    return this.http.put<Inspection>(`${BASE}/inspections/${id}`, { inspectedOn, generalNotes });
+  }
+  addInspectionArea(id: string, area: string): Observable<Inspection> {
+    return this.http.post<Inspection>(`${BASE}/inspections/${id}/items`, { area });
+  }
+  updateInspectionItem(id: string, itemId: string, condition: ItemCondition | null, notes: string | null): Observable<Inspection> {
+    return this.http.put<Inspection>(`${BASE}/inspections/${id}/items/${itemId}`, { condition, notes });
+  }
+  removeInspectionItem(id: string, itemId: string): Observable<Inspection> {
+    return this.http.delete<Inspection>(`${BASE}/inspections/${id}/items/${itemId}`);
+  }
+  addInspectionPhoto(id: string, itemId: string, file: File): Observable<Inspection> {
+    const form = new FormData();
+    form.append('File', file, file.name);
+    return this.http.post<Inspection>(`${BASE}/inspections/${id}/items/${itemId}/photos`, form);
+  }
+  inspectionPhotoUrl(id: string, photoId: string): string {
+    return `${BASE}/inspections/${id}/photos/${photoId}`;
+  }
+  completeInspection(id: string): Observable<Inspection> {
+    return this.http.post<Inspection>(`${BASE}/inspections/${id}/complete`, {});
+  }
+  acknowledgeInspection(id: string, comment: string | null): Observable<Inspection> {
+    return this.http.post<Inspection>(`${BASE}/inspections/${id}/acknowledge`, { comment });
   }
 }

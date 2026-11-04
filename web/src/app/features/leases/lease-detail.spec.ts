@@ -61,6 +61,7 @@ describe('LeaseDetail', () => {
            credit: 0, graceDays: 3, lines: [] }),
     ),
     listPayments: vi.fn(() => of({ items: [], page: 1, pageSize: 100, totalCount: 0 })),
+    leaseInspections: vi.fn(() => of({ leaseNumber: 'L2026-0007', items: [], allowedActions: [] })),
   };
   const dialog = { open: vi.fn(() => ({ afterClosed: () => of(true) })) };
 

@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using TenantManager.Application.Abstractions;
 using TenantManager.Application.Auditing;
 using TenantManager.Application.Files;
+using TenantManager.Application.Inspections;
+using TenantManager.Application.Issues;
 using TenantManager.Application.Leases;
 using TenantManager.Application.Payments;
 using TenantManager.Application.Properties;
@@ -29,6 +31,10 @@ public static class DependencyInjection
         services.AddScoped<PaymentService>();
         services.AddScoped<ReceiptFactory>();
         services.AddScoped<DepositService>();
+        services.AddScoped<IssueService>();
+        services.AddScoped<IssueSlaService>();
+        services.AddScoped<ContractorService>();
+        services.AddScoped<InspectionService>();
         return services;
     }
 }

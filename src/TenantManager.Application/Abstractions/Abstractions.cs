@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TenantManager.Domain.Auditing;
+using TenantManager.Domain.Inspections;
+using TenantManager.Domain.Issues;
 using TenantManager.Domain.Leases;
 using TenantManager.Domain.Payments;
 using TenantManager.Domain.Properties;
@@ -23,6 +25,9 @@ public interface IApplicationDbContext
     DbSet<RentCharge> RentCharges { get; }
     DbSet<ProofOfPayment> Payments { get; }
     DbSet<Deposit> Deposits { get; }
+    DbSet<Issue> Issues { get; }
+    DbSet<Contractor> Contractors { get; }
+    DbSet<Inspection> Inspections { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>Next lease number, e.g. L2026-0007, from a database sequence (never reused).</summary>
@@ -96,7 +101,7 @@ public static class BusinessTime
         DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(clock.UtcNow, Zone).DateTime);
 }
 
-/// <summary>Stores documents (lease PDFs now; proof of payment and photos later). ADR-0005.</summary>
+/// <summary>Stores documents: lease PDFs, receipts, proof of payment and photos. ADR-0005.</summary>
 public interface IFileStorage
 {
     /// <summary>Writes a new file. Keys are never reused, so an existing key is an error.</summary>

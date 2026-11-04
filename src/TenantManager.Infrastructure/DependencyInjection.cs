@@ -68,6 +68,7 @@ public static class DependencyInjection
 
         // Background jobs (ADR-0009). Off in tests and in the one-shot migrator.
         services.AddScoped<LeaseLifecycleJob>();
+        services.AddScoped<IssueSlaJob>();
         if (configuration.GetValue<bool>("Jobs:Enabled"))
         {
             services.AddHangfire(config => config
