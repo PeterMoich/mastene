@@ -1,2 +1,2 @@
 
-| [0013](0013-lease-overlap-under-application-locks.md) | Lease overlap is checked under application locks |
+| [0014](0014-rent-ledger-is-computed-not-stored.md) | The rent ledger is computed, not stored |
