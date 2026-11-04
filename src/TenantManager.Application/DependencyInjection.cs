@@ -8,6 +8,7 @@ using TenantManager.Application.Issues;
 using TenantManager.Application.Leases;
 using TenantManager.Application.Messaging;
 using TenantManager.Application.Payments;
+using TenantManager.Application.Privacy;
 using TenantManager.Application.Properties;
 using TenantManager.Application.Settings;
 using TenantManager.Application.Tenants;
@@ -19,6 +20,7 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly, includeInternalTypes: true);
+        services.AddScoped<AuditRedaction>();
         services.AddScoped<PropertyService>();
         services.AddScoped<TenantService>();
         services.AddScoped<AuditService>();
@@ -41,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<WhatsAppWebhookService>();
         services.AddScoped<MessagingService>();
         services.AddScoped<ReminderService>();
+        services.AddScoped<PrivacyService>();
         return services;
     }
 }

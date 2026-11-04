@@ -28,7 +28,8 @@ public sealed record SettingsRequest(
     int SlaLowResponseHours = 72,
     int SlaLowResolutionHours = 336,
     int IssueAutoCloseDays = 7,
-    int RentReminderDaysBefore = 3)
+    int RentReminderDaysBefore = 3,
+    int RetentionYearsAfterLeaseEnd = 5)
 {
     public SlaTargets ToSlaTargets() => new(
         new SlaTarget(SlaUrgentResponseHours, SlaUrgentResolutionHours),
@@ -60,6 +61,7 @@ public sealed record SettingsDto(
     int SlaLowResolutionHours,
     int IssueAutoCloseDays,
     int RentReminderDaysBefore,
+    int RetentionYearsAfterLeaseEnd,
     string[] LegalReviewNeeded);
 
 public sealed class SettingsRequestValidator : AbstractValidator<SettingsRequest>
@@ -79,6 +81,7 @@ public sealed class SettingsRequestValidator : AbstractValidator<SettingsRequest
         RuleFor(x => x.RentGraceDays).InclusiveBetween(0, 31);
         RuleFor(x => x.DepositRefundDays).InclusiveBetween(0, 365);
         RuleFor(x => x.RentReminderDaysBefore).InclusiveBetween(0, 14);
+        RuleFor(x => x.RetentionYearsAfterLeaseEnd).InclusiveBetween(0, 30);
         RuleFor(x => x).Custom((x, ctx) =>
         {
             try { x.ToSlaTargets().Validate(); }
@@ -91,7 +94,8 @@ public sealed class SettingsRequestValidator : AbstractValidator<SettingsRequest
 public sealed class SettingsService(IApplicationDbContext db, IValidator<SettingsRequest> validator)
 {
     private static readonly string[] LegalReviewFields =
-        ["maxEscalationPct", "monthToMonthOnLapse", "terminationNoticeDays", "leaseTemplateVersion", "depositRefundDays"];
+        ["maxEscalationPct", "monthToMonthOnLapse", "terminationNoticeDays", "leaseTemplateVersion", "depositRefundDays",
+            "retentionYearsAfterLeaseEnd"];
 
     public async Task<LeaseSettings> GetLeaseSettingsAsync(CancellationToken ct)
     {
@@ -117,9 +121,15 @@ public sealed class SettingsService(IApplicationDbContext db, IValidator<Setting
         return row?.RentReminderDaysBefore ?? BusinessSettings.DefaultRentReminderDaysBefore;
     }
 
+    public async Task<int> GetRetentionYearsAsync(CancellationToken ct)
+    {
+        var row = await db.Settings.AsNoTracking().FirstOrDefaultAsync(ct);
+        return row?.RetentionYearsAfterLeaseEnd ?? BusinessSettings.DefaultRetentionYears;
+    }
+
     public async Task<SettingsDto> GetAsync(CancellationToken ct) =>
         ToDto(await GetLeaseSettingsAsync(ct), await GetRentSettingsAsync(ct), await GetSlaTargetsAsync(ct),
-            await GetRentReminderDaysAsync(ct));
+            await GetRentReminderDaysAsync(ct), await GetRetentionYearsAsync(ct));
 
     public async Task<SettingsDto> UpdateAsync(SettingsRequest request, CancellationToken ct)
     {
@@ -136,14 +146,16 @@ public sealed class SettingsService(IApplicationDbContext db, IValidator<Setting
             request.DepositRefundDays));
         row.ApplySla(request.ToSlaTargets());
         row.ApplyReminders(request.RentReminderDaysBefore);
+        row.ApplyRetention(request.RetentionYearsAfterLeaseEnd);
         await db.SaveChangesAsync(ct);
-        return ToDto(row.ToLeaseSettings(), row.ToRentSettings(), row.ToSlaTargets(), row.RentReminderDaysBefore);
+        return ToDto(row.ToLeaseSettings(), row.ToRentSettings(), row.ToSlaTargets(), row.RentReminderDaysBefore,
+            row.RetentionYearsAfterLeaseEnd);
     }
 
-    private static SettingsDto ToDto(LeaseSettings s, RentSettings r, SlaTargets sla, int reminderDays) => new(
+    private static SettingsDto ToDto(LeaseSettings s, RentSettings r, SlaTargets sla, int reminderDays, int retentionYears) => new(
         s.ExpiryNoticeDays.ToArray(), s.DefaultEscalationPct, s.MaxEscalationPct, s.MonthToMonthOnLapse,
         s.TerminationNoticeDays, s.TemplateVersion, r.DueDay, r.GraceDays, r.ProrateFirstAndLastMonth,
         r.DepositRefundDays, sla.Urgent.ResponseHours, sla.Urgent.ResolutionHours, sla.High.ResponseHours,
         sla.High.ResolutionHours, sla.Medium.ResponseHours, sla.Medium.ResolutionHours, sla.Low.ResponseHours,
-        sla.Low.ResolutionHours, sla.AutoCloseDays, reminderDays, LegalReviewFields);
+        sla.Low.ResolutionHours, sla.AutoCloseDays, reminderDays, retentionYears, LegalReviewFields);
 }

@@ -15,6 +15,9 @@ x-api-env: &api-env
   Storage__Provider: AzureBlob
   Storage__Container: documents
   Storage__AzureConnectionString: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+  # Upload virus scanning: the EICAR-only development scanner unless SCANNING_PROVIDER=ClamAv.
+  Scanning__Provider: ${SCANNING_PROVIDER:-Eicar}
+  Scanning__ClamAvHost: clamav
   # WhatsApp: the fake provider unless you set the Meta values in .env (see README, "WhatsApp").
   WhatsApp__Provider: ${WHATSAPP_PROVIDER:-Fake}
   WhatsApp__AppSecret: ${WHATSAPP_APP_SECRET:-}
@@ -43,6 +46,13 @@ services:
     command: azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck
     ports: ["10000:10000"]
     volumes: [blobdata:/data]
+
+  # Optional real virus scanner (about 1 GB of memory). Off by default; to use it:
+  #   docker compose --profile clamav up --build   with   SCANNING_PROVIDER=ClamAv   in .env
+  clamav:
+    image: clamav/clamav:stable
+    profiles: [clamav]
+    ports: ["3310:3310"]
 
   # Applies migrations and loads synthetic demo data, then exits.
   migrator:

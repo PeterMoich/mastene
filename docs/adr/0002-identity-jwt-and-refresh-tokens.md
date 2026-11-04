@@ -12,4 +12,4 @@ ASP.NET Core Identity on SQL Server. Access tokens are JWTs signed with HMAC-SHA
 
 ## Consequences
 
-No external identity provider. Entra ID can be added later as a second authentication scheme. The Angular app keeps the refresh token in `sessionStorage`; moving it to an httpOnly cookie is planned for Phase 6 hardening.
+No external identity provider. Entra ID can be added later as a second authentication scheme. The refresh token was kept in `sessionStorage` until Phase 6; it is now an HttpOnly cookie (ADR-0019).

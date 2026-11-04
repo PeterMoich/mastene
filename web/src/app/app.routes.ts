@@ -92,6 +92,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/messages/messages').then((m) => m.MyMessages),
       },
       {
+        path: 'privacy',
+        canActivate: [roleGuard('Admin')],
+        title: 'Privacy requests · Tenant Manager',
+        loadComponent: () => import('./features/privacy/privacy').then((m) => m.PrivacyPage),
+      },
+      {
         path: 'settings',
         canActivate: [roleGuard('Admin')],
         title: 'Settings · Tenant Manager',

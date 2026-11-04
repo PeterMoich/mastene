@@ -167,6 +167,7 @@ public sealed class IssueService(
             request.Title, request.Description, Actor, targets, clock.UtcNow);
         db.Issues.Add(issue);
         await db.SaveChangesAsync(ct);
+        AppTelemetry.IssuesOpened.Add(1, new KeyValuePair<string, object?>("priority", issue.Priority.ToString()));
         return await GetAsync(issue.Id, ct);
     }
 
@@ -383,7 +384,11 @@ public sealed class IssueSlaService(IApplicationDbContext db, IClock clock, Sett
         var closed = 0;
         foreach (var issue in due)
         {
-            if (issue.CheckTargets(now)) escalated++;
+            if (issue.CheckTargets(now))
+            {
+                escalated++;
+                AppTelemetry.IssuesEscalated.Add(1, new KeyValuePair<string, object?>("priority", issue.Priority.ToString()));
+            }
             if (issue.AutoClose(now, autoCloseDays)) closed++;
         }
         await db.SaveChangesAsync(ct);

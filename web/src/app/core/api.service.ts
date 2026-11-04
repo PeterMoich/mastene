@@ -2,7 +2,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  AnonymiseResult,
   Arrears,
+  PrivacyTenant,
   ConsentStatus,
   ConversationSummary,
   MessageTemplate,
@@ -336,5 +338,16 @@ export class ApiService {
   }
   jobsDashboardLink(): Observable<{ url: string; expiresAt: string }> {
     return this.http.post<{ url: string; expiresAt: string }>(`${BASE}/admin/jobs-dashboard`, {});
+  }
+
+  // Privacy (Phase 6)
+  privacyTenants(search = ''): Observable<PrivacyTenant[]> {
+    return this.http.get<PrivacyTenant[]>(`${BASE}/privacy/tenants`, { params: toParams({ search }) });
+  }
+  exportTenantData(tenantId: string): Observable<Blob> {
+    return this.http.get(`${BASE}/tenants/${tenantId}/export`, { responseType: 'blob' });
+  }
+  anonymiseTenant(tenantId: string): Observable<AnonymiseResult> {
+    return this.http.post<AnonymiseResult>(`${BASE}/tenants/${tenantId}/anonymise`, {});
   }
 }

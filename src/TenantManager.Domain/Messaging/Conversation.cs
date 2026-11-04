@@ -97,6 +97,8 @@ public sealed class Conversation : Entity, IOwned
 
     public void MarkReadByLandlord() => UnreadByLandlord = 0;
 
+    public void Redact() => LastMessagePreview = Privacy.Removed;
+
     public void MarkReadByTenant() => UnreadByTenant = 0;
 }
 
@@ -182,6 +184,14 @@ public sealed class Message : Entity
 
     /// <summary>Who wrote it: the landlord's or tenant's name, or "System" for reminders.</summary>
     public string? ByName { get; private set; }
+
+    /// <summary>POPIA erasure: the text goes; that a message was sent, when and how, stays.</summary>
+    public void Redact()
+    {
+        Body = Privacy.Removed;
+        TemplateParameters = null;
+        if (Direction == MessageDirection.Inbound) ByName = Privacy.FormerTenant;
+    }
 
     public IReadOnlyList<string> Parameters =>
         TemplateParameters is null ? [] : TemplateParameters.Split('\u001f');

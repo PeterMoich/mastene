@@ -123,3 +123,52 @@ public interface ITenantObligationsProvider
 {
     Task<Domain.Tenants.TenantObligations> GetAsync(Guid tenantId, CancellationToken cancellationToken);
 }
+
+/// <summary>
+/// Set for one unit of work that erases personal data (POPIA). The audit log then records which fields
+/// changed and that they were erased, but not their old values, so erasing doesn't copy the very data
+/// being erased into the append-only audit log.
+/// </summary>
+public sealed class AuditRedaction
+{
+    public const string Erased = "[erased]";
+    public bool Active { get; set; }
+}
+
+/// <summary>
+/// Feature flags (configuration "Features:{name}", on unless set to false), so a risky feature can be
+/// switched off in production by an app setting, without a deploy (ADR-0017).
+/// </summary>
+public interface IFeatureFlags
+{
+    bool IsEnabled(string feature);
+}
+
+public static class Features
+{
+    /// <summary>Off: WhatsApp messages stay queued (nothing is sent) until it is switched on again.</summary>
+    public const string WhatsAppSending = "WhatsAppSending";
+
+    /// <summary>Off: the daily rent, lease and renewal reminders aren't queued.</summary>
+    public const string Reminders = "Reminders";
+}
+
+/// <summary>Business metrics, exported with OpenTelemetry (ADR-0018). Names follow OTel conventions.</summary>
+public static class AppTelemetry
+{
+    public const string Name = "TenantManager";
+    public static readonly System.Diagnostics.Metrics.Meter Meter = new(Name);
+
+    public static readonly System.Diagnostics.Metrics.Counter<long> PaymentsVerified =
+        Meter.CreateCounter<long>("tm.payments.verified", description: "Proofs of payment verified");
+    public static readonly System.Diagnostics.Metrics.Counter<long> IssuesOpened =
+        Meter.CreateCounter<long>("tm.issues.opened", description: "Maintenance issues logged");
+    public static readonly System.Diagnostics.Metrics.Counter<long> IssuesEscalated =
+        Meter.CreateCounter<long>("tm.issues.escalated", description: "Issues that missed a target");
+    public static readonly System.Diagnostics.Metrics.Counter<long> MessagesSent =
+        Meter.CreateCounter<long>("tm.messages.sent", description: "WhatsApp messages accepted by the provider");
+    public static readonly System.Diagnostics.Metrics.Counter<long> MessagesFailed =
+        Meter.CreateCounter<long>("tm.messages.failed", description: "WhatsApp send attempts that failed");
+    public static readonly System.Diagnostics.Metrics.Counter<long> WebhooksRejected =
+        Meter.CreateCounter<long>("tm.webhooks.rejected", description: "WhatsApp webhook calls with a bad signature");
+}

@@ -12,7 +12,7 @@ namespace TenantManager.Application.Messaging;
 /// again at send time, because either can change while a message waits (BR16, BR17).
 /// </summary>
 public sealed class MessageDispatcher(
-    IApplicationDbContext db, IWhatsAppProvider provider, IClock clock, ILogger<MessageDispatcher> logger)
+    IApplicationDbContext db, IWhatsAppProvider provider, IClock clock, IFeatureFlags features, ILogger<MessageDispatcher> logger)
 {
     public const int MaxAttempts = 5;
     private const int Batch = 50;
@@ -35,6 +35,7 @@ public sealed class MessageDispatcher(
     /// <returns>How many messages were sent.</returns>
     public async Task<int> DispatchAsync(CancellationToken ct)
     {
+        if (!features.IsEnabled(Features.WhatsAppSending)) return 0; // kill switch: messages wait in the queue
         var now = clock.UtcNow;
         var retryBefore = now - RetryAfter;
         var queued = await db.Messages
@@ -91,11 +92,13 @@ public sealed class MessageDispatcher(
             if (result.Ok)
             {
                 message.MarkSent(result.ProviderMessageId!, clock.UtcNow);
+                AppTelemetry.MessagesSent.Add(1, new KeyValuePair<string, object?>("kind", message.Kind.ToString()));
                 sent++;
             }
             else
             {
                 message.RecordFailure(result.Error ?? "WhatsApp refused the message.", MaxAttempts);
+                AppTelemetry.MessagesFailed.Add(1);
                 logger.LogWarning("WhatsApp send failed for message {MessageId} (attempt {Attempt}): {Error}",
                     message.Id, message.Attempts, result.Error);
             }

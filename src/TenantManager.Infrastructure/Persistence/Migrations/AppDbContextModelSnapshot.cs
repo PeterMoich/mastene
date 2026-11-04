@@ -26,6 +26,25 @@ namespace TenantManager.Infrastructure.Persistence.Migrations
 
             modelBuilder.HasSequence("ReceiptNumbers");
 
+            modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FriendlyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Xml")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataProtectionKeys");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1649,6 +1668,9 @@ namespace TenantManager.Infrastructure.Persistence.Migrations
                     b.Property<int>("RentReminderDaysBefore")
                         .HasColumnType("int");
 
+                    b.Property<int>("RetentionYearsAfterLeaseEnd")
+                        .HasColumnType("int");
+
                     b.Property<int>("SlaHighResolutionHours")
                         .HasColumnType("int");
 
@@ -1692,6 +1714,9 @@ namespace TenantManager.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("AnonymisedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");

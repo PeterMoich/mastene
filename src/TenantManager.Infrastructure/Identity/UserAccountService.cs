@@ -15,6 +15,7 @@ public sealed class UserAccountService(
     AppDbContext db,
     ICurrentUser currentUser,
     IClock clock,
+    SecurityAudit audit,
     IValidator<CreateUserRequest> createValidator) : IUserAccountService
 {
     public async Task<PagedResult<UserDto>> ListAsync(UserListQuery query, CancellationToken ct)
@@ -60,6 +61,7 @@ public sealed class UserAccountService(
             CreatedAt = clock.UtcNow,
         };
         await CreateWithRoleAsync(user, request.Password, request.Role);
+        await audit.WriteAsync(user.Id, SecurityAudit.Actions.UserCreated, after: new { role = request.Role }, ct: ct);
         return ToDto(user, request.Role);
     }
 
@@ -70,6 +72,8 @@ public sealed class UserAccountService(
         Check(await users.RemoveFromRolesAsync(user, current));
         Check(await users.AddToRoleAsync(user, role));
         await RevokeSessionsAsync(user.Id, ct); // new role takes effect at next sign-in
+        await audit.WriteAsync(user.Id, SecurityAudit.Actions.RoleChanged, new { role = string.Join(",", current) },
+            new { role }, ct: ct);
         return ToDto(user, role);
     }
 
@@ -102,6 +106,7 @@ public sealed class UserAccountService(
             CreatedAt = clock.UtcNow,
         };
         await CreateWithRoleAsync(user, password, Roles.Tenant);
+        await audit.WriteAsync(user.Id, SecurityAudit.Actions.TenantLogin, after: new { tenantId }, ct: ct);
         return new TenantLoginCreated(user.Id, email, password);
     }
 
@@ -109,6 +114,27 @@ public sealed class UserAccountService(
     {
         var user = await db.Users.FirstOrDefaultAsync(u => u.TenantId == tenantId, ct);
         if (user is not null) await SetLockAsync(user, true, ct);
+    }
+
+    public async Task<TenantLoginInfo?> FindTenantLoginAsync(Guid tenantId, CancellationToken ct)
+    {
+        var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.TenantId == tenantId, ct);
+        return user is null ? null
+            : new TenantLoginInfo(user.Id, user.Email ?? string.Empty, user.CreatedAt, user.LockoutEnd is { } end && end > clock.UtcNow);
+    }
+
+    public async Task<Guid?> AnonymiseTenantLoginAsync(Guid tenantId, CancellationToken ct)
+    {
+        var user = await db.Users.FirstOrDefaultAsync(u => u.TenantId == tenantId, ct);
+        if (user is null) return null;
+        var placeholder = $"anonymised-{user.Id:N}@invalid.example";
+        Check(await users.SetEmailAsync(user, placeholder));
+        Check(await users.SetUserNameAsync(user, placeholder));
+        user.DisplayName = Domain.Common.Privacy.FormerTenant;
+        Check(await users.UpdateAsync(user));
+        await SetLockAsync(user, true, ct);
+        await audit.WriteAsync(user.Id, SecurityAudit.Actions.Anonymised, ct: ct);
+        return user.Id;
     }
 
     public async Task<IReadOnlySet<Guid>> TenantIdsWithLoginAsync(IReadOnlyCollection<Guid> tenantIds,
@@ -146,6 +172,7 @@ public sealed class UserAccountService(
         Check(await users.SetLockoutEnabledAsync(user, true));
         Check(await users.SetLockoutEndDateAsync(user, locked ? DateTimeOffset.MaxValue : null));
         if (locked) await RevokeSessionsAsync(user.Id, ct);
+        await audit.WriteAsync(user.Id, locked ? SecurityAudit.Actions.Locked : SecurityAudit.Actions.Unlocked, ct: ct);
     }
 
     private Task RevokeSessionsAsync(Guid userId, CancellationToken ct)

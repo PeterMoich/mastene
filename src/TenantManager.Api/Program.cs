@@ -41,18 +41,26 @@ builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 
 builder.Services.AddApiSecurity(builder.Configuration);
 builder.Services.AddApiDocumentation();
+builder.Services.AddObservability(builder.Configuration);
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>("database", tags: ["ready"]);
 
 if (builder.Configuration.GetValue<bool>("ReverseProxy:Enabled"))
 {
-    // Behind nginx in docker-compose: trust X-Forwarded-For so rate limits see the real client IP.
+    // Behind nginx (compose) or Azure App Service: trust X-Forwarded-For/-Proto only from the proxy's
+    // network, and only one hop, so a client can't fake its IP to dodge rate limits (ADR-0019).
+    var networks = builder.Configuration.GetSection("ReverseProxy:KnownNetworks").Get<string[]>()
+                   ?? ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "::1/128"];
     builder.Services.Configure<ForwardedHeadersOptions>(o =>
     {
         o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        // One hop (nginx) in compose; two in Azure App Service (its front end, then nginx).
+        o.ForwardLimit = builder.Configuration.GetValue("ReverseProxy:ForwardLimit", 1);
         o.KnownIPNetworks.Clear();
         o.KnownProxies.Clear();
+        foreach (var cidr in networks) o.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(cidr));
     });
 }
+builder.Services.AddHsts(o => o.MaxAge = TimeSpan.FromDays(365));
 
 var app = builder.Build();
 
@@ -98,6 +106,7 @@ if (app.Services.GetRequiredService<JwtSigningKey>().IsGenerated)
 if (app.Configuration.GetValue<bool>("ReverseProxy:Enabled")) app.UseForwardedHeaders();
 
 app.UseSerilogRequestLogging();
+if (!app.Environment.IsDevelopment()) app.UseHsts(); // only sent on HTTPS responses
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 

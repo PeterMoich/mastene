@@ -6,9 +6,17 @@ namespace TenantManager.Application.Accounts;
 
 public sealed record LoginRequest(string Email, string Password);
 
-public sealed record RefreshRequest(string RefreshToken);
+
+public sealed record TenantLoginInfo(Guid UserId, string Email, DateTimeOffset CreatedAt, bool Locked);
 
 public sealed record MeDto(Guid Id, string Email, string DisplayName, string Role, Guid? TenantId);
+
+/// <summary>
+/// What the browser gets on sign-in or refresh. The refresh token itself is not in the body: it is set
+/// as an HttpOnly cookie that scripts can't read (ADR-0019).
+/// </summary>
+public sealed record SessionResponse(
+    string AccessToken, DateTimeOffset AccessTokenExpiresAt, DateTimeOffset RefreshTokenExpiresAt, MeDto User);
 
 public sealed record TokenResponse(
     string AccessToken, DateTimeOffset AccessTokenExpiresAt,
@@ -59,6 +67,12 @@ public interface IUserAccountService
         CancellationToken ct);
 
     Task DisableTenantLoginAsync(Guid tenantId, CancellationToken ct);
+
+    /// <summary>The tenant's login, for a data export. Null when they have none.</summary>
+    Task<TenantLoginInfo?> FindTenantLoginAsync(Guid tenantId, CancellationToken ct);
+
+    /// <summary>POPIA erasure: replaces the login's email and name, locks it and ends its sessions. Returns the user id.</summary>
+    Task<Guid?> AnonymiseTenantLoginAsync(Guid tenantId, CancellationToken ct);
     Task<IReadOnlySet<Guid>> TenantIdsWithLoginAsync(IReadOnlyCollection<Guid> tenantIds, CancellationToken ct);
 }
 

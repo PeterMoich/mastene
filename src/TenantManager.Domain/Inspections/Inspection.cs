@@ -183,6 +183,12 @@ public sealed class Inspection : Entity, IOwned, IAuditable
         CompletedByName = Guard.NotBlank(byName, "byName", 120);
     }
 
+    /// <summary>POPIA erasure: the tenant's comment goes; the checklist (the condition of the unit) stays.</summary>
+    public void RedactTenantComment()
+    {
+        if (TenantComment is not null) TenantComment = Privacy.Removed;
+    }
+
     public void Acknowledge(string? comment, DateTimeOffset now)
     {
         if (Status != InspectionStatus.Completed)

@@ -4,12 +4,14 @@ A web app for a small South African residential landlord: properties and units, 
 leases, rent and proof of payment, maintenance issues, and WhatsApp messaging.
 It is a portfolio and test project; all data in it is synthetic.
 
-**Status: Phase 5 of 6** — authentication and roles, properties, units and tenants (Phase 1);
-12-month leases with PDF generation, signing, renewals and a daily lifecycle job (Phase 2);
-rent charges, proof of payment, the rent ledger, receipts and deposits (Phase 3); maintenance
-issues with photos, contractors, response and resolution targets, and move-in/move-out inspections
-(Phase 4); and WhatsApp messaging with consent, the 24-hour window, templates, a signed webhook and
-automatic reminders (Phase 5). Deployment, observability and hardening follow in Phase 6.
+**Status: all six phases built.** Authentication and roles, properties, units and tenants (Phase 1);
+12-month leases with PDF generation, signing, renewals and a daily lifecycle job (Phase 2); rent
+charges, proof of payment, the ledger, receipts and deposits (Phase 3); maintenance issues with
+photos, contractors, response and resolution targets, and inspections (Phase 4); WhatsApp messaging
+with consent, the 24-hour window, templates, a signed webhook and reminders (Phase 5); and Azure
+infrastructure as code, blue-green deployment, OpenTelemetry with SLOs, security hardening and POPIA
+data export and erasure (Phase 6). Running it on Azure needs a subscription: see
+[docs/operations.md](docs/operations.md).
 
 | Layer | Technology |
 | --- | --- |
@@ -130,7 +132,9 @@ so a failing test points straight at the rule. Covered so far:
 | BR17 — free-form WhatsApp only inside the 24-hour window, templates otherwise; outside it a reply stays in the app | `ConversationTests`, `MessagingApiTests` |
 | BR18 — the webhook checks Meta's HMAC signature; retried deliveries are stored once | `MessagingApiTests` |
 | BR19 — a tenant with a lease in force or a balance cannot be deleted; soft delete | `TenantTests`, `TenantApiTests`, `PaymentApiTests` |
-| BR20 — every state change is audited; the audit log is append-only | `AuditTests`, `LeaseApiTests`, `IssueApiTests` |
+| BR20 — every state change is audited, including sign-ins and user changes; the audit log is append-only | `AuditTests`, `LeaseApiTests`, `IssueApiTests`, `SecurityAuditTests` |
+| POPIA — a tenant's data export; erasure only when allowed, without copying old values into the audit log | `PrivacyApiTests` |
+| Photos lose their GPS location (orientation kept) | `ImageMetadataTests` |
 
 ## Architecture
 
@@ -143,8 +147,11 @@ src/
   TenantManager.Api             controllers, auth policies, ProblemDetails, rate limits
 web/                            Angular app
 tests/                          domain tests and API integration tests
-docker/                         Dockerfiles and nginx config
+docker/                         Dockerfiles and the nginx config template
+infra/                          Bicep for every Azure resource (ADR-0017)
 docs/adr/                       architecture decision records
+docs/operations.md              Azure setup, releases, rollback, feature flags, SLOs, runbook
+docs/security.md                OWASP Top 10 review and POPIA
 ```
 
 Dependencies point inward: `Api → Application → Domain`, and `Infrastructure` implements
@@ -160,6 +167,14 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 - **Soft delete** for properties, units and tenants, with filtered unique indexes so a deleted
   "Flat 1" doesn't block a new one.
 - **Rate limits:** 10 sign-in attempts per IP per minute, 300 requests per user per minute.
+  Forwarded client IPs are trusted only from the proxy's network, for a fixed number of hops.
+- **Sessions.** A 15-minute access token in memory; the refresh token is an HttpOnly, SameSite=Strict
+  cookie for the auth endpoints only, which page scripts can't read
+  ([ADR-0019](docs/adr/0019-refresh-token-in-an-httponly-cookie.md)).
+- **Observability.** OpenTelemetry traces and metrics to Application Insights (or any OTLP collector),
+  Serilog JSON logs with trace ids, SLOs with alerts ([ADR-0018](docs/adr/0018-opentelemetry-and-slos.md)).
+- **Uploads** are typed by their bytes, size-capped, virus-scanned (ClamAV in Azure, optional in compose),
+  and photos lose their location metadata.
 - **Lists** take `page`, `pageSize` (max 100), `sort` (field name, `-` prefix for descending)
   and filters such as `search` and `status`.
 
@@ -263,11 +278,21 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 - **Background jobs dashboard.** Admins open it from **Settings**. The API issues a two-minute link,
   which sets a 30-minute cookie for `/hangfire` only.
 
+### Privacy (POPIA)
+
+- **My details → Download all my data** gives a tenant a zip of everything held about them: a JSON file
+  with every record, plus their leases, proofs of payment, receipts and issue photos.
+- **Privacy requests** (Admin) exports any tenant's data, and erases a former tenant's personal details once
+  no lease is in force, nothing is owed and the retention period after their last lease has passed (a
+  setting, LEGAL REVIEW NEEDED). Lease, payment and maintenance records are kept, without their details.
+  The audit log notes what was erased, not the old values
+  ([ADR-0020](docs/adr/0020-popia-export-and-erasure.md)).
+
 ### API (v1)
 
 | Method | Route | Role |
 | --- | --- | --- |
-| POST | `/api/v1/auth/login`, `/auth/refresh`, `/auth/logout` | anyone |
+| POST | `/api/v1/auth/login`, `/auth/refresh`, `/auth/logout` (refresh and logout use the cookie and need `X-Requested-With`) | anyone |
 | GET | `/api/v1/me` | signed in |
 | GET, POST | `/api/v1/properties` | Landlord |
 | GET, PUT, DELETE | `/api/v1/properties/{id}` | Landlord |
@@ -311,22 +336,30 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 | GET, POST | `/api/v1/webhooks/whatsapp` | Meta (signed; GET is the verify handshake) |
 | POST | `/api/v1/dev/whatsapp/inbound` | Landlord, fake provider only |
 | POST | `/api/v1/admin/jobs-dashboard` | Admin (returns a one-time dashboard link) |
+| GET | `/api/v1/tenants/{tenantId}/export` (zip) | Admin, or the tenant (own) |
+| GET | `/api/v1/privacy/tenants` | Admin |
+| POST | `/api/v1/tenants/{tenantId}/anonymise` | Admin |
 | GET, PUT | `/api/v1/settings` | GET Admin and Landlord, PUT Admin |
 | GET, POST | `/api/v1/users`; PUT `/users/{id}/role`, `/users/{id}/lock` | Admin |
 | GET | `/api/v1/audit` | Admin, Landlord |
 | GET | `/health/live`, `/health/ready` | anyone |
 
-## CI
+## CI and deployment
 
-`.github/workflows/ci.yml` runs on every push to `master` and every pull request:
+`.github/workflows/ci.yml` runs on every push to `master` and `phase-*`, and on every pull request:
 
 1. Backend: build with warnings as errors (NuGet vulnerability audit included), check transitive
    packages for known vulnerabilities, unit tests, integration tests against SQL Server.
-2. Frontend: `npm ci`, lint, component tests, production build, `npm audit`.
+2. Frontend: `npm ci`, lint (with template accessibility rules), component tests, production build, `npm audit`.
 3. CodeQL security scan of the C# and TypeScript code.
-4. Docker images for the API and web app, published to `ghcr.io/petermoich/mastene-*` from `master`.
+4. Bicep: the Azure templates are compiled and linted.
+5. Smoke test: the whole stack is started with `docker compose` and exercised through nginx.
+6. Docker images for the API and web app, published to `ghcr.io/petermoich/mastene-*` from `master`.
 
-A failure in any of the first three blocks the images.
+A failure in any of 1–5 blocks the images, and `deploy.yml` only runs after CI succeeds on `master`:
+it releases to the staging slot, smoke-tests it, swaps it into production and swaps back if production
+isn't healthy. `infra.yml` creates or updates the Azure resources. Both need an Azure subscription and
+the setup in [docs/operations.md](docs/operations.md). Dependabot proposes dependency updates weekly.
 
 ## Legal note
 

@@ -1,0 +1,68 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Tenant Manager service levels\nSLOs (docs/operations.md): **99% of API requests under 500 ms** and **99.5% of API requests succeed** (not 5xx), each over 30 days. Health probes are excluded."
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| where timestamp > ago(30d) and name !startswith \"GET /health\"\n| summarize Requests = count(), UnderLatency = round(100.0 * countif(duration < 500) / count(), 3), Succeeded = round(100.0 * countif(toint(resultCode) < 500) / count(), 3)\n| extend LatencySlo = iff(UnderLatency >= 99, \"met\", \"MISSED\"), AvailabilitySlo = iff(Succeeded >= 99.5, \"met\", \"MISSED\")",
+        "size": 4,
+        "title": "30-day SLO compliance (%)",
+        "queryType": 0,
+        "visualization": "table"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| where timestamp > ago(24h) and name !startswith \"GET /health\"\n| summarize p50 = percentile(duration, 50), p95 = percentile(duration, 95), p99 = percentile(duration, 99) by bin(timestamp, 15m)\n| render timechart",
+        "size": 0,
+        "title": "Latency, last 24 hours (ms)",
+        "queryType": 0,
+        "visualization": "timechart"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| where timestamp > ago(24h) and name !startswith \"GET /health\"\n| summarize Requests = count(), ServerErrors = countif(toint(resultCode) >= 500) by bin(timestamp, 15m)\n| render timechart",
+        "size": 0,
+        "title": "Requests and server errors, last 24 hours",
+        "queryType": 0,
+        "visualization": "timechart"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| where timestamp > ago(7d) and name !startswith \"GET /health\"\n| summarize Requests = count(), p95 = percentile(duration, 95), Errors = countif(toint(resultCode) >= 500) by name\n| top 15 by p95 desc",
+        "size": 0,
+        "title": "Slowest endpoints, last 7 days",
+        "queryType": 0,
+        "visualization": "table"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customMetrics\n| where timestamp > ago(7d) and name startswith \"tm.\"\n| summarize Total = sum(valueSum) by name, bin(timestamp, 1d)\n| render columnchart",
+        "size": 0,
+        "title": "Business events per day (payments verified, issues, WhatsApp messages, rejected webhooks)",
+        "queryType": 0,
+        "visualization": "barchart"
+      }
+    }
+  ],
+  "fallbackResourceIds": [],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

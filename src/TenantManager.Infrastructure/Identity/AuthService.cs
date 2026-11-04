@@ -14,6 +14,7 @@ public sealed class AuthService(
     TokenService tokens,
     IOptions<JwtOptions> jwtOptions,
     IClock clock,
+    SecurityAudit audit,
     ILogger<AuthService> logger) : IAuthService
 {
     public async Task<TokenResponse?> LoginAsync(LoginRequest request, CancellationToken ct)
@@ -28,16 +29,22 @@ public sealed class AuthService(
         if (await users.IsLockedOutAsync(user))
         {
             logger.LogWarning("Login refused for locked-out user {UserId}", user.Id);
+            await audit.WriteAsync(user.Id, SecurityAudit.Actions.SignInFailed, after: new { reason = "locked" }, actor: user.Id, ct: ct);
             return null;
         }
 
         if (!await users.CheckPasswordAsync(user, request.Password))
         {
             await users.AccessFailedAsync(user); // locks the account after repeated failures
+            var lockedNow = await users.IsLockedOutAsync(user);
+            await audit.WriteAsync(user.Id, lockedNow ? SecurityAudit.Actions.LockedOut : SecurityAudit.Actions.SignInFailed,
+                after: new { reason = "wrong password", failedCount = await users.GetAccessFailedCountAsync(user) },
+                actor: user.Id, ct: ct);
             return null;
         }
 
         await users.ResetAccessFailedCountAsync(user);
+        await audit.WriteAsync(user.Id, SecurityAudit.Actions.SignedIn, actor: user.Id, ct: ct);
         return await IssueAsync(user, ct);
     }
 
@@ -54,6 +61,8 @@ public sealed class AuthService(
             // whole family so both the thief and the real user have to sign in again.
             logger.LogWarning("Refresh token reuse detected for user {UserId}; revoking all sessions", stored.UserId);
             await RevokeAllAsync(stored.UserId, now, ct);
+            await audit.WriteAsync(stored.UserId, SecurityAudit.Actions.TokenReuse,
+                after: new { action = "all sessions revoked" }, actor: stored.UserId, ct: ct);
             return null;
         }
 

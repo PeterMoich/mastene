@@ -20,12 +20,13 @@ public sealed record ReminderSummary(int RentDue, int RentOverdue, int LeaseExpi
 /// not sent late, so giving consent later doesn't bring a burst of old reminders.
 /// </summary>
 public sealed class ReminderService(IApplicationDbContext db, IClock clock, Notifier notifier, RentService rent,
-    SettingsService settings)
+    SettingsService settings, IFeatureFlags features)
 {
     private const int CatchUpDays = 7;
 
     public async Task<ReminderSummary> RunAsync(CancellationToken ct)
     {
+        if (!features.IsEnabled(Features.Reminders)) return new ReminderSummary(0, 0, 0, 0);
         var today = clock.Today();
         var running = new[] { LeaseStatus.Active, LeaseStatus.Expiring };
         var leases = await db.Leases.AsNoTracking().Where(l => running.Contains(l.Status))

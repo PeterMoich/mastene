@@ -361,6 +361,13 @@ public sealed class LeaseSignature : Entity, IAuditable
         SignedAt = signedAt;
     }
 
+    /// <summary>POPIA erasure, after the retention period: the signed PDF stays as the legal record.</summary>
+    public void Redact()
+    {
+        SignerName = Privacy.FormerTenant;
+        IpAddress = null;
+    }
+
     public Guid LeaseId { get; private set; }
     public LeaseParty Party { get; private set; }
     public Guid UserId { get; private set; }

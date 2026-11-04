@@ -16,7 +16,7 @@ namespace TenantManager.Infrastructure.Persistence;
 /// Because the audit rows are added to the same SaveChanges they commit in the same
 /// transaction as the change itself, so the audit can never miss or invent a change.
 /// </summary>
-public sealed class AuditingInterceptor(ICurrentUser currentUser, IClock clock) : SaveChangesInterceptor
+public sealed class AuditingInterceptor(ICurrentUser currentUser, IClock clock, AuditRedaction redaction) : SaveChangesInterceptor
 {
     private static readonly HashSet<string> SkippedFields =
     [
@@ -90,7 +90,7 @@ public sealed class AuditingInterceptor(ICurrentUser currentUser, IClock clock) 
                     after[name] = p.CurrentValue;
                     break;
                 case EntityState.Modified when p.IsModified && !Equals(p.OriginalValue, p.CurrentValue):
-                    before[name] = p.OriginalValue;
+                    before[name] = redaction.Active && p.Metadata.ClrType == typeof(string) ? AuditRedaction.Erased : p.OriginalValue;
                     after[name] = p.CurrentValue;
                     break;
                 case EntityState.Deleted:

@@ -86,6 +86,13 @@ public sealed class ConsentRecord : Entity, IOwned, IAuditable
     public string? Note { get; private set; }
     public DateTimeOffset At { get; private set; }
 
+    /// <summary>POPIA erasure: keeps the record that consent was given or withdrawn, without the person's details.</summary>
+    public void Redact()
+    {
+        Phone = "redacted";
+        if (Source != ConsentSource.Landlord) RecordedByName = Privacy.FormerTenant;
+    }
+
     /// <summary>BR16: messages may be sent only when the latest record is a grant for the tenant's current number.</summary>
     public static bool Allows(ConsentRecord? latest, string currentPhone) =>
         latest is { Granted: true } && latest.Phone == currentPhone;

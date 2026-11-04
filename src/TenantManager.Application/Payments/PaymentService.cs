@@ -173,6 +173,7 @@ public sealed class PaymentService(
             await db.SaveChangesAsync(c);
             return true;
         }, ct);
+        AppTelemetry.PaymentsVerified.Add(1);
         await dispatcher.TryDispatchAsync(ct);
         return await GetAsync(id, ct);
     }

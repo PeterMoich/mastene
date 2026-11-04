@@ -27,6 +27,7 @@ public sealed class WhatsAppWebhookService(
         if (!WhatsAppSignature.IsValid(body, signature, config.AppSecret))
         {
             logger.LogWarning("WhatsApp webhook refused: missing or wrong signature");
+            AppTelemetry.WebhooksRejected.Add(1);
             return new WebhookResult(false, 0, 0);
         }
 

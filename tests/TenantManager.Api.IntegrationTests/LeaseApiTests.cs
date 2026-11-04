@@ -411,5 +411,6 @@ public class LeaseApiTests(ApiFactory api)
         s.MaxEscalationPct, s.MonthToMonthOnLapse, s.TerminationNoticeDays, s.LeaseTemplateVersion, s.RentDueDay,
         s.RentGraceDays, s.ProrateRent, s.DepositRefundDays, s.SlaUrgentResponseHours, s.SlaUrgentResolutionHours,
         s.SlaHighResponseHours, s.SlaHighResolutionHours, s.SlaMediumResponseHours, s.SlaMediumResolutionHours,
-        s.SlaLowResponseHours, s.SlaLowResolutionHours, s.IssueAutoCloseDays, s.RentReminderDaysBefore);
+        s.SlaLowResponseHours, s.SlaLowResolutionHours, s.IssueAutoCloseDays, s.RentReminderDaysBefore,
+        s.RetentionYearsAfterLeaseEnd);
 }
