@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using TenantManager.Application.Abstractions;
 using TenantManager.Domain.Leases;
+using TenantManager.Domain.Payments;
 using TenantManager.Domain.Settings;
 
 namespace TenantManager.Application.Settings;
@@ -12,7 +13,11 @@ public sealed record SettingsRequest(
     decimal MaxEscalationPct,
     bool MonthToMonthOnLapse,
     int TerminationNoticeDays,
-    string LeaseTemplateVersion);
+    string LeaseTemplateVersion,
+    int RentDueDay = 1,
+    int RentGraceDays = 3,
+    bool ProrateRent = true,
+    int DepositRefundDays = 14);
 
 /// <param name="LegalReviewNeeded">Names of the fields whose defaults are placeholders needing legal review.</param>
 public sealed record SettingsDto(
@@ -22,6 +27,10 @@ public sealed record SettingsDto(
     bool MonthToMonthOnLapse,
     int TerminationNoticeDays,
     string LeaseTemplateVersion,
+    int RentDueDay,
+    int RentGraceDays,
+    bool ProrateRent,
+    int DepositRefundDays,
     string[] LegalReviewNeeded);
 
 public sealed class SettingsRequestValidator : AbstractValidator<SettingsRequest>
@@ -37,6 +46,9 @@ public sealed class SettingsRequestValidator : AbstractValidator<SettingsRequest
             .PrecisionScale(5, 2, ignoreTrailingZeros: true);
         RuleFor(x => x.TerminationNoticeDays).InclusiveBetween(0, 365);
         RuleFor(x => x.LeaseTemplateVersion).NotEmpty().MaximumLength(Lease.TemplateVersionMax);
+        RuleFor(x => x.RentDueDay).InclusiveBetween(1, 28);
+        RuleFor(x => x.RentGraceDays).InclusiveBetween(0, 31);
+        RuleFor(x => x.DepositRefundDays).InclusiveBetween(0, 365);
     }
 }
 
@@ -44,7 +56,7 @@ public sealed class SettingsRequestValidator : AbstractValidator<SettingsRequest
 public sealed class SettingsService(IApplicationDbContext db, IValidator<SettingsRequest> validator)
 {
     private static readonly string[] LegalReviewFields =
-        ["maxEscalationPct", "monthToMonthOnLapse", "terminationNoticeDays", "leaseTemplateVersion"];
+        ["maxEscalationPct", "monthToMonthOnLapse", "terminationNoticeDays", "leaseTemplateVersion", "depositRefundDays"];
 
     public async Task<LeaseSettings> GetLeaseSettingsAsync(CancellationToken ct)
     {
@@ -52,7 +64,14 @@ public sealed class SettingsService(IApplicationDbContext db, IValidator<Setting
         return row?.ToLeaseSettings() ?? LeaseSettings.Defaults;
     }
 
-    public async Task<SettingsDto> GetAsync(CancellationToken ct) => ToDto(await GetLeaseSettingsAsync(ct));
+    public async Task<RentSettings> GetRentSettingsAsync(CancellationToken ct)
+    {
+        var row = await db.Settings.AsNoTracking().FirstOrDefaultAsync(ct);
+        return row?.ToRentSettings() ?? RentSettings.Defaults;
+    }
+
+    public async Task<SettingsDto> GetAsync(CancellationToken ct) =>
+        ToDto(await GetLeaseSettingsAsync(ct), await GetRentSettingsAsync(ct));
 
     public async Task<SettingsDto> UpdateAsync(SettingsRequest request, CancellationToken ct)
     {
@@ -65,11 +84,14 @@ public sealed class SettingsService(IApplicationDbContext db, IValidator<Setting
         }
         row.Apply(new LeaseSettings(request.ExpiryNoticeDays, request.DefaultEscalationPct, request.MaxEscalationPct,
             request.MonthToMonthOnLapse, request.TerminationNoticeDays, request.LeaseTemplateVersion));
+        row.ApplyRent(new RentSettings(request.RentDueDay, request.RentGraceDays, request.ProrateRent,
+            request.DepositRefundDays));
         await db.SaveChangesAsync(ct);
-        return ToDto(row.ToLeaseSettings());
+        return ToDto(row.ToLeaseSettings(), row.ToRentSettings());
     }
 
-    private static SettingsDto ToDto(LeaseSettings s) => new(
+    private static SettingsDto ToDto(LeaseSettings s, RentSettings r) => new(
         s.ExpiryNoticeDays.ToArray(), s.DefaultEscalationPct, s.MaxEscalationPct, s.MonthToMonthOnLapse,
-        s.TerminationNoticeDays, s.TemplateVersion, LegalReviewFields);
+        s.TerminationNoticeDays, s.TemplateVersion, r.DueDay, r.GraceDays, r.ProrateFirstAndLastMonth,
+        r.DepositRefundDays, LegalReviewFields);
 }

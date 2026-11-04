@@ -5,7 +5,6 @@ using TenantManager.Api.Infrastructure;
 using TenantManager.Application.Common;
 using TenantManager.Application.Leases;
 using TenantManager.Application.Settings;
-using TenantManager.Domain.Leases;
 
 namespace TenantManager.Api.Controllers;
 
@@ -102,9 +101,9 @@ public sealed class LeasesController(LeaseService leases) : ControllerBase
 [Authorize(Policy = Policies.Landlord)]
 public sealed class LeaseChecksController(LeaseLifecycleService lifecycle) : ControllerBase
 {
-    /// <summary>Runs the daily lease checks now (they also run every night at 00:15). Safe to repeat.</summary>
+    /// <summary>Runs the daily lease and rent checks now (they also run every night at 00:15). Safe to repeat.</summary>
     [HttpPost("run")]
-    public Task<LifecycleSummary> Run(CancellationToken ct) => lifecycle.RunAsync(ct);
+    public Task<DailyChecksSummary> Run(CancellationToken ct) => lifecycle.RunAsync(ct);
 }
 
 [ApiController]

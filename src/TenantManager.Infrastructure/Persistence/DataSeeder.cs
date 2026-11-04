@@ -2,8 +2,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TenantManager.Application.Abstractions;
+using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
 using TenantManager.Application.Leases;
+using TenantManager.Application.Payments;
 using TenantManager.Domain.Leases;
+using TenantManager.Domain.Payments;
 using TenantManager.Domain.Properties;
 using TenantManager.Domain.Settings;
 using TenantManager.Domain.Tenants;
@@ -33,6 +38,9 @@ public sealed class DataSeeder(
     RoleManager<IdentityRole<Guid>> roles,
     IClock clock,
     LeaseDocumentFactory leaseDocuments,
+    RentService rent,
+    ReceiptFactory receipts,
+    IFileStorage files,
     ILogger<DataSeeder> logger)
 {
     public const string AdminEmail = "admin@mastene.test";
@@ -106,10 +114,10 @@ public sealed class DataSeeder(
         // lifecycle run below flags it Expiring. Johan has no lease, so he can be given one in the demo.
         var today = clock.Today();
         var firstOfMonth = new DateOnly(today.Year, today.Month, 1);
-        await SeedSignedLeaseAsync(jacaranda.Units.First(u => u.Label == "Flat 1"), tenants[0], tenantUsers[0],
-            landlord, firstOfMonth.AddMonths(-8), escalationPct: 8m, ct);
-        await SeedSignedLeaseAsync(marula.Units.First(u => u.Label == "Cottage A"), tenants[1], tenantUsers[1],
-            landlord, firstOfMonth.AddMonths(-11), escalationPct: 6m, ct);
+        var siphoLease = await SeedSignedLeaseAsync(jacaranda.Units.First(u => u.Label == "Flat 1"), tenants[0],
+            tenantUsers[0], landlord, firstOfMonth.AddMonths(-8), escalationPct: 8m, ct);
+        var leratoLease = await SeedSignedLeaseAsync(marula.Units.First(u => u.Label == "Cottage A"), tenants[1],
+            tenantUsers[1], landlord, firstOfMonth.AddMonths(-11), escalationPct: 6m, ct);
 
         var inForce = LeaseTerm.InForce;
         var leases = await db.Leases.Where(l => inForce.Contains(l.Status))
@@ -117,9 +125,69 @@ public sealed class DataSeeder(
             .ToListAsync(ct);
         LeaseLifecycle.Run(leases, today, LeaseSettings.Defaults);
         await db.SaveChangesAsync(ct);
+
+        // Rent history. Sipho is paid up except this month, and his proof for it is waiting for review.
+        // Lerato missed most of last month and all of this month, so she shows in arrears.
+        await rent.RaiseChargesAsync(null, ct);
+        await SeedPaymentsAsync(siphoLease, tenantUsers[0], landlord, unpaidMonths: 1, partialOnFirstUnpaid: null,
+            submitForLatest: true, ct);
+        await SeedPaymentsAsync(leratoLease, tenantUsers[1], landlord, unpaidMonths: 2, partialOnFirstUnpaid: 3000m,
+            submitForLatest: false, ct);
+        await rent.RecordOverdueNoticesAsync(ct);
     }
 
-    private async Task SeedSignedLeaseAsync(Unit unit, Tenant tenant, AppUser tenantUser, AppUser landlord,
+    private async Task SeedPaymentsAsync(Lease lease, AppUser tenantUser, AppUser landlord, int unpaidMonths,
+        decimal? partialOnFirstUnpaid, bool submitForLatest, CancellationToken ct)
+    {
+        var today = clock.Today();
+        var charges = await db.RentCharges.Where(c => c.LeaseId == lease.Id).OrderBy(c => c.Period).ToListAsync(ct);
+        var paidInFull = charges.Count - unpaidMonths;
+
+        for (var i = 0; i < charges.Count; i++)
+        {
+            var charge = charges[i];
+            decimal? amount = i < paidInFull ? charge.AmountDue
+                : i == paidInFull && partialOnFirstUnpaid is { } partial ? partial
+                : i == charges.Count - 1 && submitForLatest ? charge.AmountDue
+                : null;
+            if (amount is null) continue;
+
+            var payment = new ProofOfPayment(lease.OwnerId, lease.Id, lease.TenantId, amount.Value, charge.DueDate,
+                charge.BillingPeriod, $"RENT {charge.Period}",
+                await StoreDemoProofAsync(lease, charge.Period, amount.Value, ct), tenantUser.Id, today);
+            db.Payments.Add(payment);
+
+            var leaveForReview = i == charges.Count - 1 && submitForLatest;
+            if (!leaveForReview)
+            {
+                payment.Verify(landlord.Id, landlord.DisplayName, clock.UtcNow.AddSeconds(i));
+                await receipts.IssueAsync(payment, ct);
+            }
+            await db.SaveChangesAsync(ct);
+        }
+    }
+
+    /// <summary>A tiny synthetic "bank confirmation" PDF, different per payment so the duplicate check passes.</summary>
+    private async Task<StoredFile> StoreDemoProofAsync(Lease lease, string period, decimal amount, CancellationToken ct)
+    {
+        var text = $"Synthetic EFT confirmation - {lease.LeaseNumber} - {period} - R {amount.ToString("0.00", CultureInfo.InvariantCulture)}";
+        var content = $"BT /F1 11 Tf 20 60 Td ({text}) Tj ET";
+        var pdf = Encoding.ASCII.GetBytes(
+            "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n" +
+            "2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n" +
+            "3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 500 120]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n" +
+            $"4 0 obj<</Length {content.Length}>>stream\n{content}\nendstream endobj\n" +
+            "5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n");
+        var key = $"payments/{lease.Id:N}/{Guid.NewGuid():N}.pdf";
+        using (var stream = new MemoryStream(pdf, writable: false))
+        {
+            await files.SaveAsync(key, stream, "application/pdf", ct);
+        }
+        return new StoredFile(key, $"eft-confirmation-{period}.pdf", "application/pdf", pdf.LongLength,
+            Convert.ToHexString(SHA256.HashData(pdf)));
+    }
+
+    private async Task<Lease> SeedSignedLeaseAsync(Unit unit, Tenant tenant, AppUser tenantUser, AppUser landlord,
         DateOnly start, decimal escalationPct, CancellationToken ct)
     {
         var settings = LeaseSettings.Defaults;
@@ -139,6 +207,7 @@ public sealed class DataSeeder(
         lease.AddSignedDocument(await leaseDocuments.CreateAsync(lease, LeaseDocumentKind.Signed, landlord.DisplayName,
             settings.TemplateVersion, ct));
         await db.SaveChangesAsync(ct);
+        return lease;
     }
 
     private async Task<AppUser> CreateUserAsync(string email, string name, string role, string password,

@@ -9,7 +9,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using TenantManager.Application.Abstractions;
 using TenantManager.Application.Accounts;
+using TenantManager.Application.Files;
 using TenantManager.Application.Leases;
+using TenantManager.Application.Payments;
 using TenantManager.Infrastructure.Documents;
 using TenantManager.Infrastructure.Identity;
 using TenantManager.Infrastructure.Jobs;
@@ -55,6 +57,8 @@ public static class DependencyInjection
         // Documents (ADR-0004, ADR-0005)
         QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
         services.AddSingleton<ILeaseDocumentRenderer, QuestPdfLeaseRenderer>();
+        services.AddSingleton<IReceiptRenderer, QuestPdfReceiptRenderer>();
+        services.AddSingleton<IFileScanner, EicarOnlyFileScanner>();
         services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.Section));
         var storageProvider = configuration[$"{StorageOptions.Section}:Provider"] ?? "Local";
         if (string.Equals(storageProvider, "AzureBlob", StringComparison.OrdinalIgnoreCase))

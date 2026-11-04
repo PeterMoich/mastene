@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TenantManager.Domain.Auditing;
 using TenantManager.Domain.Leases;
+using TenantManager.Domain.Payments;
 using TenantManager.Domain.Properties;
 using TenantManager.Domain.Settings;
 using TenantManager.Domain.Tenants;
@@ -19,10 +20,16 @@ public interface IApplicationDbContext
     DbSet<AuditLog> AuditLogs { get; }
     DbSet<Lease> Leases { get; }
     DbSet<BusinessSettings> Settings { get; }
+    DbSet<RentCharge> RentCharges { get; }
+    DbSet<ProofOfPayment> Payments { get; }
+    DbSet<Deposit> Deposits { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>Next lease number, e.g. L2026-0007, from a database sequence (never reused).</summary>
     Task<string> NextLeaseNumberAsync(DateOnly today, CancellationToken cancellationToken);
+
+    /// <summary>Next receipt number, e.g. R2026-0042, from a database sequence.</summary>
+    Task<string> NextReceiptNumberAsync(DateOnly today, CancellationToken cancellationToken);
 
     /// <summary>
     /// Runs <paramref name="work"/> in a transaction holding exclusive locks on the given keys (e.g.

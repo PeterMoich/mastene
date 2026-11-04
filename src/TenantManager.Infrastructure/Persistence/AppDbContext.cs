@@ -6,6 +6,7 @@ using TenantManager.Application.Abstractions;
 using TenantManager.Domain.Auditing;
 using TenantManager.Domain.Common;
 using TenantManager.Domain.Leases;
+using TenantManager.Domain.Payments;
 using TenantManager.Domain.Properties;
 using TenantManager.Domain.Settings;
 using TenantManager.Domain.Tenants;
@@ -23,6 +24,17 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Lease> Leases => Set<Lease>();
     public DbSet<BusinessSettings> Settings => Set<BusinessSettings>();
+    public DbSet<RentCharge> RentCharges => Set<RentCharge>();
+    public DbSet<ProofOfPayment> Payments => Set<ProofOfPayment>();
+    public DbSet<Deposit> Deposits => Set<Deposit>();
+
+    public async Task<string> NextReceiptNumberAsync(DateOnly today, CancellationToken cancellationToken)
+    {
+        var values = await Database
+            .SqlQuery<long>($"SELECT NEXT VALUE FOR [dbo].[ReceiptNumbers] AS [Value]")
+            .ToListAsync(cancellationToken);
+        return $"R{today.Year}-{values.Single():D4}";
+    }
 
     public async Task<string> NextLeaseNumberAsync(DateOnly today, CancellationToken cancellationToken)
     {
@@ -73,6 +85,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         builder.HasSequence<long>("LeaseNumbers").StartsAt(1);
+        builder.HasSequence<long>("ReceiptNumbers").StartsAt(1);
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

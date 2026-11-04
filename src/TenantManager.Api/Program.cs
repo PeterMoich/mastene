@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json.Serialization;
 using Hangfire;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -13,6 +14,11 @@ using TenantManager.Infrastructure;
 using TenantManager.Infrastructure.Identity;
 using TenantManager.Infrastructure.Jobs;
 using TenantManager.Infrastructure.Persistence;
+
+// One culture for parsing and formatting everywhere (amounts like 6500.50 in forms, messages, PDFs),
+// whatever the machine's regional settings are.
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
 var builder = WebApplication.CreateBuilder(args);
 
