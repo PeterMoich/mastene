@@ -20,6 +20,8 @@
     <PackageReference Include="Hangfire.Core" Version="*" />
     <PackageReference Include="Hangfire.SqlServer" Version="*" />
     <PackageReference Include="Hangfire.AspNetCore" Version="*" />
+    <!-- Hangfire.Core allows Newtonsoft.Json 11.0.1, which has a known vulnerability (GHSA-5crp-9r3c-p9vr). -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -3,6 +3,15 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   CreateUserRequest,
+  Lease,
+  LeaseListQuery,
+  LeaseRequest,
+  LeaseSummary,
+  LifecycleSummary,
+  RenewLeaseRequest,
+  Settings,
+  SettingsRequest,
+  TerminateLeaseRequest,
   ListQuery,
   PagedResult,
   Property,
@@ -89,5 +98,51 @@ export class ApiService {
   }
   setUserRole(id: string, role: 'Admin' | 'Landlord'): Observable<User> {
     return this.http.put<User>(`${BASE}/users/${id}/role`, { role });
+  }
+
+  // Leases
+  listLeases(query: LeaseListQuery = {}): Observable<PagedResult<LeaseSummary>> {
+    return this.http.get<PagedResult<LeaseSummary>>(`${BASE}/leases`, { params: toParams(query) });
+  }
+  getLease(id: string): Observable<Lease> {
+    return this.http.get<Lease>(`${BASE}/leases/${id}`);
+  }
+  leaseVersions(id: string): Observable<LeaseSummary[]> {
+    return this.http.get<LeaseSummary[]>(`${BASE}/leases/${id}/versions`);
+  }
+  createLease(body: LeaseRequest): Observable<Lease> {
+    return this.http.post<Lease>(`${BASE}/leases`, body);
+  }
+  updateLease(id: string, body: LeaseRequest): Observable<Lease> {
+    return this.http.put<Lease>(`${BASE}/leases/${id}`, body);
+  }
+  discardLease(id: string): Observable<void> {
+    return this.http.delete<void>(`${BASE}/leases/${id}`);
+  }
+  generateLease(id: string): Observable<Lease> {
+    return this.http.post<Lease>(`${BASE}/leases/${id}/generate`, {});
+  }
+  signLease(id: string): Observable<Lease> {
+    return this.http.post<Lease>(`${BASE}/leases/${id}/sign`, {});
+  }
+  renewLease(id: string, body: RenewLeaseRequest): Observable<Lease> {
+    return this.http.post<Lease>(`${BASE}/leases/${id}/renewals`, body);
+  }
+  terminateLease(id: string, body: TerminateLeaseRequest): Observable<Lease> {
+    return this.http.post<Lease>(`${BASE}/leases/${id}/terminate`, body);
+  }
+  leaseDocument(leaseId: string, documentId: string): Observable<Blob> {
+    return this.http.get(`${BASE}/leases/${leaseId}/documents/${documentId}`, { responseType: 'blob' });
+  }
+  runLeaseChecks(): Observable<LifecycleSummary> {
+    return this.http.post<LifecycleSummary>(`${BASE}/lease-checks/run`, {});
+  }
+
+  // Settings
+  getSettings(): Observable<Settings> {
+    return this.http.get<Settings>(`${BASE}/settings`);
+  }
+  updateSettings(body: SettingsRequest): Observable<Settings> {
+    return this.http.put<Settings>(`${BASE}/settings`, body);
   }
 }
