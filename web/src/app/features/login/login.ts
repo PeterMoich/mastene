@@ -79,7 +79,7 @@ import { Brand } from '../../shared/brand';
     .error mat-icon { flex: none; font-size: 20px; width: 20px; height: 20px; }
     form { display: flex; flex-direction: column; gap: 4px; padding-top: 12px; }
   `,
-})})
+})
 export class Login {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
