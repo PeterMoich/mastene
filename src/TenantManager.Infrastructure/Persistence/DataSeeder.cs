@@ -28,6 +28,34 @@ public sealed class SeedOptions
 
     /// <summary>Password for every demo login. Comes from .env, never from git.</summary>
     public string? Password { get; set; }
+
+    /// <summary>
+    /// Show the demo logins (landlord and two tenants, not the admin) on the sign-in page, for a public
+    /// demo site. Only works together with DemoData and a Password. Anyone who opens the site can then
+    /// sign in and change the demo data, so never turn it on where real people's data lives.
+    /// </summary>
+    public bool ShowDemoLogins { get; set; }
+}
+
+/// <summary>A demo account offered on the sign-in page.</summary>
+public sealed record DemoLogin(string Role, string Name, string Email);
+
+/// <summary>What the sign-in page shows when <see cref="SeedOptions.ShowDemoLogins"/> is on.</summary>
+public sealed record DemoLoginsResponse(string Password, IReadOnlyList<DemoLogin> Accounts)
+{
+    /// <summary>The demo accounts the seeder creates. The admin is left out so visitors can't lock the others.</summary>
+    public static readonly IReadOnlyList<DemoLogin> SeededAccounts =
+    [
+        new("Landlord", "Thandi Nkosi", DataSeeder.LandlordEmail),
+        new("Tenant", "Sipho Dlamini", "sipho.dlamini@example.com"),
+        new("Tenant", "Lerato Mokoena", "lerato.mokoena@example.com"),
+    ];
+
+    /// <summary>The response, or null when demo logins must not be shown.</summary>
+    public static DemoLoginsResponse? For(SeedOptions options) =>
+        options is { DemoData: true, ShowDemoLogins: true } && !string.IsNullOrWhiteSpace(options.Password)
+            ? new DemoLoginsResponse(options.Password, SeededAccounts)
+            : null;
 }
 
 /// <summary>

@@ -21,6 +21,7 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
+  { path: '/dashboard', label: 'Dashboard', icon: 'space_dashboard', roles: ['Landlord'] },
   { path: '/properties', label: 'Properties', icon: 'apartment', roles: ['Landlord'] },
   { path: '/tenants', label: 'Tenants', icon: 'group', roles: ['Landlord'] },
   { path: '/leases', label: 'Leases', icon: 'contract', roles: ['Landlord'] },

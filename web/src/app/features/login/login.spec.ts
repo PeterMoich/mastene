@@ -7,12 +7,14 @@ import { Login } from './login';
 describe('Login', () => {
   const auth = {
     login: vi.fn(),
+    demoLogins: vi.fn().mockResolvedValue(null),
     homeFor: vi.fn((role: string) => (role === 'Landlord' ? '/properties' : '/login')),
   };
   const router = { navigateByUrl: vi.fn().mockResolvedValue(true) };
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    auth.demoLogins.mockResolvedValue(null);
     await TestBed.configureTestingModule({
       imports: [Login],
       providers: [
@@ -66,5 +68,28 @@ describe('Login', () => {
 
     expect(auth.login).not.toHaveBeenCalled();
     expect(el.textContent).toContain('Enter a valid email address.');
+  });
+
+  it('offers demo accounts on a demo site and signs in with one click', async () => {
+    auth.demoLogins.mockResolvedValue({
+      password: 'Demo-Pass-1',
+      accounts: [{ role: 'Landlord', name: 'Thandi Nkosi', email: 'landlord@mastene.test' }],
+    });
+    auth.login.mockResolvedValue({ role: 'Landlord' });
+    const fixture = TestBed.createComponent(Login);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Try the demo');
+    (el.querySelector('.demo-account') as HTMLButtonElement).click();
+    await vi.waitFor(() => expect(auth.login).toHaveBeenCalledWith('landlord@mastene.test', 'Demo-Pass-1'));
+  });
+
+  it('shows no demo box on a real site', async () => {
+    const fixture = TestBed.createComponent(Login);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect((fixture.nativeElement as HTMLElement).textContent).not.toContain('Try the demo');
   });
 });

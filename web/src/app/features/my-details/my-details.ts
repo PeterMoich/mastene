@@ -30,29 +30,29 @@ import { currentLease, greeting, leaseProgress, rentSummary } from './tenant-hom
     IssueStatusChip, LeaseStatusChip,
   ],
   template: `
-    <section class="hero" aria-labelledby="hello">
-      <svg class="hero-art" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+    <section class="app-hero" aria-labelledby="hello">
+      <svg class="app-hero-art" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
         <path d="M30 170V75l70-45 70 45v95h-40v-68l-30 22-30-22v68z" />
       </svg>
-      <div class="hero-text">
-        <p class="eyebrow">{{ todayLabel }}</p>
-        <h1 id="hello">{{ hello }}{{ firstName() ? ', ' + firstName() : '' }}</h1>
+      <div class="app-hero-text">
+        <p class="app-hero-eyebrow">{{ todayLabel }}</p>
+        <h1 id="hello" class="app-hero-title">{{ hello }}{{ firstName() ? ', ' + firstName() : '' }}</h1>
         @if (lease(); as l) {
-          <p class="where"><mat-icon aria-hidden="true">location_on</mat-icon>{{ l.unitLabel }} · {{ l.propertyName }}</p>
+          <p class="app-hero-sub"><mat-icon aria-hidden="true">location_on</mat-icon>{{ l.unitLabel }} · {{ l.propertyName }}</p>
         } @else {
-          <p class="where">Welcome to Mastene.</p>
+          <p class="app-hero-sub">Welcome to Mastene.</p>
         }
       </div>
-      <div class="hero-actions">
-        <button mat-flat-button type="button" class="on-dark-primary" (click)="report()">
+      <div class="app-hero-actions">
+        <button mat-flat-button type="button" class="app-on-dark-primary" (click)="report()">
           <mat-icon aria-hidden="true">build</mat-icon> Report an issue
         </button>
         @if (lease(); as l) {
-          <a mat-stroked-button class="on-dark" [routerLink]="['/leases', l.id]">
+          <a mat-stroked-button class="app-on-dark" [routerLink]="['/leases', l.id]">
             <mat-icon aria-hidden="true">upload_file</mat-icon> Upload proof of payment
           </a>
         }
-        <a mat-stroked-button class="on-dark" routerLink="/my-messages">
+        <a mat-stroked-button class="app-on-dark" routerLink="/my-messages">
           <mat-icon aria-hidden="true">chat</mat-icon> Message your landlord
         </a>
       </div>
@@ -141,25 +141,6 @@ import { currentLease, greeting, leaseProgress, rentSummary } from './tenant-hom
   `,
   styles: `
     :host { display: flex; flex-direction: column; gap: 20px; }
-    .hero { position: relative; overflow: hidden; border-radius: 20px; padding: 28px 28px 24px;
-            background: linear-gradient(135deg, var(--app-bar) 0%, color-mix(in srgb, var(--app-bar) 78%, #1f4e8c) 100%);
-            color: var(--app-on-bar); display: flex; flex-direction: column; gap: 20px; }
-    .hero-art { position: absolute; right: -24px; bottom: -36px; width: 260px; height: 260px; opacity: 0.12; }
-    .hero-art path { fill: var(--app-logo-bg); }
-    .hero-text { position: relative; }
-    .eyebrow { margin: 0 0 4px; font: var(--mat-sys-label-large); letter-spacing: 0.04em; color: var(--app-on-bar-muted); }
-    h1 { margin: 0; font: var(--mat-sys-headline-medium); font-weight: 600; letter-spacing: -0.01em; }
-    .where { margin: 6px 0 0; display: flex; align-items: center; gap: 4px; color: var(--app-on-bar-muted); font: var(--mat-sys-body-large); }
-    .where mat-icon { font-size: 20px; width: 20px; height: 20px; }
-    .hero-actions { position: relative; display: flex; flex-wrap: wrap; gap: 10px; }
-    .hero-actions a, .hero-actions button { height: 44px; border-radius: 22px; }
-    .on-dark-primary { --mat-button-filled-container-color: var(--app-logo-bg); --mat-button-filled-label-text-color: var(--app-logo-ink);
-                       --mat-button-filled-state-layer-color: var(--app-logo-ink); }
-    .on-dark { --mat-button-outlined-label-text-color: var(--app-on-bar);
-               --mat-button-outlined-outline-color: color-mix(in srgb, var(--app-on-bar) 45%, transparent);
-               --mat-button-outlined-state-layer-color: var(--app-on-bar); }
-    .hero :focus-visible { outline-color: var(--app-on-bar); }
-
     .overview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
     .stat { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
     .stat header { display: flex; align-items: center; gap: 10px; }
@@ -200,8 +181,6 @@ import { currentLease, greeting, leaseProgress, rentSummary } from './tenant-hom
     @media (max-width: 1000px) { .overview { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
     @media (max-width: 760px) {
       .overview, .lower { grid-template-columns: minmax(0, 1fr); }
-      .hero { padding: 22px 18px 18px; }
-      .hero-actions a, .hero-actions button { flex: 1 1 100%; }
       .details > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
     }
   `,

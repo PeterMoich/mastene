@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { homeRedirect, roleGuard, signedOutOnly } from './core/guards';
-import { Shell } from './layout/shell';
 
 export const routes: Routes = [
   {
@@ -11,8 +10,15 @@ export const routes: Routes = [
   },
   {
     path: '',
-    component: Shell,
+    // The app frame (menu, top bar, account menu) loads after sign-in, so the sign-in page stays small.
+    loadComponent: () => import('./layout/shell').then((m) => m.Shell),
     children: [
+      {
+        path: 'dashboard',
+        canActivate: [roleGuard('Landlord')],
+        title: 'Dashboard · Mastene',
+        loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+      },
       {
         path: 'properties',
         canActivate: [roleGuard('Landlord')],

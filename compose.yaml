@@ -8,6 +8,8 @@ x-api-env: &api-env
   Jwt__SigningKey: ${JWT_SIGNING_KEY:?Set JWT_SIGNING_KEY in .env (copy .env.example)}
   Seed__DemoData: "true"
   Seed__Password: ${SEED_PASSWORD:?Set SEED_PASSWORD in .env (copy .env.example)}
+  # The sign-in page lists the demo logins (landlord and tenants). Local and demo sites only.
+  Seed__ShowDemoLogins: ${SHOW_DEMO_LOGINS:-true}
   Database__MigrateOnStartup: "false"
   ReverseProxy__Enabled: "true"
   # Documents go to Azurite, the Azure Blob emulator. The account key below is Azurite's public,

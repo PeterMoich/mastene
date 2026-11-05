@@ -6,11 +6,15 @@ releases are in `.github/workflows/`.
 
 ## What runs where
 
-| Piece | Azure resource | Notes |
+`costProfile` in `infra/main.parameters.json` picks the size ([ADR-0022](adr/0022-cost-profiles.md)).
+`demo` (the default) is for a portfolio or trial site; `production` is for real use.
+
+| Piece | Azure resource (demo / production) | Notes |
 | --- | --- | --- |
-| Web app + API | One Linux App Service (P0v3) running three containers: `web` (nginx + Angular, the public one), `api` (ASP.NET Core and Hangfire) and `clamav` (virus scanner) | Same shape as docker compose; the containers share `localhost` |
-| Releases | A `staging` deployment slot | Blue-green: each release starts in staging, then the slots swap |
-| Database | Azure SQL (S0), TLS 1.2, transparent data encryption | Point-in-time restore for 7 days (Azure default) |
+| Web app + API | One Linux App Service, B1 / P0v3, running `web` (nginx + Angular, the public one) and `api` (ASP.NET Core and Hangfire); production adds `clamav` (virus scanner) | Same shape as docker compose; the containers share `localhost`. Demo checks uploads with the built-in EICAR check only |
+| Releases | In place / a `staging` deployment slot | Demo replaces the containers (a minute or two of restart, rolled back if unhealthy); production is blue-green |
+| Database | Azure SQL, Basic (5 DTU, 2 GB) / S0, TLS 1.2, transparent data encryption | Point-in-time restore for 7 days (Azure default) |
+| Cost alerts | A monthly budget on the resource group (`monthlyBudget`, default 500 in the billing currency) | Emails `ALERT_EMAIL` at 50%, 80% and 100% of the budget, and when the month is forecast to go over |
 | Documents and photos | Storage account, private container `documents`, ZRS, soft delete 30 days | Files are only served through the API |
 | Secrets | Key Vault (RBAC, purge protection) | App settings refer to secrets; the app reads them with its managed identity |
 | Telemetry | Application Insights + Log Analytics | Traces, metrics, container logs, availability test, alerts, SLO workbook |
@@ -32,9 +36,29 @@ releases are in `.github/workflows/`.
    Copy the `siteName` output into the `AZURE_SITE_NAME` variable. The deploy workflow now runs after every
    green CI build on `master`.
 
+## Cost
+
+An Azure free account is never billed by itself: when its credit runs out or its 30 days end, Azure
+disables the subscription and the app stops until you upgrade to pay-as-you-go. So there is nothing to
+scale down at that moment. What matters is the size of the setup once you upgrade, which is why the demo
+profile is the default. Rough monthly costs in South Africa North (check the Azure pricing calculator):
+
+| | demo | production |
+| --- | --- | --- |
+| App Service plan | B1, about R250 | P0v3, about R1,300 |
+| Azure SQL | Basic, about R90 | S0, about R280 |
+| Storage, Key Vault, monitoring, availability test | under R100 | about R150 |
+
+To switch profile, change `costProfile` and run the `infra` workflow. Going to `demo` deletes the staging
+slot and the ClamAV container first (the Basic plan has no slots), then resizes the plan and database.
+Going to `production` adds them back; the next release then uses the slot.
+
 ## A release
 
-`deploy.yml` runs after CI passes on `master` (or by hand, for any commit sha whose images exist):
+`deploy.yml` runs after CI passes on `master` (or by hand, for any commit sha whose images exist). It
+looks for a staging slot: without one (demo profile) it points production's `api` and `web` containers
+at the new images, restarts, waits for readiness and runs the same checks as step 3 below, and puts the
+previous images back if anything fails. With a staging slot (production profile):
 
 1. The staging slot's `api` and `web` containers are pointed at the images CI built for that commit.
 2. Staging restarts. The new API applies database migrations on start-up (EF Core holds a lock, so a

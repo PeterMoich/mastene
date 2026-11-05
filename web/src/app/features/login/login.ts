@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
+import { DemoLogins } from '../../core/api.models';
 import { errorMessage } from '../../core/problem';
 import { Brand } from '../../shared/brand';
 
@@ -76,6 +77,23 @@ import { Brand } from '../../shared/brand';
                 {{ busy() ? 'Signing in…' : 'Sign in' }}
               </button>
             </form>
+            @if (demo(); as d) {
+              <section class="demo" aria-labelledby="demo-h">
+                <h2 id="demo-h">Try the demo</h2>
+                <p class="sub">Pick an account to sign in as. Everything you see is made-up demo data.</p>
+                <ul>
+                  @for (a of d.accounts; track a.email) {
+                    <li>
+                      <button type="button" class="demo-account" (click)="useDemo(a.email, d.password)" [disabled]="busy()">
+                        <span class="avatar" [class.tenant]="a.role === 'Tenant'" aria-hidden="true">{{ initials(a.name) }}</span>
+                        <span class="who"><strong>{{ a.name }}</strong><span>{{ a.role }} · {{ a.email }}</span></span>
+                        <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              </section>
+            }
           </mat-card-content>
         </mat-card>
       </section>
@@ -112,6 +130,21 @@ import { Brand } from '../../shared/brand';
              background: var(--mat-sys-error-container); padding: 10px 12px; border-radius: 8px; margin: 0 0 12px; }
     .error mat-icon { flex: none; font-size: 20px; width: 20px; height: 20px; }
     form { display: flex; flex-direction: column; gap: 4px; padding-top: 12px; }
+    .demo { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--mat-sys-outline-variant); }
+    .demo h2 { margin: 0 0 2px; font: var(--mat-sys-title-small); font-weight: 600; }
+    .demo ul { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+    .demo-account { all: unset; box-sizing: border-box; width: 100%; cursor: pointer; display: flex; align-items: center; gap: 12px;
+                    padding: 8px 12px; border-radius: 12px; border: 1px solid var(--mat-sys-outline-variant);
+                    transition: background-color 120ms ease, border-color 120ms ease; }
+    .demo-account:hover { background: var(--mat-sys-surface-container-low); border-color: var(--mat-sys-outline); }
+    .demo-account:focus-visible { outline: 2px solid var(--mat-sys-primary); outline-offset: 2px; }
+    .demo-account[disabled] { opacity: 0.6; cursor: default; }
+    .demo-account mat-icon { color: var(--mat-sys-on-surface-variant); }
+    .avatar { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+              background: var(--mat-sys-primary-container); color: var(--mat-sys-on-primary-container); font: var(--mat-sys-label-large); font-weight: 600; }
+    .avatar.tenant { background: var(--mat-sys-tertiary-container); color: var(--mat-sys-on-tertiary-container); }
+    .who { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .who span { color: var(--mat-sys-on-surface-variant); font: var(--mat-sys-body-small); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     @media (max-width: 900px) {
       .page { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
@@ -133,11 +166,27 @@ export class Login {
 
   protected readonly busy = signal(false);
   protected readonly showPassword = signal(false);
+  /** Demo accounts, only on a demo site. */
+  protected readonly demo = signal<DemoLogins | null>(null);
   protected readonly error = signal<string | null>(null);
   protected readonly form = inject(FormBuilder).nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
   });
+
+  constructor() {
+    void this.auth.demoLogins().then((d) => this.demo.set(d));
+  }
+
+  protected initials(name: string): string {
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+  }
+
+  /** One click: fills in a demo account and signs in. */
+  protected async useDemo(email: string, password: string): Promise<void> {
+    this.form.setValue({ email, password });
+    await this.submit();
+  }
 
   async submit(): Promise<void> {
     if (this.form.invalid) {

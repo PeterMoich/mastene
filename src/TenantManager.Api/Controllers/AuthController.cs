@@ -3,9 +3,11 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 using TenantManager.Api.Infrastructure;
 using TenantManager.Application.Abstractions;
 using TenantManager.Application.Accounts;
+using TenantManager.Infrastructure.Persistence;
 
 namespace TenantManager.Api.Controllers;
 
@@ -58,6 +60,21 @@ public sealed class AuthController(IAuthService auth, IValidator<LoginRequest> l
             return InvalidCredentials("Session has expired. Please sign in again.");
         }
         return Session(result);
+    }
+
+    /// <summary>
+    /// The demo accounts and their password, for the sign-in page of a public demo site
+    /// (Seed:ShowDemoLogins with Seed:DemoData). 404 everywhere else, so a real site never offers them.
+    /// </summary>
+    [HttpGet("demo")]
+    [ProducesResponseType<DemoLoginsResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<DemoLoginsResponse> Demo([FromServices] IOptions<SeedOptions> seed)
+    {
+        var demo = DemoLoginsResponse.For(seed.Value);
+        if (demo is null) return NotFound();
+        Response.Headers.CacheControl = "no-store";
+        return demo;
     }
 
     /// <summary>Ends the session: revokes the refresh token and deletes the cookie.</summary>

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom, Observable, shareReplay, tap, finalize } from 'rxjs';
-import { Me, Role, SessionResponse } from './api.models';
+import { DemoLogins, Me, Role, SessionResponse } from './api.models';
 
 /** The API refuses cookie-based auth calls without it (a cross-site form can't send custom headers). */
 const CSRF_HEADERS = { 'X-Requested-With': 'TenantManager' };
@@ -73,6 +73,15 @@ export class AuthService {
     return role !== null && roles.includes(role);
   }
 
+  /** The demo accounts, on a demo site only; null everywhere else (the API answers 404). */
+  async demoLogins(): Promise<DemoLogins | null> {
+    try {
+      return await firstValueFrom(this.http.get<DemoLogins>('/api/v1/auth/demo'));
+    } catch {
+      return null;
+    }
+  }
+
   /** Where each role lands after signing in. */
   homeFor(role: Role | null): string {
     switch (role) {
@@ -81,7 +90,7 @@ export class AuthService {
       case 'Tenant':
         return '/my-details';
       case 'Landlord':
-        return '/properties';
+        return '/dashboard';
       default:
         return '/login';
     }

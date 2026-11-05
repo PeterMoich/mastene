@@ -311,6 +311,158 @@ select:-webkit-autofill {
   min-width: 0;
 }
 
+// ---- Welcome banner at the top of the tenant and landlord home pages ----
+.app-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 28px 28px 24px;
+  background: linear-gradient(135deg, var(--app-bar) 0%, color-mix(in srgb, var(--app-bar) 78%, #1f4e8c) 100%);
+  color: var(--app-on-bar);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  :focus-visible {
+    outline-color: var(--app-on-bar);
+  }
+}
+.app-hero-art {
+  position: absolute;
+  right: -24px;
+  bottom: -36px;
+  width: 260px;
+  height: 260px;
+  opacity: 0.12;
+
+  path {
+    fill: var(--app-logo-bg);
+  }
+}
+.app-hero-text,
+.app-hero-actions {
+  position: relative;
+}
+.app-hero-eyebrow {
+  margin: 0 0 4px;
+  font: var(--mat-sys-label-large);
+  letter-spacing: 0.04em;
+  color: var(--app-on-bar-muted);
+}
+.app-hero-title {
+  margin: 0;
+  font: var(--mat-sys-headline-medium);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.app-hero-sub {
+  margin: 6px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--app-on-bar-muted);
+  font: var(--mat-sys-body-large);
+
+  .mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+.app-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  a,
+  button {
+    height: 44px;
+    border-radius: 22px;
+  }
+}
+.app-on-dark-primary {
+  --mat-button-filled-container-color: var(--app-logo-bg);
+  --mat-button-filled-label-text-color: var(--app-logo-ink);
+  --mat-button-filled-state-layer-color: var(--app-logo-ink);
+}
+.app-on-dark {
+  --mat-button-outlined-label-text-color: var(--app-on-bar);
+  --mat-button-outlined-outline-color: color-mix(in srgb, var(--app-on-bar) 45%, transparent);
+  --mat-button-outlined-state-layer-color: var(--app-on-bar);
+}
+@media (max-width: 760px) {
+  .app-hero {
+    padding: 22px 18px 18px;
+  }
+  .app-hero-actions a,
+  .app-hero-actions button {
+    flex: 1 1 100%;
+  }
+}
+
+// Card header used on the home pages: an icon tile and a title.
+.app-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  h2 {
+    margin: 0;
+    font: var(--mat-sys-title-medium);
+    font-weight: 600;
+  }
+}
+.app-icon-tile {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+
+  .mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &.danger {
+    background: var(--app-danger-container);
+    color: var(--app-on-danger-container);
+  }
+  &.warning {
+    background: var(--app-warning-container);
+    color: var(--app-on-warning-container);
+  }
+  &.success {
+    background: var(--app-success-container);
+    color: var(--app-on-success-container);
+  }
+  &.info {
+    background: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
+  }
+}
+.app-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font: var(--mat-sys-label-large);
+  color: var(--mat-sys-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+  .mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
