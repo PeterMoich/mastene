@@ -37,7 +37,8 @@ resource availability 'Microsoft.Insights/webtests@2022-06-15' = {
     Kind: 'standard'
     RetryEnabled: true
     Locations: [
-      { Id: 'emea-za-jnb-azr' } // South Africa North
+      // Availability tests can't run from South Africa; these are the closest supported locations.
+      { Id: 'emea-gb-db3-azr' } // North Europe (Dublin)
       { Id: 'emea-nl-ams-azr' }
       { Id: 'us-va-ash-azr' }
     ]

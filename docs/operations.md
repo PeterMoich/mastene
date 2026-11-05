@@ -79,7 +79,7 @@ az webapp config appsettings set -g <rg> -n <site> --settings Features__WhatsApp
 | --- | --- | --- |
 | Share of API requests answered in under 500 ms (health probes excluded) | 99% | More than 5% slower than 500 ms in an hour |
 | Share of API requests that don't fail with a 5xx | 99.5% | More than 2% 5xx in 15 minutes |
-| Readiness check from Johannesburg, Amsterdam and Virginia | — | Failing from 2 or more locations |
+| Readiness check from Dublin, Amsterdam and Virginia | — | Failing from 2 or more locations |
 | WhatsApp send failures and rejected webhook calls | — | 5 or more in an hour |
 
 The **Tenant Manager - service levels** workbook (Application Insights → Workbooks) shows the 30-day
