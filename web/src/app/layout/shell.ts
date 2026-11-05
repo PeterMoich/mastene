@@ -28,7 +28,7 @@ const NAV: NavItem[] = [
   { path: '/issues', label: 'Issues', icon: 'build', roles: ['Landlord'] },
   { path: '/contractors', label: 'Contractors', icon: 'engineering', roles: ['Landlord'] },
   { path: '/messages', label: 'Messages', icon: 'chat', roles: ['Landlord'] },
-  { path: '/my-details', label: 'My details', icon: 'person', roles: ['Tenant'] },
+  { path: '/my-details', label: 'Home', icon: 'home', roles: ['Tenant'] },
   { path: '/leases', label: 'My leases', icon: 'contract', roles: ['Tenant'] },
   { path: '/issues', label: 'My issues', icon: 'build', roles: ['Tenant'] },
   { path: '/my-messages', label: 'Messages', icon: 'chat', roles: ['Tenant'] },
@@ -123,15 +123,15 @@ const NAV: NavItem[] = [
     .menu-head span, .menu-label { color: var(--mat-sys-on-surface-variant); font: var(--mat-sys-body-small); }
     .menu-label { padding: 12px 16px 4px; font: var(--mat-sys-label-medium); text-transform: uppercase; letter-spacing: 0.06em; }
     .container { flex: 1; }
-    .nav { width: 232px; padding: 8px 0; }
-    mat-nav-list a { margin: 2px 8px; }
+    .nav { width: 232px; padding: 12px 0; overflow-x: hidden; }
+    mat-nav-list a { margin: 2px 12px; width: auto; border-radius: 28px; }
     .filled { font-variation-settings: 'FILL' 1; }
-    .content { padding: 24px 32px 48px; max-width: 1200px; outline: none; box-sizing: border-box; }
+    .content { padding: 28px 32px 56px; max-width: 1280px; margin: 0 auto; outline: none; box-sizing: border-box; }
     .skip-link { position: absolute; left: -9999px; }
     .skip-link:focus { left: 8px; top: 8px; z-index: 10; background: var(--mat-sys-surface); color: var(--mat-sys-primary); padding: 8px 12px; border-radius: 8px; }
     @media (max-width: 720px) {
       .nav { width: 72px; }
-      mat-nav-list a { margin: 2px 6px; }
+      mat-nav-list a { margin: 2px 8px; }
       .nav [matListItemTitle], .who { display: none; }
       .content { padding: 16px; }
     }

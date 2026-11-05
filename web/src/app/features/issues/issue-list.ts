@@ -181,8 +181,10 @@ export class SlaReportView {
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Issue</th>
           <td mat-cell *matCellDef="let i">
             <a [routerLink]="['/issues', i.id]">{{ i.title }}</a>
-            @if (i.isEscalated) { <app-escalated /> }
-            <div class="muted small">{{ i.category }} · logged {{ i.openedAt | date: 'd MMM, HH:mm' }}</div>
+            <div class="meta muted small">
+              <span>{{ i.category }} · logged {{ i.openedAt | date: 'd MMM, HH:mm' }}</span>
+              @if (i.isEscalated) { <app-escalated /> }
+            </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="unit">
@@ -201,7 +203,11 @@ export class SlaReportView {
         <ng-container matColumnDef="target">
           <th mat-header-cell *matHeaderCellDef mat-sort-header="resolutionDueAt">Next target</th>
           <td mat-cell *matCellDef="let i">
-            @if (target(i); as t) { <span [class.late]="t.late">{{ t.text }}</span> } @else { <span class="muted">–</span> }
+            @if (target(i); as t) {
+              <span class="target" [class.late]="t.late">
+                <mat-icon aria-hidden="true">{{ t.late ? 'alarm' : 'schedule' }}</mat-icon>{{ t.text }}
+              </span>
+            } @else { <span class="muted">–</span> }
           </td>
         </ng-container>
         <ng-container matColumnDef="contractor">
@@ -237,8 +243,11 @@ export class SlaReportView {
     .filters mat-form-field { min-width: 180px; }
     .muted { color: var(--mat-sys-on-surface-variant); }
     .small { font: var(--mat-sys-body-small); }
+    .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-top: 2px; }
+    .target { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .target mat-icon { font-size: 16px; width: 16px; height: 16px; color: var(--mat-sys-on-surface-variant); }
     .late { color: var(--mat-sys-error); font-weight: 500; }
-    app-escalated { margin-left: 6px; }
+    .late mat-icon { color: inherit; }
   `,
 })
 export class IssueList {

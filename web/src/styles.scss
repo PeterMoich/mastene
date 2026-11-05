@@ -78,6 +78,7 @@ html {
     (
       container-background-color: var(--mat-sys-surface-container-low),
       container-divider-color: var(--mat-sys-outline-variant),
+      container-shape: 0,
       content-background-color: var(--mat-sys-surface),
     )
   );
@@ -187,6 +188,127 @@ a {
     color: var(--mat-sys-on-surface-variant);
     border-color: var(--mat-sys-outline-variant);
   }
+}
+
+// ---- Tables: one bordered card with the paginator as its footer, tinted header, row hover ----
+.mat-mdc-table {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+
+  &:has(+ .mat-mdc-paginator) {
+    border-bottom: 0;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .mat-mdc-header-row {
+    background: var(--mat-sys-surface-container-low);
+    height: 48px;
+  }
+
+  .mat-mdc-header-cell {
+    font: var(--mat-sys-label-medium);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+    border-bottom-color: var(--mat-sys-outline-variant);
+  }
+
+  .mat-mdc-row {
+    height: 60px;
+    transition: background-color 120ms ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-primary) 5%, transparent);
+    }
+  }
+
+  .mat-mdc-cell {
+    border-bottom-color: var(--mat-sys-outline-variant);
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .mat-mdc-row:last-child .mat-mdc-cell {
+    border-bottom: 0;
+  }
+
+  // The record's name links to it: primary colour, underline only on hover.
+  .mat-mdc-cell a {
+    color: var(--mat-sys-primary);
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+
+  // "Nothing here yet" rows: centred with an icon.
+  .mat-mdc-no-data-row .mat-mdc-cell,
+  td.empty {
+    text-align: center;
+    padding: 40px 16px;
+    color: var(--mat-sys-on-surface-variant);
+
+    &::before {
+      content: 'inbox';
+      display: block;
+      margin: 0 auto 8px;
+      font-family: 'Material Symbols Outlined';
+      font-size: 36px;
+      line-height: 1;
+      color: var(--mat-sys-outline);
+      font-variation-settings: 'wght' 300;
+    }
+  }
+}
+
+.mat-mdc-table + .mat-mdc-paginator {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 0 0 12px 12px;
+}
+
+// No browser-blue fill on autofilled fields (Chrome, Edge, Safari).
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--mat-sys-on-surface);
+  caret-color: var(--mat-sys-on-surface);
+  -webkit-box-shadow: 0 0 0 1000px var(--app-field-fill, var(--mat-sys-surface-container-lowest)) inset;
+  transition: background-color 600000s 0s;
+}
+
+// Smaller chip for badges that sit next to other text (e.g. Escalated).
+.app-chip.sm {
+  min-height: 20px;
+  padding: 0 7px 0 5px;
+  border-radius: 6px;
+  font: var(--mat-sys-label-small);
+  font-weight: 600;
+  gap: 3px;
+
+  .mat-icon {
+    width: 13px;
+    height: 13px;
+    font-size: 13px;
+    line-height: 13px;
+  }
+}
+
+// A plain surface card used on the tenant home and other overview pages.
+.app-card {
+  background: var(--mat-sys-surface-container-lowest);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 16px;
+  padding: 20px;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .visually-hidden {

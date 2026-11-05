@@ -107,6 +107,6 @@ export class IssuePriorityLabel {
 @Component({
   selector: 'app-escalated',
   imports: [MatIconModule],
-  template: `<span class="app-chip danger" title="A response or resolution target was missed"><mat-icon aria-hidden="true">priority_high</mat-icon>Escalated</span>`,
+  template: `<span class="app-chip sm danger" title="A response or resolution target was missed"><mat-icon aria-hidden="true">priority_high</mat-icon>Escalated</span>`,
 })
 export class EscalatedBadge {}

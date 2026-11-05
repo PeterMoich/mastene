@@ -54,10 +54,9 @@ export function templateDefaults(t: MessageTemplate, tenantName: string, landlor
   template: `
     @let c = consent();
     <section class="consent" [class.on]="c.granted" aria-labelledby="consent-heading">
-      <h2 id="consent-heading">
-        <mat-icon aria-hidden="true">{{ c.granted ? 'check_circle' : 'do_not_disturb_on' }}</mat-icon>
-        {{ c.granted ? 'WhatsApp messages: on' : 'WhatsApp messages: off' }}
-      </h2>
+      <span class="badge" aria-hidden="true"><mat-icon>{{ c.granted ? 'mark_chat_read' : 'chat_bubble_outline' }}</mat-icon></span>
+      <div class="content">
+      <h2 id="consent-heading">{{ c.granted ? 'WhatsApp messages: on' : 'WhatsApp messages: off' }}</h2>
       @if (c.latest; as l) {
         <p class="muted">
           {{ l.granted ? 'Agreed' : 'Withdrawn' }} {{ l.at | date: 'd MMM y' }} ·
@@ -83,14 +82,24 @@ export function templateDefaults(t: MessageTemplate, tenantName: string, landlor
           <button mat-stroked-button type="button" (click)="set(true)" [disabled]="busy()">Record consent given another way</button>
         }
       }
+      </div>
     </section>
   `,
   styles: `
-    .consent { border: 1px solid var(--mat-sys-outline-variant); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; }
-    .consent.on { border-color: var(--mat-sys-primary); }
-    h2 { font: var(--mat-sys-title-small); display: flex; align-items: center; gap: 6px; margin: 0 0 4px; }
-    p { margin: 4px 0 8px; }
-    .text { max-width: 60ch; }
+    :host { display: block; }
+    .consent { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; align-items: start;
+               background: var(--mat-sys-surface-container-lowest); border: 1px solid var(--mat-sys-outline-variant);
+               border-radius: 16px; padding: 18px 20px; }
+    .badge { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px;
+             background: var(--mat-sys-surface-container-high); color: var(--mat-sys-on-surface-variant); }
+    .on .badge { background: var(--app-success-container); color: var(--app-on-success-container); }
+    .badge mat-icon { font-size: 22px; width: 22px; height: 22px; }
+    .content { min-width: 0; }
+    h2 { font: var(--mat-sys-title-medium); font-weight: 600; margin: 0 0 2px; }
+    p { margin: 4px 0 10px; }
+    .text { max-width: 62ch; padding: 10px 12px; border-radius: 10px; background: var(--mat-sys-surface-container-low);
+            border-left: 3px solid var(--mat-sys-primary); }
+    button { border-radius: 20px; }
     .muted { color: var(--mat-sys-on-surface-variant); }
     .small { font: var(--mat-sys-body-small); }
   `,
@@ -217,87 +226,131 @@ export class TemplateDialog {
   imports: [DatePipe, FormsModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, ConsentPanel],
   template: `
     @if (thread(); as t) {
-      <header class="thread-head">
-        <h2>{{ isTenant() ? 'Messages with your landlord' : t.tenantName }}</h2>
-        @if (!isTenant()) { <span class="muted">{{ t.phone }}</span> }
-      </header>
-      <app-consent-panel [tenantId]="t.tenantId" [consent]="t.consent" (changed)="consentChanged($event)" />
+      <section class="chat" aria-labelledby="thread-title">
+        <header class="thread-head">
+          <span class="avatar" aria-hidden="true">
+            @if (isTenant()) { <mat-icon>home_work</mat-icon> } @else { {{ initials(t.tenantName) }} }
+          </span>
+          <div class="who">
+            <h2 id="thread-title">{{ isTenant() ? 'Messages with your landlord' : t.tenantName }}</h2>
+            <span class="muted small">{{ isTenant() ? 'Your landlord reads and answers these in Mastene.' : t.phone }}</span>
+          </div>
+          <span [class]="'app-chip sm ' + (t.consent.granted ? 'success' : 'muted')">
+            <mat-icon aria-hidden="true">{{ t.consent.granted ? 'check' : 'block' }}</mat-icon>
+            WhatsApp {{ t.consent.granted ? 'on' : 'off' }}
+          </span>
+        </header>
 
-      <ol class="messages" #list aria-label="Messages" aria-live="polite">
-        @for (m of t.messages; track m.id) {
-          <li [class.out]="m.direction === 'Outbound'" [class.failed]="m.status === 'Failed'">
-            <div class="bubble">
-              <p class="body">{{ m.body }}</p>
-              <p class="meta">
-                {{ m.byName }} · {{ m.at | date: 'd MMM, HH:mm' }} · {{ label(m) }}
-                @if (m.error) { <br /><span class="error">{{ m.error }}</span> }
-              </p>
-            </div>
-          </li>
-        } @empty {
-          <li class="empty">No messages yet.</li>
+        @if (!isTenant() || !t.consent.granted) {
+          <div class="consent-wrap">
+            <app-consent-panel [tenantId]="t.tenantId" [consent]="t.consent" (changed)="consentChanged($event)" />
+          </div>
         }
-      </ol>
 
-      @if (!isTenant()) {
-        <p class="window" [class.open]="t.whatsAppTextAllowed" role="status">
-          @if (t.whatsAppTextAllowed) {
-            Your reply goes to WhatsApp. The 24-hour window is open until {{ t.serviceWindowEndsAt | date: 'd MMM, HH:mm' }}.
-          } @else if (!t.consent.granted) {
-            No WhatsApp consent: your reply is kept in the app, where the tenant can read it.
-          } @else {
-            Outside WhatsApp's 24-hour window: a free-form reply is kept in the app only. Send a template to reach them on WhatsApp.
+        <ol class="messages" #list aria-label="Messages" aria-live="polite">
+          @for (m of t.messages; track m.id) {
+            <li [class.out]="m.direction === 'Outbound'" [class.failed]="m.status === 'Failed'">
+              <div class="bubble">
+                <p class="body">{{ m.body }}</p>
+                <p class="meta">
+                  {{ m.byName }} · {{ m.at | date: 'd MMM, HH:mm' }} · {{ label(m) }}
+                  @if (m.error) { <br /><span class="error">{{ m.error }}</span> }
+                </p>
+              </div>
+            </li>
+          } @empty {
+            <li class="empty">
+              <span class="empty-icon" aria-hidden="true"><mat-icon>forum</mat-icon></span>
+              <strong>No messages yet</strong>
+              <span>{{ isTenant() ? 'Ask a question or let your landlord know about something. Replies show up here.' : 'Write the first message below.' }}</span>
+            </li>
           }
-        </p>
-      }
-      <form class="composer" (ngSubmit)="send()" novalidate>
-        <mat-form-field class="grow" subscriptSizing="dynamic">
-          <mat-label>{{ isTenant() ? 'Write to your landlord' : 'Reply' }}</mat-label>
-          <textarea matInput [formControl]="text" rows="2" maxlength="4096"></textarea>
-        </mat-form-field>
-        <div class="actions">
-          <button mat-flat-button type="submit" [disabled]="busy() || !text.value.trim()">
-            <mat-icon aria-hidden="true">send</mat-icon> Send
-          </button>
-          @if (!isTenant()) {
-            <button mat-stroked-button type="button" (click)="template(t)" [disabled]="busy() || !t.consent.granted">Template…</button>
-            @if (t.simulationAvailable) {
-              <button mat-button type="button" (click)="simulate(t)" [disabled]="busy()"
-                      title="Development only: pretend the tenant replied on WhatsApp">
-                <mat-icon aria-hidden="true">science</mat-icon> Simulate tenant reply
-              </button>
+        </ol>
+
+        @if (!isTenant()) {
+          <p class="window" [class.open]="t.whatsAppTextAllowed" role="status">
+            <mat-icon aria-hidden="true">{{ t.whatsAppTextAllowed ? 'schedule_send' : 'info' }}</mat-icon>
+            <span>
+            @if (t.whatsAppTextAllowed) {
+              Your reply goes to WhatsApp. The 24-hour window is open until {{ t.serviceWindowEndsAt | date: 'd MMM, HH:mm' }}.
+            } @else if (!t.consent.granted) {
+              No WhatsApp consent: your reply is kept in the app, where the tenant can read it.
+            } @else {
+              Outside WhatsApp's 24-hour window: a free-form reply is kept in the app only. Send a template to reach them on WhatsApp.
             }
-          }
-        </div>
-      </form>
-      @if (isTenant()) {
-        <p class="muted small">Messages you write here stay in the app. To use WhatsApp, message your landlord's business number.</p>
-      }
+            </span>
+          </p>
+        }
+        <form class="composer" (ngSubmit)="send()" novalidate>
+          <mat-form-field class="grow" subscriptSizing="dynamic">
+            <mat-label>{{ isTenant() ? 'Write to your landlord' : 'Reply' }}</mat-label>
+            <textarea matInput [formControl]="text" rows="2" maxlength="4096"></textarea>
+          </mat-form-field>
+          <div class="actions">
+            <button mat-flat-button type="submit" class="send" [disabled]="busy() || !text.value.trim()">
+              <mat-icon aria-hidden="true">send</mat-icon> Send
+            </button>
+            @if (!isTenant()) {
+              <button mat-stroked-button type="button" (click)="template(t)" [disabled]="busy() || !t.consent.granted">Template…</button>
+              @if (t.simulationAvailable) {
+                <button mat-button type="button" (click)="simulate(t)" [disabled]="busy()"
+                        title="Development only: pretend the tenant replied on WhatsApp">
+                  <mat-icon aria-hidden="true">science</mat-icon> Simulate tenant reply
+                </button>
+              }
+            }
+          </div>
+        </form>
+        @if (isTenant()) {
+          <p class="muted small foot">Messages you write here stay in the app. To use WhatsApp, message your landlord's business number.</p>
+        }
+      </section>
     } @else if (error()) {
       <p class="error" role="alert">{{ error() }}</p>
     }
   `,
   styles: `
     :host { display: flex; flex-direction: column; min-width: 0; }
-    .thread-head { display: flex; align-items: baseline; gap: 12px; }
-    h2 { font: var(--mat-sys-title-large); margin: 0 0 12px; }
-    .messages { list-style: none; padding: 8px; margin: 0; display: flex; flex-direction: column; gap: 8px;
-                max-height: 55vh; overflow-y: auto; background: var(--mat-sys-surface-container-low); border-radius: 12px; }
+    .chat { display: flex; flex-direction: column; background: var(--mat-sys-surface-container-lowest);
+            border: 1px solid var(--mat-sys-outline-variant); border-radius: 16px; overflow: hidden; }
+    .thread-head { display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+                   border-bottom: 1px solid var(--mat-sys-outline-variant); }
+    .avatar { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+              background: var(--mat-sys-primary-container); color: var(--mat-sys-on-primary-container);
+              font: var(--mat-sys-label-large); font-weight: 600; }
+    .avatar mat-icon { font-size: 22px; width: 22px; height: 22px; }
+    .who { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+    h2 { font: var(--mat-sys-title-medium); font-weight: 600; margin: 0; }
+    .consent-wrap { padding: 16px 18px 0; }
+    .messages { list-style: none; padding: 20px 18px; margin: 0; display: flex; flex-direction: column; gap: 10px;
+                min-height: 240px; max-height: 55vh; overflow-y: auto; }
     .messages li { display: flex; }
     .messages li.out { justify-content: flex-end; }
-    .bubble { max-width: min(75%, 560px); padding: 8px 12px; border-radius: 12px;
+    .bubble { max-width: min(75%, 560px); padding: 10px 14px; border-radius: 18px 18px 18px 6px;
               background: var(--mat-sys-surface-container-high); color: var(--mat-sys-on-surface); }
-    .out .bubble { background: var(--mat-sys-primary-container); color: var(--mat-sys-on-primary-container); }
-    .failed .bubble { outline: 2px solid var(--mat-sys-error); }
+    .out .bubble { border-radius: 18px 18px 6px 18px; background: var(--mat-sys-primary); color: var(--mat-sys-on-primary); }
+    .failed .bubble { outline: 2px solid var(--mat-sys-error); outline-offset: 2px; }
     .body { margin: 0; white-space: pre-line; overflow-wrap: anywhere; }
-    .meta { margin: 4px 0 0; font: var(--mat-sys-body-small); opacity: 0.85; }
-    .empty { color: var(--mat-sys-on-surface-variant); padding: 16px; }
-    .window { margin: 12px 0 0; padding: 8px 12px; border-radius: 8px;
-              background: var(--mat-sys-tertiary-container); color: var(--mat-sys-on-tertiary-container); }
+    .meta { margin: 4px 0 0; font: var(--mat-sys-body-small); opacity: 0.8; }
+    .out .error { color: inherit; font-weight: 600; }
+    .messages li.empty { flex: 1; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px;
+                         color: var(--mat-sys-on-surface-variant); padding: 24px 16px; }
+    .empty strong { color: var(--mat-sys-on-surface); font: var(--mat-sys-title-medium); }
+    .empty span:last-child { max-width: 42ch; }
+    .empty-icon { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; margin-bottom: 6px;
+                  background: var(--mat-sys-primary-container); color: var(--mat-sys-on-primary-container); }
+    .empty-icon mat-icon { font-size: 32px; width: 32px; height: 32px; }
+    .window { display: flex; gap: 8px; align-items: flex-start; margin: 0 18px; padding: 10px 12px; border-radius: 10px;
+              background: var(--mat-sys-tertiary-container); color: var(--mat-sys-on-tertiary-container); font: var(--mat-sys-body-medium); }
+    .window mat-icon { flex: none; font-size: 20px; width: 20px; height: 20px; }
     .window.open { background: var(--mat-sys-primary-container); color: var(--mat-sys-on-primary-container); }
-    .composer { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-top: 12px; }
-    .grow { flex: 1; min-width: 240px; }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 4px; }
+    .composer { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; padding: 14px 18px 16px;
+                border-top: 1px solid var(--mat-sys-outline-variant); background: var(--mat-sys-surface-container-low); margin-top: 12px; }
+    .grow { flex: 1; min-width: 240px; --app-field-fill: var(--mat-sys-surface-container-lowest); }
+    .grow { --mat-form-field-outlined-container-color: var(--mat-sys-surface-container-lowest); }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 6px; }
+    .actions button { border-radius: 22px; height: 44px; }
+    .foot { margin: 0; padding: 0 18px 14px; background: var(--mat-sys-surface-container-low); }
     .muted { color: var(--mat-sys-on-surface-variant); }
     .small { font: var(--mat-sys-body-small); }
     .error { color: var(--mat-sys-error); }
@@ -330,6 +383,10 @@ export class ThreadView {
 
   protected label(m: ChatMessage): string {
     return deliveryLabel(m);
+  }
+
+  protected initials(name: string): string {
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
   }
 
   private async load(tenantId: string): Promise<void> {
@@ -446,9 +503,10 @@ export class ThreadView {
   styles: `
     .new { min-width: 240px; }
     .layout { display: grid; grid-template-columns: minmax(240px, 320px) 1fr; gap: 24px; align-items: start; }
-    .list ul { list-style: none; padding: 0; margin: 0; border: 1px solid var(--mat-sys-outline-variant); border-radius: 12px; overflow: hidden; }
+    .list ul { list-style: none; padding: 0; margin: 0; border: 1px solid var(--mat-sys-outline-variant); border-radius: 16px; overflow: hidden;
+                background: var(--mat-sys-surface-container-lowest); }
     .list li + li { border-top: 1px solid var(--mat-sys-outline-variant); }
-    .list a { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; color: inherit; text-decoration: none; }
+    .list a { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; color: inherit; text-decoration: none; }
     .list a:hover, .list a:focus-visible { background: var(--mat-sys-surface-container); }
     .list a.active { background: var(--mat-sys-secondary-container); color: var(--mat-sys-on-secondary-container); }
     .name { font: var(--mat-sys-title-small); display: flex; gap: 8px; align-items: center; }

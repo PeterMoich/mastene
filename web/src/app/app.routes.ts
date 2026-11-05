@@ -112,7 +112,7 @@ export const routes: Routes = [
       {
         path: 'my-details',
         canActivate: [roleGuard('Tenant')],
-        title: 'My details · Mastene',
+        title: 'Home · Mastene',
         loadComponent: () => import('./features/my-details/my-details').then((m) => m.MyDetails),
       },
       { path: '', pathMatch: 'full', canActivate: [homeRedirect], children: [] },

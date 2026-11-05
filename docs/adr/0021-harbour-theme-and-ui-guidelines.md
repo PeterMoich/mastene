@@ -33,3 +33,15 @@ Material Design 3 and Apple's Human Interface Guidelines, with a navy top bar. F
   so a few rarely seen states use azure rather than Harbour's exact navy.
 - The product, repository and API keep their technical names (TenantManager.*); only what people see says
   Mastene.
+
+## Update (5 November 2026): first review
+
+- **Tenant home** replaces "My details": a greeting with the three most common actions (report an issue,
+  upload proof of payment, message the landlord), then rent, lease term and repairs at a glance, then their
+  details and WhatsApp consent.
+- **Tables**: one bordered card with the paginator as its footer, a tinted header with small capitals, row
+  hover, linked names in the primary colour, and an icon on empty states. Content is centred up to 1280 px.
+- **Messages**: a chat card with a header, bubbles, an empty state and the composer as its footer.
+- **Escalated** is a small badge on the issue's detail line instead of a full-size chip beside the title.
+- **Sign-in**: a photo panel ("Apartment building with balconies" by Cristian Pineda, Unsplash License,
+  stored in `web/public/images`, so no request goes to Unsplash) and no browser autofill tint.
