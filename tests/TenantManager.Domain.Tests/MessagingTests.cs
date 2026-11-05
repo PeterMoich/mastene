@@ -168,7 +168,7 @@ public class TemplateTests
         var t = MessageTemplates.RentOverdue.Render(["Lerato", "October 2026", "R3,500.00"]);
 
         t.Body.ShouldBe("Hi Lerato, your rent for October 2026 is overdue and R3,500.00 is still outstanding. " +
-                        "Please pay, or upload your proof of payment in the Tenant Manager app.");
+                        "Please pay, or upload your proof of payment in the Mastene app.");
         t.Parameters.ShouldBe(["Lerato", "October 2026", "R3,500.00"]);
     }
 

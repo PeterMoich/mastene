@@ -121,7 +121,7 @@ app.Use(async (context, next) =>
 if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {
     app.UseSwagger();
-    app.UseSwaggerUI(o => o.SwaggerEndpoint("/swagger/v1/swagger.json", "Tenant Manager API v1"));
+    app.UseSwaggerUI(o => o.SwaggerEndpoint("/swagger/v1/swagger.json", "Mastene API v1"));
 }
 
 if (app.Configuration.GetValue<bool>("Jobs:Enabled")) app.UseJobsDashboard(); // Admin only, see JobsDashboard

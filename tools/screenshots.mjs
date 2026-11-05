@@ -34,6 +34,7 @@ async function signInAs(page, name) {
 }
 
 async function shot(page, file, fullPage = false) {
+  await page.mouse.move(0, 0); // no hover highlight from the last click
   await settle(page);
   await page.screenshot({ path: `${OUT}/${file}`, fullPage });
   console.log('saved', file);

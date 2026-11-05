@@ -95,7 +95,7 @@ public sealed class PrivacyService(
         var document = new
         {
             exportedAt = clock.UtcNow,
-            note = "Everything Tenant Manager holds about you. The files folder has your leases, proofs of payment, receipts and issue photos.",
+            note = "Everything Mastene holds about you. The files folder has your leases, proofs of payment, receipts and issue photos.",
             tenant = new { tenant.Id, tenant.FirstName, tenant.LastName, tenant.Email, tenant.Phone, tenant.CreatedAt, tenant.IsDeleted, tenant.AnonymisedAt },
             login = login is null ? null : new { login.Email, login.CreatedAt, login.Locked },
             leases = leases.Select(l => new

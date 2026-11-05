@@ -98,7 +98,7 @@ public static class ApiSetup
 
         services.AddSwaggerGen(o =>
         {
-            o.SwaggerDoc("v1", new OpenApiInfo { Title = "Tenant Manager API", Version = "v1" });
+            o.SwaggerDoc("v1", new OpenApiInfo { Title = "Mastene API", Version = "v1" });
             o.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.Http,

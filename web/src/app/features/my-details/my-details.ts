@@ -66,7 +66,7 @@ import { currentLease, greeting, leaseProgress, rentSummary } from './tenant-hom
         <header><span class="icon-badge" aria-hidden="true"><mat-icon>payments</mat-icon></span><h2 id="rent-h">Rent</h2></header>
         @if (rent(); as r) {
           <p class="big">
-            @if (r.amount !== null) { {{ r.amount | currency: 'ZAR' : 'symbol-narrow' }} } @else { {{ lease()!.monthlyRent | currency: 'ZAR' : 'symbol-narrow' }}<span class="per"> / month</span> }
+            @if (r.amount !== null) { {{ r.amount | currency: 'ZAR' : 'symbol-narrow' : '1.0-2' }} } @else { {{ lease()!.monthlyRent | currency: 'ZAR' : 'symbol-narrow' : '1.0-2' }}<span class="per"> / month</span> }
           </p>
           <span [class]="'app-chip ' + r.tone"><mat-icon aria-hidden="true">{{ r.icon }}</mat-icon>{{ r.title }}</span>
           <p class="detail">{{ r.detail }}</p>
@@ -205,7 +205,7 @@ export class MyDetails {
   /** Local date as yyyy-MM-dd. */
   private readonly today = `${this.now.getFullYear()}-${String(this.now.getMonth() + 1).padStart(2, '0')}-${String(this.now.getDate()).padStart(2, '0')}`;
   protected readonly hello = greeting(this.now.getHours());
-  protected readonly todayLabel = this.now.toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' });
+  protected readonly todayLabel = this.now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 
   protected readonly firstName = computed(
     () => this.tenant()?.firstName ?? this.auth.user()?.displayName.split(' ')[0] ?? '',

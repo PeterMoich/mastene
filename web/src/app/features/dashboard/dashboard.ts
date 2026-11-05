@@ -86,7 +86,8 @@ import {
         </div>
         <p class="figure">{{ issues().length }}</p>
         <p class="note">
-          @if (escalatedCount()) { <span class="bad">{{ escalatedCount() }} escalated</span> · } {{ issues().length ? 'oldest first below' : 'Nothing open' }}
+          @if (escalatedCount()) { <span class="bad">{{ escalatedCount() }} escalated</span>, past a response or fix target }
+          @else if (issues().length) { All within their targets } @else { Nothing open }
         </p>
       </a>
     </div>
@@ -235,7 +236,7 @@ export class Dashboard {
   private readonly today = localToday(this.now);
 
   protected readonly hello = greeting(this.now.getHours());
-  protected readonly todayLabel = this.now.toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' });
+  protected readonly todayLabel = this.now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
   protected readonly firstName = inject(AuthService).user()?.displayName.split(' ')[0] ?? '';
 
   protected readonly loading = signal(true);
