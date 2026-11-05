@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { LeaseStatus } from '../../core/api.models';
 
 const LABELS: Record<LeaseStatus, string> = {
@@ -32,37 +33,29 @@ export function escalatedRent(rent: number, pct: number): number {
   return Math.round(rent * (1 + pct / 100));
 }
 
-/** Coloured status label. Colour is never the only signal: the text always says the status. */
+/** Status chip: words, an icon and a colour, so the colour is never the only signal. */
 @Component({
   selector: 'app-lease-status',
-  template: `<span class="chip" [class]="'chip ' + tone()">{{ label() }}</span>`,
-  styles: `
-    .chip { display: inline-block; padding: 2px 10px; border-radius: 12px; font: var(--mat-sys-label-medium);
-            white-space: nowrap; border: 1px solid transparent; }
-    .neutral { background: var(--mat-sys-surface-container-high); color: var(--mat-sys-on-surface); }
-    .waiting { background: var(--mat-sys-tertiary-container); color: var(--mat-sys-on-tertiary-container); }
-    .good { background: var(--mat-sys-primary-container); color: var(--mat-sys-on-primary-container); }
-    .warn { background: var(--mat-sys-error-container); color: var(--mat-sys-on-error-container); }
-    .done { background: transparent; color: var(--mat-sys-on-surface-variant); border-color: var(--mat-sys-outline-variant); }
-  `,
+  imports: [MatIconModule],
+  template: `<span [class]="'app-chip ' + look().tone"><mat-icon aria-hidden="true">{{ look().icon }}</mat-icon>{{ label() }}</span>`,
 })
 export class LeaseStatusChip {
   readonly status = input.required<LeaseStatus>();
   readonly monthToMonth = input(false);
 
   protected readonly label = computed(() => leaseStatusLabel(this.status(), this.monthToMonth()));
-  protected readonly tone = computed(() => {
+  protected readonly look = computed(() => {
     switch (this.status()) {
       case 'Draft':
-        return 'neutral';
+        return { tone: 'neutral', icon: 'edit_note' };
       case 'PendingSignature':
-        return 'waiting';
+        return { tone: 'info', icon: 'draw' };
       case 'Active':
-        return 'good';
+        return { tone: 'success', icon: 'check_circle' };
       case 'Expiring':
-        return 'warn';
+        return { tone: 'warning', icon: 'schedule' };
       default:
-        return 'done';
+        return { tone: 'muted', icon: 'archive' };
     }
   });
 }

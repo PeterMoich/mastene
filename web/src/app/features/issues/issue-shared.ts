@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { IssueEventKind, IssuePriority, IssueStatus } from '../../core/api.models';
 
 const STATUS_LABELS: Record<IssueStatus, string> = {
@@ -61,33 +62,26 @@ export function targetText(due: string, doneAt: string | null, now: Date = new D
     : { text: `Overdue by ${formatDuration(-left)}`, late: true };
 }
 
-/** Coloured status label; the text always says the status. */
+/** Status chip: words, an icon and a colour, so the colour is never the only signal. */
 @Component({
   selector: 'app-issue-status',
-  template: `<span [class]="'chip ' + tone()">{{ label() }}</span>`,
-  styles: `
-    .chip { display: inline-block; padding: 2px 10px; border-radius: 12px; font: var(--mat-sys-label-medium);
-            white-space: nowrap; border: 1px solid transparent; }
-    .open { background: var(--mat-sys-tertiary-container); color: var(--mat-sys-on-tertiary-container); }
-    .active { background: var(--mat-sys-primary-container); color: var(--mat-sys-on-primary-container); }
-    .resolved { background: var(--mat-sys-secondary-container); color: var(--mat-sys-on-secondary-container); }
-    .done { background: transparent; color: var(--mat-sys-on-surface-variant); border-color: var(--mat-sys-outline-variant); }
-  `,
+  imports: [MatIconModule],
+  template: `<span [class]="'app-chip ' + look().tone"><mat-icon aria-hidden="true">{{ look().icon }}</mat-icon>{{ label() }}</span>`,
 })
 export class IssueStatusChip {
   readonly status = input.required<IssueStatus>();
   protected readonly label = computed(() => issueStatusLabel(this.status()));
-  protected readonly tone = computed(() => {
+  protected readonly look = computed(() => {
     switch (this.status()) {
       case 'Open':
-        return 'open';
+        return { tone: 'warning', icon: 'flag' };
       case 'Acknowledged':
       case 'InProgress':
-        return 'active';
+        return { tone: 'info', icon: 'construction' };
       case 'Resolved':
-        return 'resolved';
+        return { tone: 'success', icon: 'check_circle' };
       default:
-        return 'done';
+        return { tone: 'muted', icon: 'archive' };
     }
   });
 }
@@ -112,10 +106,7 @@ export class IssuePriorityLabel {
 /** Escalation badge (BR15). */
 @Component({
   selector: 'app-escalated',
-  template: `<span class="badge" title="A response or resolution target was missed">Escalated</span>`,
-  styles: `
-    .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font: var(--mat-sys-label-small);
-             background: var(--mat-sys-error); color: var(--mat-sys-on-error); white-space: nowrap; }
-  `,
+  imports: [MatIconModule],
+  template: `<span class="app-chip danger" title="A response or resolution target was missed"><mat-icon aria-hidden="true">priority_high</mat-icon>Escalated</span>`,
 })
 export class EscalatedBadge {}

@@ -59,7 +59,7 @@ function toParams(query: object): HttpParams {
   return params;
 }
 
-/** Typed client for the Tenant Manager API. One method per endpoint. */
+/** Typed client for the Mastene API. One method per endpoint. */
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly http = inject(HttpClient);

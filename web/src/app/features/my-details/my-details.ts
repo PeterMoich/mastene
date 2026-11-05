@@ -28,7 +28,7 @@ import { saveBlob } from '../../shared/download';
           <button mat-stroked-button type="button" (click)="download(t.id)" [disabled]="busy()">
             Download all my data
           </button>
-          <p class="note small">A zip with everything Tenant Manager holds about you, including your lease and receipts.</p>
+          <p class="note small">A zip with everything Mastene holds about you, including your lease and receipts.</p>
         </mat-card-content>
       </mat-card>
       @if (consent(); as c) {
