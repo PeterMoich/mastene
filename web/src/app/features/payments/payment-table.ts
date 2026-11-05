@@ -43,7 +43,7 @@ import { RejectPaymentDialog } from './payment-dialogs';
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef>Status</th>
         <td mat-cell *matCellDef="let p">
-          <span class="status" [class]="'status ' + p.status.toLowerCase()">{{ statusLabel(p.status) }}</span>
+          <span [class]="'app-chip ' + statusLook(p.status).tone"><mat-icon aria-hidden="true">{{ statusLook(p.status).icon }}</mat-icon>{{ statusLabel(p.status) }}</span>
           @if (p.rejectionReason) { <br /><span class="muted">{{ p.rejectionReason }}</span> }
           @if (p.receiptNumber) { <br /><span class="muted">Receipt {{ p.receiptNumber }}</span> }
         </td>
@@ -77,10 +77,6 @@ import { RejectPaymentDialog } from './payment-dialogs';
   styleUrl: '../../shared/list-page.scss',
   styles: `
     .muted { color: var(--mat-sys-on-surface-variant); font: var(--mat-sys-body-small); }
-    .status { font: var(--mat-sys-label-large); }
-    .status.submitted { color: var(--mat-sys-tertiary); }
-    .status.verified { color: var(--mat-sys-primary); }
-    .status.rejected { color: var(--mat-sys-error); }
     .actions button { margin-left: 4px; }
   `,
 })
@@ -100,6 +96,17 @@ export class PaymentTable {
 
   protected month(period: string): string {
     return monthName(period);
+  }
+
+  protected statusLook(status: Payment['status']): { tone: string; icon: string } {
+    switch (status) {
+      case 'Verified':
+        return { tone: 'success', icon: 'check_circle' };
+      case 'Rejected':
+        return { tone: 'danger', icon: 'cancel' };
+      default:
+        return { tone: 'warning', icon: 'hourglass_top' };
+    }
   }
 
   protected statusLabel(status: Payment['status']): string {

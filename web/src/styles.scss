@@ -1,39 +1,330 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
+// Mastene's look: the "Harbour" theme (ADR-0021).
+//
+// Material 3 drives the components. `mat.theme` builds the full palette from the built-in azure (primary)
+// and cyan (tertiary) palettes; the key colour roles are then set exactly to Harbour's navy and teal below,
+// with a light and a dark value each. `light-dark()` picks one from the page's color-scheme, which follows
+// the device setting (Apple HIG) unless the person picks Light or Dark in the account menu.
+//
+// Text contrast is at least 4.5:1 (WCAG AA) everywhere in both modes. Status colours always come with
+// words and an icon, never colour alone.
 @use '@angular/material' as mat;
+
+// The device's own font (Apple HIG): SF on Apple, Segoe on Windows, Roboto on Android.
+$system-font: (system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
 
 html {
   height: 100%;
+  color-scheme: light dark;
+
   @include mat.theme(
     (
       color: (
         primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
+        tertiary: mat.$cyan-palette,
       ),
-      typography: Roboto,
+      typography: (
+        plain-family: $system-font,
+        brand-family: $system-font,
+      ),
       density: 0,
+    )
+  );
+
+  // Harbour colour roles (light, dark).
+  --mat-sys-primary: light-dark(#1f4e8c, #a9c7ff);
+  --mat-sys-on-primary: light-dark(#ffffff, #0b2a5a);
+  --mat-sys-primary-container: light-dark(#d6e3ff, #23406b);
+  --mat-sys-on-primary-container: light-dark(#0b1c3a, #d6e3ff);
+  --mat-sys-secondary-container: light-dark(#dce4f3, #2a3d5c);
+  --mat-sys-on-secondary-container: light-dark(#121c2e, #dce4f3);
+  --mat-sys-tertiary: light-dark(#00787a, #4fd8d8);
+  --mat-sys-on-tertiary: light-dark(#ffffff, #003737);
+  --mat-sys-tertiary-container: light-dark(#b9f0ee, #004f51);
+  --mat-sys-on-tertiary-container: light-dark(#002020, #b9f0ee);
+  --mat-sys-background: light-dark(#fbfcfe, #12161d);
+  --mat-sys-surface: light-dark(#fbfcfe, #12161d);
+  --mat-sys-on-surface: light-dark(#1a1c21, #e3e5ea);
+  --mat-sys-on-surface-variant: light-dark(#4f5665, #a9b0bd);
+  --mat-sys-outline: light-dark(#7c8494, #6c7484);
+  --mat-sys-outline-variant: light-dark(#d5dae3, #343b47);
+  --mat-sys-surface-container-lowest: light-dark(#ffffff, #0d1015);
+  --mat-sys-surface-container-low: light-dark(#f4f6fa, #181d25);
+  --mat-sys-surface-container: light-dark(#eef1f6, #1c212a);
+  --mat-sys-surface-container-high: light-dark(#e8ebf1, #232934);
+  --mat-sys-surface-container-highest: light-dark(#e2e6ed, #2a303b);
+
+  // Mastene's own tokens.
+  --app-bar: light-dark(#13294b, #0e1a2f);
+  --app-on-bar: light-dark(#ffffff, #e3e8f2);
+  --app-on-bar-muted: light-dark(#c3cde0, #a9b3c6);
+  --app-logo-bg: light-dark(#2bb3b1, #4fd8d8);
+  --app-logo-ink: #0b1c3a;
+  --app-success-container: light-dark(#d5f0de, #1d4430);
+  --app-on-success-container: light-dark(#0b4a26, #a9e7c0);
+  --app-warning-container: light-dark(#fce8c3, #4d3810);
+  --app-on-warning-container: light-dark(#5c3b00, #ffd99a);
+  --app-danger-container: light-dark(#fbdad7, #5a1e1a);
+  --app-on-danger-container: light-dark(#8a1c14, #ffb8b0);
+
+  // Navy top bar; its buttons and menu trigger read on navy.
+  @include mat.toolbar-overrides(
+    (
+      container-background-color: var(--app-bar),
+      container-text-color: var(--app-on-bar),
+    )
+  );
+  // Navigation drawer on a slightly tinted surface, content on the page surface.
+  @include mat.sidenav-overrides(
+    (
+      container-background-color: var(--mat-sys-surface-container-low),
+      container-divider-color: var(--mat-sys-outline-variant),
+      container-shape: 0,
+      content-background-color: var(--mat-sys-surface),
+    )
+  );
+  // Tables and cards sit on the lightest surface so they stand off the page.
+  @include mat.table-overrides(
+    (
+      background-color: var(--mat-sys-surface-container-lowest),
+    )
+  );
+  @include mat.paginator-overrides(
+    (
+      container-background-color: var(--mat-sys-surface-container-lowest),
     )
   );
 }
 
-body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
+// Explicit choice from the account menu (Appearance); without it the device setting decides.
+html.light-mode {
   color-scheme: light;
+}
+html.dark-mode {
+  color-scheme: dark;
+}
 
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
+body {
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
   margin: 0;
   height: 100%;
+  -webkit-font-smoothing: antialiased;
 }
-/* You can add global styles to this file, and also import other style files */
+
+a {
+  color: var(--mat-sys-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+}
+
+// Buttons inside the navy bar.
+.app-bar {
+  @include mat.button-overrides(
+    (
+      text-label-text-color: var(--app-on-bar),
+      text-state-layer-color: var(--app-on-bar),
+      text-ripple-color: color-mix(in srgb, var(--app-on-bar) 12%, transparent),
+    )
+  );
+  @include mat.icon-button-overrides(
+    (
+      icon-color: var(--app-on-bar),
+      state-layer-color: var(--app-on-bar),
+      ripple-color: color-mix(in srgb, var(--app-on-bar) 12%, transparent),
+    )
+  );
+
+  :focus-visible {
+    outline-color: var(--app-on-bar);
+  }
+}
+
+// Status chips used across leases, issues and payments: words + icon + colour.
+.app-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 26px;
+  padding: 0 10px 0 8px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font: var(--mat-sys-label-large);
+  white-space: nowrap;
+  box-sizing: border-box;
+
+  .mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    line-height: 16px;
+  }
+
+  &.success {
+    background: var(--app-success-container);
+    color: var(--app-on-success-container);
+  }
+  &.warning {
+    background: var(--app-warning-container);
+    color: var(--app-on-warning-container);
+  }
+  &.danger {
+    background: var(--app-danger-container);
+    color: var(--app-on-danger-container);
+  }
+  &.info {
+    background: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
+  }
+  &.neutral {
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+  }
+  &.muted {
+    background: transparent;
+    color: var(--mat-sys-on-surface-variant);
+    border-color: var(--mat-sys-outline-variant);
+  }
+}
+
+// ---- Tables: one bordered card with the paginator as its footer, tinted header, row hover ----
+.mat-mdc-table {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+
+  &:has(+ .mat-mdc-paginator) {
+    border-bottom: 0;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .mat-mdc-header-row {
+    background: var(--mat-sys-surface-container-low);
+    height: 48px;
+  }
+
+  .mat-mdc-header-cell {
+    font: var(--mat-sys-label-medium);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+    border-bottom-color: var(--mat-sys-outline-variant);
+  }
+
+  .mat-mdc-row {
+    height: 60px;
+    transition: background-color 120ms ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-primary) 5%, transparent);
+    }
+  }
+
+  .mat-mdc-cell {
+    border-bottom-color: var(--mat-sys-outline-variant);
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .mat-mdc-row:last-child .mat-mdc-cell {
+    border-bottom: 0;
+  }
+
+  // The record's name links to it: primary colour, underline only on hover.
+  .mat-mdc-cell a {
+    color: var(--mat-sys-primary);
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+
+  // "Nothing here yet" rows: centred with an icon.
+  .mat-mdc-no-data-row .mat-mdc-cell,
+  td.empty {
+    text-align: center;
+    padding: 40px 16px;
+    color: var(--mat-sys-on-surface-variant);
+
+    &::before {
+      content: 'inbox';
+      display: block;
+      margin: 0 auto 8px;
+      font-family: 'Material Symbols Outlined';
+      font-size: 36px;
+      line-height: 1;
+      color: var(--mat-sys-outline);
+      font-variation-settings: 'wght' 300;
+    }
+  }
+}
+
+.mat-mdc-table + .mat-mdc-paginator {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 0 0 12px 12px;
+}
+
+// No browser-blue fill on autofilled fields (Chrome, Edge, Safari).
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--mat-sys-on-surface);
+  caret-color: var(--mat-sys-on-surface);
+  -webkit-box-shadow: 0 0 0 1000px var(--app-field-fill, var(--mat-sys-surface-container-lowest)) inset;
+  transition: background-color 600000s 0s;
+}
+
+// Smaller chip for badges that sit next to other text (e.g. Escalated).
+.app-chip.sm {
+  min-height: 20px;
+  padding: 0 7px 0 5px;
+  border-radius: 6px;
+  font: var(--mat-sys-label-small);
+  font-weight: 600;
+  gap: 3px;
+
+  .mat-icon {
+    width: 13px;
+    height: 13px;
+    font-size: 13px;
+    line-height: 13px;
+  }
+}
+
+// A plain surface card used on the tenant home and other overview pages.
+.app-card {
+  background: var(--mat-sys-surface-container-lowest);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 16px;
+  padding: 20px;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
