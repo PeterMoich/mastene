@@ -55,17 +55,17 @@ public static class MessageTemplates
 
     public static readonly MessageTemplate RentOverdue = new("rent_overdue",
         "Rent is overdue",
-        "Hi {{1}}, your rent for {{2}} is overdue and {{3}} is still outstanding. Please pay, or upload your proof of payment in the Tenant Manager app.",
+        "Hi {{1}}, your rent for {{2}} is overdue and {{3}} is still outstanding. Please pay, or upload your proof of payment in the Mastene app.",
         ["tenant first name", "month", "amount outstanding"]);
 
     public static readonly MessageTemplate PaymentReceived = new("payment_received",
         "A payment was verified",
-        "Hi {{1}}, thank you. Your payment of {{2}} has been verified. Receipt {{3}} is in the Tenant Manager app.",
+        "Hi {{1}}, thank you. Your payment of {{2}} has been verified. Receipt {{3}} is in the Mastene app.",
         ["tenant first name", "amount", "receipt number"]);
 
     public static readonly MessageTemplate PaymentRejected = new("payment_rejected",
         "A proof of payment was rejected",
-        "Hi {{1}}, your proof of payment of {{2}} could not be accepted: {{3}}. Please upload it again in the Tenant Manager app.",
+        "Hi {{1}}, your proof of payment of {{2}} could not be accepted: {{3}}. Please upload it again in the Mastene app.",
         ["tenant first name", "amount", "reason"]);
 
     public static readonly MessageTemplate IssueUpdate = new("issue_update",
@@ -80,7 +80,7 @@ public static class MessageTemplates
 
     public static readonly MessageTemplate RenewalReady = new("renewal_ready",
         "A renewal is waiting to be signed",
-        "Hi {{1}}, the renewal of your lease for {{2}}, starting {{3}}, is ready for you to sign in the Tenant Manager app.",
+        "Hi {{1}}, the renewal of your lease for {{2}}, starting {{3}}, is ready for you to sign in the Mastene app.",
         ["tenant first name", "home", "start date"]);
 
     public static readonly MessageTemplate MessageWaiting = new("message_waiting",

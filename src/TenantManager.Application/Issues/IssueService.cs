@@ -184,7 +184,7 @@ public sealed class IssueService(
         await resolveValidator.ValidateAndThrowAsync(request, ct);
         return await ChangeAsync(id, i => i.Resolve(request.Note, Actor, clock.UtcNow), ct,
             i => ($"issue-resolved:{i.Id}:{i.ReopenCount}",
-                "it has been marked as fixed. Please confirm in the Tenant Manager app, or reopen it if it isn't."));
+                "it has been marked as fixed. Please confirm in the Mastene app, or reopen it if it isn't."));
     }
 
     public Task<IssueDto> CloseAsync(Guid id, CancellationToken ct) =>

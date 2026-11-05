@@ -25,6 +25,26 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Remove what the demo profile doesn't use (Azure keeps resources a template stops mentioning)
+        if: ${{ !inputs.what_if }}
+        env:
+          RG: ${{ vars.AZURE_RESOURCE_GROUP }}
+        run: |
+          profile=$(jq -r '.parameters.costProfile.value // "demo"' infra/main.parameters.json)
+          echo "Cost profile: $profile"
+          [ "$profile" = "demo" ] || exit 0
+          for site in $(az webapp list -g "$RG" --query "[].name" -o tsv); do
+            if az webapp deployment slot list -g "$RG" -n "$site" --query "[?name=='staging'] | length(@)" -o tsv | grep -q '^1$'; then
+              echo "Deleting the staging slot of $site (the Basic plan has no slots)"
+              az webapp deployment slot delete -g "$RG" -n "$site" --slot staging
+            fi
+            uri="/subscriptions/$(az account show --query id -o tsv)/resourceGroups/$RG/providers/Microsoft.Web/sites/$site/sitecontainers/clamav?api-version=2024-04-01"
+            if az rest --method get --uri "$uri" > /dev/null 2>&1; then
+              echo "Removing the ClamAV sidecar from $site (uploads use the built-in EICAR check in demo)"
+              az rest --method delete --uri "$uri"
+            fi
+          done
+
       - name: Deploy infra/main.bicep
         env:
           RG: ${{ vars.AZURE_RESOURCE_GROUP }}

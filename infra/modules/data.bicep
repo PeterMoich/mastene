@@ -8,6 +8,8 @@ param tags object
 param sqlAdminLogin string
 @secure()
 param sqlAdminPassword string
+@description('S0 (production) or Basic (demo, 5 DTU, 2 GB).')
+param databaseSku object = { name: 'S0', tier: 'Standard' }
 
 resource sql 'Microsoft.Sql/servers@2023-08-01-preview' = {
   name: sqlServerName
@@ -37,10 +39,7 @@ resource database 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
   name: databaseName
   location: location
   tags: tags
-  sku: {
-    name: 'S0'
-    tier: 'Standard'
-  }
+  sku: databaseSku
   properties: {
     requestedBackupStorageRedundancy: 'Local'
   }

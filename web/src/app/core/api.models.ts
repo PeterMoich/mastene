@@ -19,6 +19,12 @@ export interface ListQuery {
   search?: string;
 }
 
+/** Demo accounts offered on the sign-in page of a demo site (GET /auth/demo). */
+export interface DemoLogins {
+  password: string;
+  accounts: { role: 'Landlord' | 'Tenant'; name: string; email: string }[];
+}
+
 export interface Me {
   id: string;
   email: string;

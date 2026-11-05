@@ -18,11 +18,15 @@ param keyVaultUri string
 param appInsightsConnectionString string
 param logAnalyticsWorkspaceId string
 param seedDemoData bool
+param showDemoLogins bool = false
 param whatsAppProvider string
 param whatsAppPhoneNumberId string
 
 @description('Run ClamAV as a sidecar and scan every upload with it (recommended; about 1 GB of memory).')
 param enableClamAv bool = true
+
+@description('Create the staging slot for blue-green releases (Standard or Premium plans only).')
+param useSlots bool = true
 
 var kv = 'VaultName=${keyVaultName}'
 var useCredentials = !empty(registryUsername)
@@ -49,6 +53,7 @@ var commonSettings = {
   Scanning__ClamAvHost: 'localhost'
   Seed__DemoData: string(seedDemoData)
   Seed__Password: '@Microsoft.KeyVault(${kv};SecretName=seed-password)'
+  Seed__ShowDemoLogins: string(showDemoLogins)
   WhatsApp__Provider: whatsAppProvider
   WhatsApp__AppSecret: '@Microsoft.KeyVault(${kv};SecretName=whatsapp-app-secret)'
   WhatsApp__VerifyToken: '@Microsoft.KeyVault(${kv};SecretName=whatsapp-verify-token)'
@@ -106,7 +111,7 @@ resource siteSettings 'Microsoft.Web/sites/config@2024-04-01' = {
 }
 
 // Settings that stay with their slot when slots are swapped.
-resource sticky 'Microsoft.Web/sites/config@2024-04-01' = {
+resource sticky 'Microsoft.Web/sites/config@2024-04-01' = if (useSlots) {
   parent: site
   name: 'slotConfigNames'
   properties: {
@@ -114,7 +119,7 @@ resource sticky 'Microsoft.Web/sites/config@2024-04-01' = {
   }
 }
 
-resource staging 'Microsoft.Web/sites/slots@2024-04-01' = {
+resource staging 'Microsoft.Web/sites/slots@2024-04-01' = if (useSlots) {
   parent: site
   name: 'staging'
   location: location
@@ -129,7 +134,7 @@ resource staging 'Microsoft.Web/sites/slots@2024-04-01' = {
   }
 }
 
-resource stagingSettingsConfig 'Microsoft.Web/sites/slots/config@2024-04-01' = {
+resource stagingSettingsConfig 'Microsoft.Web/sites/slots/config@2024-04-01' = if (useSlots) {
   parent: staging
   name: 'appsettings'
   properties: stagingSettings
@@ -173,19 +178,19 @@ resource clamContainer 'Microsoft.Web/sites/sitecontainers@2024-04-01' = if (ena
 }
 
 // The staging slot starts with the same images; deploy.yml points it at each new release.
-resource stagingWeb 'Microsoft.Web/sites/slots/sitecontainers@2024-04-01' = {
+resource stagingWeb 'Microsoft.Web/sites/slots/sitecontainers@2024-04-01' = if (useSlots) {
   parent: staging
   name: 'web'
   properties: webContainer.properties
 }
 
-resource stagingApi 'Microsoft.Web/sites/slots/sitecontainers@2024-04-01' = {
+resource stagingApi 'Microsoft.Web/sites/slots/sitecontainers@2024-04-01' = if (useSlots) {
   parent: staging
   name: 'api'
   properties: apiContainer.properties
 }
 
-resource stagingClam 'Microsoft.Web/sites/slots/sitecontainers@2024-04-01' = if (enableClamAv) {
+resource stagingClam 'Microsoft.Web/sites/slots/sitecontainers@2024-04-01' = if (useSlots && enableClamAv) {
   parent: staging
   name: 'clamav'
   properties: {
@@ -213,12 +218,12 @@ resource siteCanReadSecrets 'Microsoft.Authorization/roleAssignments@2022-04-01'
   }
 }
 
-resource stagingCanReadSecrets 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource stagingCanReadSecrets 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (useSlots) {
   scope: vault
   name: guid(vault.id, staging.id, keyVaultSecretsUser)
   properties: {
     roleDefinitionId: keyVaultSecretsUser
-    principalId: staging.identity.principalId
+    principalId: staging!.identity.principalId
     principalType: 'ServicePrincipal'
   }
 }
@@ -240,5 +245,5 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
 
 output siteName string = site.name
 output hostName string = site.properties.defaultHostName
-output stagingHostName string = staging.properties.defaultHostName
+output stagingHostName string = useSlots ? staging!.properties.defaultHostName : ''
 output keyVaultUri string = keyVaultUri

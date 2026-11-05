@@ -1,17 +1,55 @@
-# Tenant Manager (mastene)
+# Mastene
 
-A web app for a small South African residential landlord: properties and units, tenants,
-leases, rent and proof of payment, maintenance issues, and WhatsApp messaging.
-It is a portfolio and test project; all data in it is synthetic.
+**Renting, sorted.** A web app for small South African landlords and their tenants: properties and
+units, 12-month leases signed online, rent and proof of payment, maintenance issues with SLA targets,
+inspections, and WhatsApp messaging with consent. Built end to end as a portfolio project: ASP.NET Core
+10 with clean architecture, Angular 22 with Material 3, SQL Server, Docker, and Azure with infrastructure
+as code. All data in it is synthetic.
 
-**Status: all six phases built.** Authentication and roles, properties, units and tenants (Phase 1);
-12-month leases with PDF generation, signing, renewals and a daily lifecycle job (Phase 2); rent
-charges, proof of payment, the ledger, receipts and deposits (Phase 3); maintenance issues with
-photos, contractors, response and resolution targets, and inspections (Phase 4); WhatsApp messaging
-with consent, the 24-hour window, templates, a signed webhook and reminders (Phase 5); and Azure
-infrastructure as code, blue-green deployment, OpenTelemetry with SLOs, security hardening and POPIA
-data export and erasure (Phase 6). Running it on Azure needs a subscription: see
-[docs/operations.md](docs/operations.md).
+**Live demo:** <https://mastene-prod-app-k2vyuebeop4xc.azurewebsites.net>. The sign-in page lists demo
+accounts; pick one to sign in as the landlord or a tenant.
+
+![The landlord dashboard](docs/screenshots/landlord-dashboard.png)
+
+| | |
+| --- | --- |
+| ![Sign-in page with demo accounts](docs/screenshots/sign-in.png) | ![The dashboard in dark mode](docs/screenshots/landlord-dashboard-dark.png) |
+| ![Issues with SLA targets and escalation](docs/screenshots/issues.png) | ![WhatsApp-style messages with consent](docs/screenshots/messages.png) |
+| ![A lease with its rent ledger](docs/screenshots/lease.png) | ![The tenant's home page](docs/screenshots/tenant-home.png) |
+
+<p align="center"><img src="docs/screenshots/tenant-home-phone.png" alt="The tenant home on a phone" width="300" /></p>
+
+## What it does
+
+**For the landlord**
+- A dashboard with rent collected this month against what is due, arrears, occupancy, open and
+  escalated issues, payments waiting to be checked, and leases ending soon.
+- Properties, units and tenants; leases generated as PDFs, signed in the app by both parties,
+  renewed with escalation, ended or terminated with notice, and a daily job that moves them along.
+- Rent charges with pro-rating, proof-of-payment review, a ledger per lease, PDF receipts, and deposits
+  with deductions and refunds.
+- Maintenance issues with photos, contractors, response and resolution targets per priority, automatic
+  escalation and an SLA report; move-in and move-out inspections with photos.
+- WhatsApp messaging through an outbox, with recorded consent, the 24-hour service window, approved
+  templates, a signed webhook, STOP to opt out, and rent reminders.
+
+**For the tenant**
+- A home page with rent due, the lease term and their repairs, and one-tap actions to report an issue,
+  upload proof of payment or message the landlord.
+- Their leases to read and sign, payments and receipts, issues with photos, and messages.
+- POPIA: download everything held about them, and give or withdraw WhatsApp consent.
+
+**Engineering highlights**
+- Clean architecture with business rules in the domain and tests for each one; an append-only audit
+  log enforced by a database trigger; ProblemDetails errors with stable codes; owner and tenant
+  filtering in every query.
+- Security: refresh token in an HttpOnly SameSite cookie, rate limits, CSP and security headers, upload
+  type checks and virus scanning, photo location stripping, CodeQL and dependency audits in CI.
+- Operations: OpenTelemetry to Application Insights with SLOs and alerts, feature flags, Bicep for every
+  Azure resource, OIDC deployment from GitHub with health checks and automatic rollback, and a cost
+  profile that keeps a demo site cheap ([ADR-0022](docs/adr/0022-cost-profiles.md)).
+- UI: Material 3 with a custom navy and teal theme, light and dark mode, the device's system font,
+  WCAG AA contrast, keyboard and screen-reader support ([ADR-0021](docs/adr/0021-harbour-theme-and-ui-guidelines.md)).
 
 | Layer | Technology |
 | --- | --- |
@@ -19,7 +57,9 @@ data export and erasure (Phase 6). Running it on Azure needs a subscription: see
 | Documents and jobs | QuestPDF (Community licence), Azure Blob Storage (Azurite locally), Hangfire on SQL Server |
 | Web | Angular 22 (standalone, signals, zoneless), Angular Material 3 |
 | Tests | xUnit + Shouldly, Testcontainers (real SQL Server), Vitest component tests |
-| Run | Docker Compose; GitHub Actions for CI and container images |
+| Run | Docker Compose; GitHub Actions for CI, images and Azure deployment |
+
+The code's projects and namespaces keep the working name `TenantManager`.
 
 ## Run it
 
@@ -41,14 +81,15 @@ The first start takes a few minutes while SQL Server and the images download.
 
 ### Demo logins
 
-Every demo login uses the `SEED_PASSWORD` from your `.env`.
+The sign-in page lists the landlord and tenant demo accounts; click one to sign in. Every demo login
+uses the `SEED_PASSWORD` from your `.env` (set `SHOW_DEMO_LOGINS=false` in `.env` to hide the list).
 
 | Role | Email | Sees |
 | --- | --- | --- |
-| Landlord | `landlord@mastene.test` | Properties, units, tenants |
-| Tenant | `sipho.dlamini@example.com` | Their own details only |
-| Tenant | `lerato.mokoena@example.com` | Their own details only |
-| Admin | `admin@mastene.test` | Staff user accounts only |
+| Landlord | `landlord@mastene.test` | The dashboard and everything for their properties |
+| Tenant | `sipho.dlamini@example.com` | Their own home, leases, payments, issues and messages |
+| Tenant | `lerato.mokoena@example.com` | The same, for Lerato |
+| Admin | `admin@mastene.test` | Staff accounts, privacy requests and settings (not listed on the sign-in page) |
 
 The demo data is two properties in Gauteng with five units, three tenants (two with logins), and two
 signed leases. Sipho's (Jacaranda Court, Flat 1) started eight months ago. Lerato's (Marula Gardens,
@@ -71,7 +112,7 @@ On **Messages**, Sipho has agreed to WhatsApp messages and wrote two hours ago a
 his thread is inside WhatsApp's 24-hour window and a reply goes to WhatsApp. Lerato hasn't agreed, so
 nothing goes to her on WhatsApp; replies to her stay in the app. WhatsApp itself is simulated (no Meta
 account needed): use **Simulate tenant reply** to play the tenant, and reply `STOP` to see consent
-withdrawn. Sign in as a tenant and open **My details** or **Messages** to give or withdraw consent.
+withdrawn. Sign in as a tenant and open **Home** or **Messages** to give or withdraw consent.
 
 To start again from an empty database: `docker compose down -v`. A database from an earlier phase
 keeps its data and gets the Phase 4 demo issues, contractors and inspections added on the next start.
@@ -356,10 +397,15 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 5. Smoke test: the whole stack is started with `docker compose` and exercised through nginx.
 6. Docker images for the API and web app, published to `ghcr.io/petermoich/mastene-*` from `master`.
 
+The sign-in photo is by [Cristian Pineda](https://unsplash.com/@watershoes) on Unsplash (Unsplash License).
+
 A failure in any of 1–5 blocks the images, and `deploy.yml` only runs after CI succeeds on `master`:
-it releases to the staging slot, smoke-tests it, swaps it into production and swaps back if production
-isn't healthy. `infra.yml` creates or updates the Azure resources. Both need an Azure subscription and
-the setup in [docs/operations.md](docs/operations.md).
+with the `production` cost profile it releases to the staging slot, smoke-tests it, swaps it into
+production and swaps back if production isn't healthy; with the `demo` profile (the default, see
+[ADR-0022](docs/adr/0022-cost-profiles.md)) it replaces the running containers, checks them and puts the
+previous release back if they aren't healthy. `infra.yml` creates or updates the Azure resources.
+Both need an Azure subscription and the setup in [docs/operations.md](docs/operations.md).
+`screenshots.yml` refreshes the screenshots above from the running app.
 
 ## Legal note
 

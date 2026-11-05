@@ -1,0 +1,46 @@
+name: screenshots
+# Refreshes the README screenshots (docs/screenshots) from the real app. Push a commit whose message
+# contains [screenshots] to any branch except master; the workflow starts docker compose, takes the
+# screenshots with Playwright (tools/screenshots.mjs) and commits them back to that branch.
+on:
+  push:
+    branches-ignore: [master]
+permissions:
+  contents: write
+jobs:
+  screenshots:
+    if: contains(github.event.head_commit.message, '[screenshots]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Start the app with its demo data
+        run: |
+          cp .env.example .env
+          sed -i "s/^JWT_SIGNING_KEY=.*/JWT_SIGNING_KEY=$(openssl rand -hex 32)/" .env
+          echo "AUTH_RATE_LIMIT=1000" >> .env # every page load refreshes the session
+          docker compose up -d --build > compose.log 2>&1 || { cat compose.log; exit 1; }
+          for i in $(seq 1 90); do
+            curl -sf http://localhost:4200/api/v1/auth/demo > /dev/null && break
+            sleep 5
+          done
+          curl -sf http://localhost:4200/api/v1/auth/demo > /dev/null || { docker compose logs --tail=200; exit 1; }
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Take the screenshots
+        run: |
+          mkdir -p /tmp/shots && cd /tmp/shots && npm init -y > /dev/null && npm install --no-audit --no-fund playwright@1.55.0 > /dev/null
+          npx playwright install --with-deps chromium > /dev/null
+          cp "$GITHUB_WORKSPACE/tools/screenshots.mjs" . && OUT_DIR="$GITHUB_WORKSPACE/docs/screenshots" node screenshots.mjs
+      - name: Commit them to this branch
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add docs/screenshots
+          git diff --cached --quiet && { echo "No changes"; exit 0; }
+          git commit -m "Refresh README screenshots"
+          git push
+      - name: App logs if something failed
+        if: failure()
+        run: docker compose logs --tail=300

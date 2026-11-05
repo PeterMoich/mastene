@@ -5,3 +5,4 @@
 | [0019](0019-refresh-token-in-an-httponly-cookie.md) | The refresh token lives in an HttpOnly cookie; proxies are trusted by network and hop count |
 | [0020](0020-popia-export-and-erasure.md) | POPIA access and erasure |
 | [0021](0021-harbour-theme-and-ui-guidelines.md) | The Harbour theme and the UI guidelines |
+| [0022](0022-cost-profiles.md) | Cost profiles: a cheap demo site and a production setup |

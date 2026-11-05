@@ -92,7 +92,7 @@ public sealed class QuestPdfReceiptRenderer : IReceiptRenderer
         page.Footer().AlignCenter().Text(text =>
         {
             text.DefaultTextStyle(s => s.FontSize(7.5f).FontColor(Colors.Grey.Darken1));
-            text.Span($"{m.ReceiptNumber} · Tenant Manager");
+            text.Span($"{m.ReceiptNumber} · Mastene");
         });
     })).GeneratePdf();
 

@@ -1,5 +1,8 @@
 name: deploy
-# Blue-green release to Azure App Service (ADR-0017). Runs after CI passes on master, or by hand.
+# Release to Azure App Service (ADR-0017, ADR-0022). Runs after CI passes on master, or by hand.
+# With a staging slot (costProfile=production) it is blue-green: staging first, smoke test, swap, swap back
+# if production is unhealthy. Without one (costProfile=demo) it replaces the running containers, checks
+# health and the smoke test, and puts the previous images back if either fails.
 # A failing test or scan never reaches here: CI must succeed first, and the images it built are the
 # ones deployed (tagged with the commit sha).
 #
@@ -45,7 +48,54 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Find out how to release (slot or in place)
+        run: |
+          slots=$(az webapp deployment slot list -g "$RG" -n "$SITE" --query "[?name=='staging'] | length(@)" -o tsv)
+          if [ "$slots" = "1" ]; then echo "MODE=slot" >> "$GITHUB_ENV"; else echo "MODE=inplace" >> "$GITHUB_ENV"; fi
+          echo "BASE=/subscriptions/$(az account show --query id -o tsv)/resourceGroups/$RG/providers/Microsoft.Web/sites/$SITE" >> "$GITHUB_ENV"
+
+      # ---------- In place (demo profile) ----------
+      - name: Point production at this release's images
+        if: env.MODE == 'inplace'
+        run: |
+          for c in api web; do
+            current=$(az rest --method get --uri "$BASE/sitecontainers/$c?api-version=2024-04-01")
+            echo "PREVIOUS_$c=$(jq -r .properties.image <<<"$current")" >> "$GITHUB_ENV"
+            body=$(jq --arg img "ghcr.io/petermoich/mastene-$c:$SHA" '{properties: (.properties | .image = $img)}' <<<"$current")
+            az rest --method put --uri "$BASE/sitecontainers/$c?api-version=2024-04-01" --body "$body" > /dev/null
+            echo "production $c -> mastene-$c:$SHA"
+          done
+          az webapp restart -g "$RG" -n "$SITE"
+
+      - name: Check production, and put the previous release back if it isn't healthy
+        if: env.MODE == 'inplace'
+        run: |
+          host=$(az webapp show -g "$RG" -n "$SITE" --query defaultHostName -o tsv)
+          url="https://$host"
+          healthy=false
+          for i in $(seq 1 60); do
+            if curl -sf "$url/health/ready" > /dev/null; then healthy=true; break; fi
+            sleep 10
+          done
+          if $healthy; then
+            curl -sf "$url/" | grep -q "<app-root" || healthy=false
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$url/api/v1/properties"); [ "$code" = "401" ] || healthy=false
+            code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$url/api/v1/webhooks/whatsapp" -d '{}'); [ "$code" = "401" ] || healthy=false
+          fi
+          if $healthy; then echo "::notice title=Released::mastene $SHA is live at $url"; exit 0; fi
+          echo "::error title=Rolled back::the new release was not healthy; putting the previous images back"
+          for c in api web; do
+            prev_var="PREVIOUS_$c"; prev="${!prev_var}"
+            body=$(az rest --method get --uri "$BASE/sitecontainers/$c?api-version=2024-04-01" \
+              | jq --arg img "$prev" '{properties: (.properties | .image = $img)}')
+            az rest --method put --uri "$BASE/sitecontainers/$c?api-version=2024-04-01" --body "$body" > /dev/null
+          done
+          az webapp restart -g "$RG" -n "$SITE"
+          exit 1
+
+      # ---------- Blue-green (production profile) ----------
       - name: Point the staging slot at this release's images
+        if: env.MODE == 'slot'
         run: |
           base="/subscriptions/$(az account show --query id -o tsv)/resourceGroups/$RG/providers/Microsoft.Web/sites/$SITE/slots/staging/sitecontainers"
           for c in api web; do
@@ -57,6 +107,7 @@ jobs:
           az webapp restart -g "$RG" -n "$SITE" --slot staging
 
       - name: Wait for staging to be ready (the new code applies database migrations here)
+        if: env.MODE == 'slot'
         run: |
           host=$(az webapp show -g "$RG" -n "$SITE" --slot staging --query defaultHostName -o tsv)
           echo "STAGING=https://$host" >> "$GITHUB_ENV"
@@ -67,6 +118,7 @@ jobs:
           echo "::error title=Staging not ready::/health/ready did not return 200 within 10 minutes"; exit 1
 
       - name: Smoke test staging
+        if: env.MODE == 'slot'
         run: |
           curl -sf "$STAGING/" | grep -q "<app-root"
           curl -sfI "$STAGING/" | grep -i "content-security-policy" > /dev/null
@@ -76,9 +128,11 @@ jobs:
           [ "$code" = "401" ] || { echo "::error::expected the unsigned webhook to be refused, got $code"; exit 1; }
 
       - name: Swap staging into production
+        if: env.MODE == 'slot'
         run: az webapp deployment slot swap -g "$RG" -n "$SITE" --slot staging --target-slot production
 
       - name: Check production, and swap back if it isn't healthy
+        if: env.MODE == 'slot'
         run: |
           host=$(az webapp show -g "$RG" -n "$SITE" --query defaultHostName -o tsv)
           for i in $(seq 1 30); do

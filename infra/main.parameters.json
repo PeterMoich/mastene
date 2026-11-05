@@ -6,8 +6,11 @@
     "environmentName": { "value": "prod" },
     "apiImage": { "value": "ghcr.io/petermoich/mastene-api:latest" },
     "webImage": { "value": "ghcr.io/petermoich/mastene-web:latest" },
-    "planSku": { "value": "P0v3" },
+    "costProfile": { "value": "demo" },
+    "monthlyBudget": { "value": 500 },
+    "budgetStartDate": { "value": "2026-11-01" },
     "seedDemoData": { "value": true },
+    "showDemoLogins": { "value": true },
     "whatsAppProvider": { "value": "Fake" }
   }
 }

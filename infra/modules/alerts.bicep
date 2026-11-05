@@ -6,6 +6,10 @@ param tags object
 param appInsightsId string
 param appUrl string
 param alertEmail string
+@description('Seconds between availability checks (300 or 900).')
+param availabilityFrequency int = 300
+@description('How many places run the availability check (2 or 3); the alert needs 2 failing.')
+param availabilityLocations int = 3
 
 resource actionGroup 'Microsoft.Insights/actionGroups@2023-01-01' = if (!empty(alertEmail)) {
   name: '${baseName}-oncall'
@@ -32,16 +36,16 @@ resource availability 'Microsoft.Insights/webtests@2022-06-15' = {
     SyntheticMonitorId: '${baseName}-ready'
     Name: 'Readiness (/health/ready)'
     Enabled: true
-    Frequency: 300
+    Frequency: availabilityFrequency
     Timeout: 30
     Kind: 'standard'
     RetryEnabled: true
-    Locations: [
-      // Availability tests can't run from South Africa; these are the closest supported locations.
+    // Availability tests can't run from South Africa; these are the closest supported locations.
+    Locations: take([
       { Id: 'emea-gb-db3-azr' } // North Europe (Dublin)
-      { Id: 'emea-nl-ams-azr' }
-      { Id: 'us-va-ash-azr' }
-    ]
+      { Id: 'emea-nl-ams-azr' } // West Europe (Amsterdam)
+      { Id: 'us-va-ash-azr' } // East US (Virginia)
+    ], availabilityLocations)
     Request: {
       RequestUrl: '${appUrl}/health/ready'
       HttpVerb: 'GET'
@@ -65,7 +69,7 @@ resource availabilityAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
     enabled: true
     scopes: [availability.id, appInsightsId]
     evaluationFrequency: 'PT1M'
-    windowSize: 'PT5M'
+    windowSize: availabilityFrequency > 300 ? 'PT15M' : 'PT5M'
     criteria: {
       'odata.type': 'Microsoft.Azure.Monitor.WebtestLocationAvailabilityCriteria'
       webTestId: availability.id

@@ -59,7 +59,7 @@ public static class JobsDashboard
         app.UseHangfireDashboard(Path, new DashboardOptions
         {
             Authorization = [new SessionCookieFilter()],
-            DashboardTitle = "Tenant Manager background jobs",
+            DashboardTitle = "Mastene background jobs",
             AppPath = "/settings",
         });
     }

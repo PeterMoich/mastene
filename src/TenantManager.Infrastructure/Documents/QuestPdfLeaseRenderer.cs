@@ -97,7 +97,7 @@ public sealed class QuestPdfLeaseRenderer : ILeaseDocumentRenderer
             column.Item().Text("Signatures").FontSize(12).Bold();
             if (m.Signatures.Count == 0)
             {
-                column.Item().Text("Awaiting signature by the landlord and the tenant in Tenant Manager.")
+                column.Item().Text("Awaiting signature by the landlord and the tenant in Mastene.")
                     .FontColor(Colors.Grey.Darken1);
                 return;
             }
@@ -154,7 +154,7 @@ public sealed class LeaseTemplate
         ("Term", $"The lease runs for 12 months from {QuestPdfLeaseRenderer.Date(m.StartDate)} to " +
                  $"{QuestPdfLeaseRenderer.Date(m.EndDate)}, both days included."),
         ("Rent", $"The Tenant pays {QuestPdfLeaseRenderer.Money(m.MonthlyRent)} per month in advance, on or before " +
-                 "the due day set by the Landlord, and uploads proof of payment in Tenant Manager."),
+                 "the due day set by the Landlord, and uploads proof of payment in Mastene."),
         ("Deposit", $"The Tenant pays a deposit of {QuestPdfLeaseRenderer.Money(m.DepositAmount)}, which the Landlord " +
                     "holds and refunds as required by applicable law. [LEGAL REVIEW NEEDED]"),
         ("Inspections", "The Landlord and the Tenant inspect the Premises together at move-in and move-out and " +
@@ -164,7 +164,7 @@ public sealed class LeaseTemplate
                     "lease continues as set out in the Landlord's settings. [LEGAL REVIEW NEEDED]"),
         ("Termination", "Either party may end the lease early by giving the notice required by applicable law. " +
                         "[LEGAL REVIEW NEEDED]"),
-        ("Maintenance", "The Tenant reports maintenance issues in Tenant Manager. The Landlord responds within the " +
+        ("Maintenance", "The Tenant reports maintenance issues in Mastene. The Landlord responds within the " +
                         "target times shown there."),
         ("Personal information", "The Landlord processes the Tenant's personal information only to manage this " +
                                  "lease, and the Tenant may ask for a copy of it. [LEGAL REVIEW NEEDED]"),
