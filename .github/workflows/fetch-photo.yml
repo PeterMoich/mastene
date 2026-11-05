@@ -12,11 +12,11 @@ jobs:
       - name: Download the Unsplash photo and make web-sized copies
         run: |
           set -e
-          curl -fsSL -o photo.jpg "https://images.unsplash.com/photo-1760894492960-5b0a2da0676d?fm=jpg&q=85&w=2400&ixlib=rb-4.1.0"
-          identify photo.jpg
           mkdir -p web/public/images
-          convert photo.jpg -auto-orient -strip -resize '2000x2000>' -quality 72 -interlace Plane web/public/images/login-bg.jpg
-          convert photo.jpg -auto-orient -strip -resize '2000x2000>' -quality 68 web/public/images/login-bg.webp
+          base="https://images.unsplash.com/photo-1760894492960-5b0a2da0676d?ixlib=rb-4.1.0&w=2000&fit=max"
+          curl -fsSL -o web/public/images/login-bg.jpg "$base&fm=jpg&q=72"
+          curl -fsSL -o web/public/images/login-bg.webp "$base&fm=webp&q=68"
+          file web/public/images/*
           ls -la web/public/images
       - name: Commit
         run: |
