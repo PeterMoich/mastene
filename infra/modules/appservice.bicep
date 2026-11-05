@@ -89,7 +89,7 @@ resource site 'Microsoft.Web/sites@2024-04-01' = {
   name: '${baseName}-app-${uniqueString(resourceGroup().id)}'
   location: location
   tags: tags
-  kind: 'app,linux,container'
+  kind: 'app,linux' // sitecontainers apps are 'app,linux'; the slot must match the site
   identity: { type: 'SystemAssigned' }
   properties: {
     serverFarmId: plan.id
@@ -119,7 +119,7 @@ resource staging 'Microsoft.Web/sites/slots@2024-04-01' = {
   name: 'staging'
   location: location
   tags: tags
-  kind: 'app,linux,container'
+  kind: 'app,linux' // sitecontainers apps are 'app,linux'; the slot must match the site
   identity: { type: 'SystemAssigned' }
   properties: {
     serverFarmId: plan.id
