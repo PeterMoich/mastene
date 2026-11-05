@@ -123,7 +123,7 @@ import { Brand } from '../../shared/brand';
       .card { margin-top: -28px; position: relative; }
     }
   `,
-})})
+})
 export class Login {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
