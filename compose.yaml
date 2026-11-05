@@ -11,6 +11,8 @@ x-api-env: &api-env
   # The sign-in page lists the demo logins (landlord and tenants). Local and demo sites only.
   Seed__ShowDemoLogins: ${SHOW_DEMO_LOGINS:-true}
   Database__MigrateOnStartup: "false"
+  # Sign-in calls per IP per minute (the screenshots workflow raises it).
+  RateLimits__AuthPerMinute: ${AUTH_RATE_LIMIT:-10}
   ReverseProxy__Enabled: "true"
   # Documents go to Azurite, the Azure Blob emulator. The account key below is Azurite's public,
   # documented development key, not a secret. Switching to real Azure Storage is a config change.
