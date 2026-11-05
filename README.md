@@ -359,7 +359,7 @@ Application's interfaces. Key choices, each explained in [docs/adr](docs/adr/REA
 A failure in any of 1–5 blocks the images, and `deploy.yml` only runs after CI succeeds on `master`:
 it releases to the staging slot, smoke-tests it, swaps it into production and swaps back if production
 isn't healthy. `infra.yml` creates or updates the Azure resources. Both need an Azure subscription and
-the setup in [docs/operations.md](docs/operations.md). Dependabot proposes dependency updates weekly.
+the setup in [docs/operations.md](docs/operations.md).
 
 ## Legal note
 
